@@ -1,0 +1,13 @@
+export const USER = 'USER';
+export const LOAN = 'LOAN';
+export const CLIENTS = 'CLIENTS';
+export const CLIENT = 'CLIENT';
+export const CLIENT_PREVIEW = 'CLIENT_PREVIEW';
+export const CLIENT_EXTRA = 'CLIENT_EXTRA';
+export const CLIENT_EMPLOYER = 'CLIENT_EMPLOYER';
+export const CLIENT_ADDRESS = 'CLIENT_ADDRESS';
+export const CLIENT_NEXT_OF_KIN = 'CLIENT_NEXT_OF_KIN';
+export const CLIENT_BANK_INFO = 'CLIENT_BANK_INFO';
+export const VENDOR = 'VENDOR';
+export const CRM_LENDERS = 'CRM_LENDERS';
+export const EMPLOYER = 'EMPLOYER';
