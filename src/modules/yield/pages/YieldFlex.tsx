@@ -188,34 +188,43 @@ function YieldFlex() {
         </div>
         <div className="space-y-8">
           {isFAQ ? (
-            <Paper variant="outlined" className="p-4 pb-8 space-y-8">
+            <Paper variant="outlined" className="px-6 pt-5 pb-14">
               <div>
-                <div className="flex items-center gap-2 justify-between mb-4">
+                <div className="flex items-center gap-2 justify-between">
                   <Typography variant="h6" className="font-medium">
                     What is a Flex Yield?
                   </Typography>
-                  <IconButton variant="soft" size="small" onClick={toggleFAQ}>
+                  <IconButton
+                    variant="soft"
+                    className="bg-neutral-100"
+                    onClick={toggleFAQ}
+                  >
                     <Iconify icon="material-symbols:close" />
                   </IconButton>
                 </div>
-                <Typography color="textSecondary">
-                  Flex Yield is a flexible savings product that allows you
-                  manage their funds more flexibly. <br />
-                  <br />
+                <Typography color="textSecondary" className="mt-4">
+                  <span className="text-[#4920AA] font-semibold">
+                    Flex Yield
+                  </span>{" "}
+                  is a flexible savings product that allows you manage their
+                  funds more flexibly.
+                </Typography>
+                <Typography color="textSecondary" className="mt-3">
                   The feature will allow you autosave, and enjoy the benefits of
                   no-penalty withdrawals.
-                  <br />
-                  <br />
+                </Typography>
+
+                <Typography color="textSecondary" className="mt-3">
                   You can also create labels within their target yield to
                   organize your funds according to specific needs.
                 </Typography>
               </div>
 
               <div>
-                <Typography variant="h6" className="font-medium mb-4">
+                <Typography variant="h6" className="font-medium mt-8">
                   What is a Flex Yield?
                 </Typography>
-                <Typography color="textSecondary">
+                <Typography color="textSecondary" className="mt-4">
                   With an interest rate of 14%, you can save for as long as you
                   like and withdraw your money at any time.
                 </Typography>
