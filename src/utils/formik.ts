@@ -3,7 +3,7 @@ import { objectAccessor } from "./object";
 export function getFormikTextFieldHelperText(
   formik: any,
   key: string,
-  helperText?: string
+  helperText?: any
 ) {
   return !!objectAccessor(formik.touched, key) &&
     objectAccessor(formik.errors, key)
@@ -27,7 +27,7 @@ export function getFormikTextFieldError(formik: any, key: string) {
 export function getFormikTextFieldHelperTextAndErrorProps(
   formik: any,
   key: string,
-  helperText?: string
+  helperText?: any
 ) {
   return {
     error: getFormikTextFieldError(formik, key),
@@ -43,7 +43,7 @@ export function getFormikTextFieldHelperTextAndErrorProps(
 export function getFormikTextFieldProps(
   formik: any,
   key: string,
-  helperText?: string
+  helperText?: any
 ) {
   return {
     ...formik.getFieldProps(key),
