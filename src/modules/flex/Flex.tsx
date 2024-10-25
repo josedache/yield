@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 
-function Yield() {
+function Flex() {
   return (
     <>
       <Outlet />
@@ -8,6 +8,6 @@ function Yield() {
   );
 }
 
-export default Yield;
+export default Flex;
 
-export const Component = Yield;
+export const Component = Flex;

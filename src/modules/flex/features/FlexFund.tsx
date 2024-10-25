@@ -28,7 +28,7 @@ import {
 } from "libs/payment-gateway-inline";
 import { PAYSTACK_PUBLIC_KEY } from "constants/env";
 
-function YieldFund(props: YieldFundProps) {
+function FlexFund(props: FlexFundProps) {
   const { children, onClose, ...restProps } = props;
 
   const { enqueueSnackbar } = useSnackbar();
@@ -43,7 +43,7 @@ function YieldFund(props: YieldFundProps) {
     },
     enableReinitialize: true,
     validationSchema: yup.object({
-        amount: yup.number().label("Amount").min(1).required(),
+      amount: yup.number().label("Amount").min(1).required(),
     }),
     onSubmit: async () => {
       try {
@@ -225,9 +225,9 @@ function YieldFund(props: YieldFundProps) {
   );
 }
 
-export default YieldFund;
+export default FlexFund;
 
-export type YieldFundProps = {
+export type FlexFundProps = {
   id?: string;
   children?:
     | ReactNode

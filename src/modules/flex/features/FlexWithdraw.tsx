@@ -24,7 +24,7 @@ import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
 import CurrencyTypography from "components/CurrencyTypography";
 import OtpInput from "components/OtpInput";
 
-function YieldWithdraw(props: YieldWithdrawProps) {
+function FlexWithdraw(props: FlexWithdrawProps) {
   const { children, onClose, ...restProps } = props;
 
   const { enqueueSnackbar } = useSnackbar();
@@ -317,9 +317,9 @@ function YieldWithdraw(props: YieldWithdrawProps) {
   );
 }
 
-export default YieldWithdraw;
+export default FlexWithdraw;
 
-export type YieldWithdrawProps = {
+export type FlexWithdrawProps = {
   id?: string;
   children?:
     | ReactNode

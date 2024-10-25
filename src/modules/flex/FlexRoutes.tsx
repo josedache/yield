@@ -4,6 +4,6 @@ import { RouteObject } from "react-router-dom";
 export default [
   {
     index: true,
-    lazy: () => import("modules/yield/pages/YieldFlex"),
+    lazy: () => import("modules/flex/pages/Flex"),
   },
 ] as RouteObject[];

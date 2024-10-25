@@ -14,10 +14,10 @@ import SavedCardSvg from "assets/svgs/saved-card.svg?react";
 import BookmarkSvg from "assets/svgs/bookmark.svg?react";
 import WalletTransactionFlowSvg from "assets/svgs/wallet--transaction-flow.svg?react";
 import * as dfns from "date-fns";
-import YieldFund from "../features/YieldFund";
-import YieldWithdraw from "../features/YieldWithdraw";
+import FlexFund from "../features/FlexFund";
+import YieldWithdraw from "../features/FlexWithdraw";
 
-function YieldFlex() {
+function Flex() {
   const [isFAQ, toggleFAQ] = useToggle(true);
 
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
@@ -81,13 +81,13 @@ function YieldFlex() {
               </div>
               {isActive ? (
                 <div className="space-y-2">
-                  <YieldFund>
+                  <FlexFund>
                     {({ toggleOpen }) => (
                       <Button fullWidth onClick={toggleOpen}>
                         Add Money
                       </Button>
                     )}
-                  </YieldFund>
+                  </FlexFund>
 
                   <YieldWithdraw>
                     {({ toggleOpen }) => (
@@ -98,11 +98,11 @@ function YieldFlex() {
                   </YieldWithdraw>
                 </div>
               ) : (
-                <YieldFund>
+                <FlexFund>
                   {({ toggleOpen }) => (
                     <Button onClick={toggleOpen}>Fund Wallet</Button>
                   )}
-                </YieldFund>
+                </FlexFund>
               )}
             </div>
           </Paper>
@@ -329,9 +329,9 @@ function YieldFlex() {
   );
 }
 
-export const Component = YieldFlex;
+export const Component = Flex;
 
-export default YieldFlex;
+export default Flex;
 
 const transactions = [
   {
