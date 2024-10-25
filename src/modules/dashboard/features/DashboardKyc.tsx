@@ -22,6 +22,7 @@ import { getFormikTextFieldProps } from "utils/formik";
 import NumberTextField from "components/NumberTextField";
 import Dropzone from "react-dropzone";
 import { Icon as Iconify } from "@iconify/react";
+import clsx from "clsx";
 
 function DashboardKyc() {
   const { enqueueSnackbar } = useSnackbar();
@@ -63,17 +64,17 @@ function DashboardKyc() {
 
   return (
     <>
-      <div className="w-full max-w-xl mx-auto space-y-8">
+      <div className="w-full max-w-xl mx-auto">
         <div className="text-center">
           <Typography variant="h5" gutterBottom>
             Let’s get you started
           </Typography>
-          <Typography color="textSecondary">
+          <Typography color="textSecondary" className="mt-4">
             To get the best experience, we recommend you complete these
             onboarding steps.
           </Typography>
         </div>
-        <div className="">
+        <div className="mt-8">
           {[
             {
               title: "Basic Information",
@@ -295,7 +296,20 @@ function DashboardKyc() {
             },
           ].map(({ title, content }, index) => {
             return (
-              <Accordion key={title} expanded={stepper.step === index}>
+              <Accordion
+                key={title}
+                elevation={stepper.step === index ? 1 : 0}
+                expanded={stepper.step === index}
+                className={clsx(
+                  stepper.step === index ? "border-neutral-50" : "border-none",
+                  "rounded-lg mb-4"
+                )}
+                sx={{
+                  "&:before": {
+                    display: "none",
+                  },
+                }}
+              >
                 <AccordionSummary expandIcon={<Icon>expand_more</Icon>}>
                   <div className="flex items-center gap-2">
                     <Icon
@@ -304,7 +318,14 @@ function DashboardKyc() {
                     >
                       check_circle
                     </Icon>
-                    <Typography className="font-semibold">{title}</Typography>
+                    <Typography
+                      variant="h6"
+                      className={clsx(
+                        stepper.step === index ? "font-semibold" : "font-normal"
+                      )}
+                    >
+                      {title}
+                    </Typography>
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>{content}</AccordionDetails>
