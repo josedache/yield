@@ -23,6 +23,8 @@ import NumberTextField from "components/NumberTextField";
 import Dropzone from "react-dropzone";
 import { Icon as Iconify } from "@iconify/react";
 import clsx from "clsx";
+import { Link } from "react-router-dom";
+import { DASHBOARD } from "constants/urls";
 
 function DashboardKyc() {
   const { enqueueSnackbar } = useSnackbar();
@@ -30,7 +32,34 @@ function DashboardKyc() {
 
   const formik = useFormik({
     initialValues: {
-      document: "",
+      bvn: "",
+      nin: "",
+      dateOfBirth: "",
+      gender: "",
+      mobileNo: "",
+      emailAddress: "",
+      firstname: "",
+      lastname: "",
+      middlename: "",
+      addressId: "",
+      typeId: 36,
+      addressLine1: "",
+      addressLine2: "",
+      addressLine3: "",
+      stateProvinceId: "",
+      stateName: "",
+      city: "",
+      countryId: "",
+      countryName: "",
+      accountnumber: "",
+      accountname: "",
+      bankId: "",
+      // is_bvn_validated: true,
+      // is_mobile_no_validated: true,
+      // is_email_validated: true,
+      // is_nin_validated: true,
+      // is_client_identifier_validated: "",
+      // isActive: true,
     },
     validationSchema: yup.object({}),
     onSubmit: async () => {
@@ -84,13 +113,13 @@ function DashboardKyc() {
                     fullWidth
                     label="First Name"
                     placeholder="Stephanie"
-                    {...getFormikTextFieldProps(formik, "firstName")}
+                    {...getFormikTextFieldProps(formik, "firstname")}
                   />
                   <TextField
                     fullWidth
                     label="Last Name"
                     placeholder="Takeme"
-                    {...getFormikTextFieldProps(formik, "lastName")}
+                    {...getFormikTextFieldProps(formik, "lastname")}
                   />
                   <NumberTextField
                     freeSolo
@@ -104,14 +133,14 @@ function DashboardKyc() {
                     fullWidth
                     label="Phone Number"
                     placeholder="08012345678"
-                    {...getFormikTextFieldProps(formik, "phoneNumber")}
+                    {...getFormikTextFieldProps(formik, "mobileNo")}
                   />
                   <TextField
                     fullWidth
                     label="Email Address"
                     placeholder="stephanietakeme@yahoo.com"
                     type="email"
-                    {...getFormikTextFieldProps(formik, "email")}
+                    {...getFormikTextFieldProps(formik, "emailAddress")}
                   />
                   <div className="flex items-end">
                     <div className="flex-1">{actionButtons}</div>
@@ -131,7 +160,7 @@ function DashboardKyc() {
                     {...getFormikTextFieldProps(formik, "idType")}
                   >
                     {[
-                      { name: "NIN", id: "nin" },
+                      { name: "NIN", id: "" },
                       { name: "ID Number", id: "idNumber" },
                     ].map((option) => (
                       <MenuItem key={option.id} value={option.name}>
@@ -353,7 +382,7 @@ function DashboardKyc() {
             You’ve successfully completed your onboarding. Let’s start growing
             your wealth!
           </DialogContentText>
-          <Button size="large" fullWidth>
+          <Button size="large" fullWidth component={Link} to={DASHBOARD}>
             Go to Dashboard
           </Button>
         </DialogContent>
@@ -361,5 +390,7 @@ function DashboardKyc() {
     </>
   );
 }
+
+export const Component = DashboardKyc;
 
 export default DashboardKyc;

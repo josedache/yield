@@ -1,13 +1,13 @@
 import { useCallback } from "react";
 import { logout as logoutAction } from "configs/store-actions";
 import useStoreDispatch from "./useStoreDispatch";
-// import CoreTwoFactorApi from "apis/CoreTwoFactorApi";
+import { userApi } from "apis/user-api";
 
 function useLogout() {
   const dispatch = useStoreDispatch();
 
-  // const [logoutTwoFactorMutation, logoutTwoFactorMutationResult] =
-  //   CoreTwoFactorApi.useLogoutTwoFactorMutation();
+  const [logoutUserMutation, logoutUserMutationResult] =
+    userApi.useLogoutUserMutation();
 
   const logout = useCallback(
     function logout() {
@@ -18,7 +18,7 @@ function useLogout() {
     [dispatch]
   );
 
-  return { logout };
+  return { logout, logoutUserMutation, logoutUserMutationResult };
 }
 
 export default useLogout;

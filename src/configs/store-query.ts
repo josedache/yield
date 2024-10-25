@@ -10,7 +10,20 @@ import * as tags from "constants/tags";
 export const coreApi = createApi({
   reducerPath: "coreApi",
   baseQuery: customFetchBaseQuery({
-    baseUrl: `${API_BASE_URL}/api`,
+    baseUrl: `${API_BASE_URL}/v1`,
+    prepareHeaders(headers, { getState }) {
+      headers = new Headers(headers);
+
+      const { authUser } = (getState() as any)?.global ?? {};
+
+      const token = authUser?.token;
+
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+
+      return headers;
+    },
   }),
   endpoints: () => ({}),
 }).enhanceEndpoints({ addTagTypes: Object.values(tags) });

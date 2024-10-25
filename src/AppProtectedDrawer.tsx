@@ -15,11 +15,55 @@ import MediaBreakpoint from "enums/MediaBreakpoint";
 import useSideNavigation from "hooks/useSideNavigation";
 import { NavLink, NavLinkProps } from "react-router-dom";
 import { Icon as Iconify } from "@iconify-icon/react";
+import useLogout from "hooks/useLogout";
 
 function AppProtectedDrawer() {
   const islg = useMediaQuery(MediaBreakpoint.LG);
 
+  const { logout } = useLogout();
+
   const sideNavigation = useSideNavigation();
+
+  const NAV_LINKS = [
+    {
+      children: [
+        {
+          icon: "hugeicons:dashboard-square-02",
+          children: "Dashboard",
+          to: DASHBOARD,
+        },
+        {
+          icon: "ph:plant",
+          children: "Yield",
+          to: YIELD,
+        },
+        {
+          icon: "iconoir:profile-circle",
+          children: "Profile",
+          to: PROFILE,
+        },
+      ],
+    },
+    {
+      children: [
+        {
+          icon: "ep:chat-dot-round",
+          children: "Support",
+          to: SUPPORT,
+        },
+        {
+          icon: "la:cog",
+          children: "Settings",
+          to: SETTINGS,
+        },
+        {
+          icon: "ion:power-outline",
+          children: "Logout",
+          onClick: logout,
+        },
+      ],
+    },
+  ] as { children: ({ icon?: string } & NavLinkProps)[] }[];
 
   return (
     <>
@@ -110,43 +154,3 @@ function AppProtectedDrawer() {
 }
 
 export default AppProtectedDrawer;
-
-const NAV_LINKS = [
-  {
-    children: [
-      {
-        icon: "hugeicons:dashboard-square-02",
-        children: "Dashboard",
-        to: DASHBOARD,
-      },
-      {
-        icon: "ph:plant",
-        children: "Yield",
-        to: YIELD,
-      },
-      {
-        icon: "iconoir:profile-circle",
-        children: "Profile",
-        to: PROFILE,
-      },
-    ],
-  },
-  {
-    children: [
-      {
-        icon: "ep:chat-dot-round",
-        children: "Support",
-        to: SUPPORT,
-      },
-      {
-        icon: "la:cog",
-        children: "Settings",
-        to: SETTINGS,
-      },
-      {
-        icon: "ion:power-outline",
-        children: "Logout",
-      },
-    ],
-  },
-] as { children: ({ icon?: string } & NavLinkProps)[] }[];
