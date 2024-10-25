@@ -1,11 +1,13 @@
-import DashboardKyc from "./features/DashboardKyc";
-import DashboardMain from "./features/DashboardMain";
+import { Outlet } from "react-router-dom";
 
 function Dashboard() {
-  const isKycCompleted = false;
-  return <>{isKycCompleted ? <DashboardMain /> : <DashboardKyc />}</>;
+  return (
+    <>
+      <Outlet />
+    </>
+  );
 }
 
-export const Component = Dashboard;
-
 export default Dashboard;
+
+export const Component = Dashboard;

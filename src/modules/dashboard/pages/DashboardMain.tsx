@@ -4,11 +4,20 @@ import clsx from "clsx";
 import CurrencyTypography from "components/CurrencyTypography";
 import useToggle from "hooks/useToggle";
 import DashboardEmptyActivitySvg from "assets/svgs/dashboard-empty-activity.svg?react";
+import { Navigate } from "react-router-dom";
+import { DASHBOARD_KYC } from "constants/urls";
+import useAuthUser from "hooks/useAuthUser";
 
 function DashboardMain() {
+  const authUser = useAuthUser();
+
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
   const [isFixedYieldVisible, toggleFixedYieldVisible] = useToggle();
   const [isFlexYieldVisible, toggleFlexYieldVisible] = useToggle();
+
+  if (!authUser?.kycLevel) {
+    return <Navigate to={DASHBOARD_KYC} />;
+  }
 
   return (
     <div className="space-y-8">
@@ -144,5 +153,7 @@ function DashboardMain() {
     </div>
   );
 }
+
+export const Component = DashboardMain;
 
 export default DashboardMain;

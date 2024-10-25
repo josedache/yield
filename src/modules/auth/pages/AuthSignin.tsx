@@ -8,28 +8,39 @@ import { DASHBOARD, RESET_PASSWORD, SIGNUP } from "constants/urls";
 import PasswordTextField from "components/PasswordTextField";
 import { getFormikTextFieldProps } from "utils/formik";
 import NumberTextField from "components/NumberTextField";
-import { useDispatch } from "react-redux";
-import { setAuthUser } from "configs/store-slice";
+import { userApi } from "apis/user-api";
 
 function AuthSignin() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
-  const dispatch = useDispatch();
+  const [loginUserMutation] = userApi.useLoginUserMutation();
 
   const formik = useFormik({
     initialValues: {
-      email: "",
       password: "",
+      phone: "",
+      device_id: "kdkdkdd",
+      login_method: "password",
+      channel: "yield",
+      version: "1",
     },
     validateOnBlur: true,
-    validationSchema: yup.object().shape({}),
-    onSubmit: async () => {
+    validationSchema: yup.object().shape({
+      phone: yup.string().label("Phone").required(),
+      password: yup.string().label("Password").required(),
+    }),
+    onSubmit: async (values) => {
       try {
-        dispatch(setAuthUser({ token: "kdkdkd" }));
+        const data = await loginUserMutation({ body: values }).unwrap();
+        enqueueSnackbar(data.message || "Login Successful", {
+          variant: "success",
+        });
         navigate(DASHBOARD);
-      } catch {
-        enqueueSnackbar("Error", { variant: "error" });
+      } catch (error: any) {
+        enqueueSnackbar(error?.data?.message || "Failed to login", {
+          variant: "error",
+        });
       }
     },
   });
@@ -56,7 +67,7 @@ function AuthSignin() {
             margin="normal"
             label="Phone Number"
             placeholder="Enter Phone Number"
-            {...getFormikTextFieldProps(formik, "phoneNumber")}
+            {...getFormikTextFieldProps(formik, "phone")}
           />
           <PasswordTextField
             fullWidth

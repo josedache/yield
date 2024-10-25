@@ -1,0 +1,98 @@
+import { coreApi } from "configs/store-query";
+import * as tags from "constants/tags";
+import { ApiRequest, ApiResponse } from "src/types/api";
+import {
+  UserClientKycApiResponse,
+  UserLoginApiRequest,
+  UserLoginApiResponse,
+  UserLogoutApiRequest,
+  UserResetPasswordApiRequest,
+  UserResetPasswordApiResponse,
+  UserResetPasswordSendApiRequest,
+  UserResetPasswordSendApiResponse,
+  UserResetPasswordVerifyApiRequest,
+  UserResetPasswordVerifyApiResponse,
+} from "src/types/user-api";
+
+export const BASE_URL = "/user";
+
+export const userApi = coreApi.injectEndpoints({
+  endpoints: (builder) => ({
+    loginUser: builder.mutation<UserLoginApiResponse, UserLoginApiRequest>({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/login",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.USER],
+    }),
+
+    getUserClientKyc: builder.query<UserClientKycApiResponse, ApiRequest>({
+      query: (config) => ({
+        url: BASE_URL + "/kyc/client/verify",
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.USER],
+    }),
+
+    verifyUserClientKyc: builder.mutation<UserClientKycApiResponse, ApiRequest>(
+      {
+        query: ({ ...config }) => ({
+          url: BASE_URL + "/kyc/client/verify",
+          method: "POST",
+          ...config,
+        }),
+        invalidatesTags: [tags.USER],
+      }
+    ),
+
+    logoutUser: builder.mutation<ApiResponse, UserLogoutApiRequest>({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/logout",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.USER],
+    }),
+
+    sendUserResetPassword: builder.mutation<
+      UserResetPasswordSendApiResponse,
+      UserResetPasswordSendApiRequest
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/send/reset-password",
+        method: "POST",
+        headers: {
+          "x-channel-code": "2",
+        },
+        ...config,
+      }),
+      invalidatesTags: [tags.USER],
+    }),
+
+    verifyUserResetPassword: builder.mutation<
+      UserResetPasswordVerifyApiResponse,
+      UserResetPasswordVerifyApiRequest
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/verify/reset-password",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.USER],
+    }),
+
+    resetPassword: builder.mutation<
+      UserResetPasswordApiResponse,
+      UserResetPasswordApiRequest
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/reset-password",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.USER],
+    }),
+  }),
+});

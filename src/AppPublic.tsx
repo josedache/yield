@@ -18,7 +18,7 @@ export const Component = AppPublic;
 export function loader() {
   const { authUser } = store.getState().global;
 
-  if (authUser) {
+  if (authUser?.isAuthenticated) {
     return redirect(ENTRY);
   }
 

@@ -1,14 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { logout } from "./store-actions";
+import { userApi } from "apis/user-api";
+import { User } from "src/types/user";
 
-type initialStateType = {
-  authUser: null;
+type InitialState = {
+  authUser: User;
   isSideNavigation: boolean;
   isIconOnly: boolean;
 };
 
-export const initialState: initialStateType = {
-  authUser: null as null,
+export const initialState: InitialState = {
+  authUser: null,
   isSideNavigation: false,
   isIconOnly: false,
 };
@@ -29,7 +31,41 @@ export const slice = createSlice({
     },
   },
   extraReducers: (builder) =>
-    builder.addCase(logout, () => ({ ...initialState })),
+    builder
+      .addCase(logout, () => ({ ...initialState }))
+      .addMatcher(
+        userApi.endpoints.loginUser.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = { ...payload.data, isAuthenticated: true } as User;
+        }
+      )
+      .addMatcher(
+        userApi.endpoints.getUserClientKyc.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = Object.assign(state.authUser, payload.data);
+        }
+      )
+      .addMatcher(
+        userApi.endpoints.sendUserResetPassword.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = payload.data as User;
+        }
+      )
+      .addMatcher(
+        userApi.endpoints.verifyUserResetPassword.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser.token = payload.data;
+        }
+      )
+      .addMatcher(userApi.endpoints.resetPassword.matchFulfilled, (state) => {
+        state.authUser = null;
+      })
+      .addMatcher(
+        userApi.endpoints.getUserClientKyc.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = Object.assign(state.authUser, payload.data);
+        }
+      ),
 });
 
 export const { toggleIconOnlyMenuAction, setAuthUser } = slice.actions;

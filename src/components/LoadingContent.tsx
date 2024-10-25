@@ -123,7 +123,7 @@ type LoadingUIProps = {
   Component?: any;
   children: any | (() => any);
   onMount?: () => void;
-  loading?: boolean;
+  loading: boolean;
   LoadingProps?: any;
   renderLoading?: (props: LoadingUIProps) => React.ReactNode;
   error?: boolean;
