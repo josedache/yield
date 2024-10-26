@@ -10,7 +10,14 @@ import {
 } from "@mui/material";
 import clsx from "clsx";
 import Logo from "components/Logo";
-import { DASHBOARD, PROFILE, SETTINGS, SUPPORT, YIELD } from "constants/urls";
+import {
+  DASHBOARD,
+  FLEX,
+  PROFILE,
+  SETTINGS,
+  SUPPORT,
+  YIELD,
+} from "constants/urls";
 import MediaBreakpoint from "enums/MediaBreakpoint";
 import useSideNavigation from "hooks/useSideNavigation";
 import { NavLink, NavLinkProps } from "react-router-dom";
@@ -35,7 +42,7 @@ function AppProtectedDrawer() {
         {
           icon: "ph:plant",
           children: "Yield",
-          to: YIELD,
+          to: FLEX,
         },
         {
           icon: "iconoir:profile-circle",

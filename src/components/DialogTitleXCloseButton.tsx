@@ -12,13 +12,16 @@ function DialogTitleXCloseButton(props: any) {
   return (
     <DialogTitle className={clsx("", className)} {...other}>
       {children}
+
       {onClose ? (
         <IconButton
           className="absolute right-2 top-3"
           aria-label="close"
           onClick={onClose}
         >
-          <Icon><Iconify icon="material-symbols:close" /></Icon>
+          <Icon>
+            <Iconify icon="material-symbols:close" />
+          </Icon>
         </IconButton>
       ) : null}
     </DialogTitle>

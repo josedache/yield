@@ -1,7 +1,8 @@
 import AppErrorBoundary from "./AppErrorBoundary";
-import { DASHBOARD, ENTRY, FLEX, YIELD_FLEX } from "constants/urls";
+import { DASHBOARD, ENTRY, FIXED, FLEX } from "constants/urls";
 import AuthRoutes from "modules/auth/AuthRoutes";
 import DashboardRoutes from "modules/dashboard/DashboardRoutes";
+import FixedRoutes from "modules/fixed/FixedRoutes";
 import FlexRoutes from "modules/flex/FlexRoutes";
 import { createBrowserRouter } from "react-router-dom";
 
@@ -41,6 +42,11 @@ const router = createBrowserRouter([
             path: FLEX,
             lazy: () => import("modules/flex/Flex"),
             children: FlexRoutes,
+          },
+          {
+            path: FIXED,
+            lazy: () => import("modules/fixed/Fixed"),
+            children: FixedRoutes,
           },
         ],
       },
