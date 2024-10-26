@@ -3,6 +3,10 @@ import * as tags from "constants/tags";
 import { ApiRequest, ApiResponse } from "src/types/api";
 import {
   UserClientKycApiResponse,
+  UserCreatePasswordApiRequest,
+  UserCreatePasswordApiResponse,
+  UserFileUploadPasswordApiRequest,
+  UserFileUploadPasswordApiResponse,
   UserLoginApiRequest,
   UserLoginApiResponse,
   UserLogoutApiRequest,
@@ -12,7 +16,12 @@ import {
   UserResetPasswordSendApiResponse,
   UserResetPasswordVerifyApiRequest,
   UserResetPasswordVerifyApiResponse,
+  UserSignupYieldApiRequest,
+  UserSignupYieldApiResponse,
+  UserVerifyOtpApiRequest,
+  UserVerifyOtpApiResponse,
 } from "src/types/user-api";
+import { objectToFormData } from "utils/object";
 
 export const BASE_URL = "/user";
 
@@ -91,6 +100,58 @@ export const userApi = coreApi.injectEndpoints({
         url: BASE_URL + "/reset-password",
         method: "POST",
         ...config,
+      }),
+      invalidatesTags: [tags.USER],
+    }),
+
+    signupYieldUser: builder.mutation<
+      UserSignupYieldApiResponse,
+      UserSignupYieldApiRequest
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/yield_sign_up",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.USER],
+    }),
+
+    verifyUserOtp: builder.mutation<
+      UserVerifyOtpApiResponse,
+      UserVerifyOtpApiRequest
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/verify_otp",
+        method: "POST",
+        headers: {
+          "x-channel-code": "2",
+        },
+        ...config,
+      }),
+      invalidatesTags: [tags.USER],
+    }),
+
+    createYieldUserPassword: builder.mutation<
+      UserCreatePasswordApiResponse,
+      UserCreatePasswordApiRequest
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/yield_create_password",
+        method: "PUT",
+        ...config,
+      }),
+      invalidatesTags: [tags.USER],
+    }),
+
+    uploadUserFile: builder.mutation<
+      UserFileUploadPasswordApiResponse,
+      UserFileUploadPasswordApiRequest
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/file/upload",
+        method: "POST",
+        ...config,
+        body: objectToFormData(config.body),
       }),
       invalidatesTags: [tags.USER],
     }),

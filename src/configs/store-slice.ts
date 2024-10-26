@@ -34,15 +34,15 @@ export const slice = createSlice({
     builder
       .addCase(logout, () => ({ ...initialState }))
       .addMatcher(
-        userApi.endpoints.loginUser.matchFulfilled,
+        userApi.endpoints.signupYieldUser.matchFulfilled,
         (state, { payload }) => {
-          state.authUser = { ...payload.data, isAuthenticated: true } as User;
+          state.authUser = { token: payload.data.token } as User;
         }
       )
       .addMatcher(
-        userApi.endpoints.getUserClientKyc.matchFulfilled,
+        userApi.endpoints.loginUser.matchFulfilled,
         (state, { payload }) => {
-          state.authUser = Object.assign(state.authUser, payload.data);
+          state.authUser = { ...payload.data, isAuthenticated: true } as User;
         }
       )
       .addMatcher(

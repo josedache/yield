@@ -6,6 +6,8 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import { API_BASE_URL } from "constants/env";
 import * as tags from "constants/tags";
+import store from "./store";
+import { logout } from "./store-actions";
 
 export const coreApi = createApi({
   reducerPath: "coreApi",
@@ -22,7 +24,19 @@ export const coreApi = createApi({
         headers.set("Authorization", `Bearer ${token}`);
       }
 
+      headers.set("ngrok-skip-browser-warning", "true");
+
       return headers;
+    },
+    fetchFn: async (...arg) => {
+      const response = await fetch(...arg);
+
+      if (response.status == 401) {
+        store.dispatch(logout());
+        window.location.reload();
+      }
+
+      return response;
     },
   }),
   endpoints: () => ({}),

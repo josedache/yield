@@ -38,8 +38,28 @@ function DashboardMain() {
       textColor: "text-[#4920AA96]",
     },
   ];
-  if (!authUser?.kycLevel) {
-    return <Navigate to={DASHBOARD_KYC} />;
+
+  const isBasicInformationCompleted =
+    authUser?.firstname &&
+    authUser?.lastname &&
+    authUser?.bvn &&
+    authUser?.mobileNo &&
+    authUser?.email;
+
+  const isIdentificationCompleted = authUser?.nin;
+
+  const isAccountDetailsCompleted =
+    authUser?.bank_details?.accountnumber &&
+    authUser?.bank_details?.accountname;
+
+  if (
+    !(
+      isBasicInformationCompleted &&
+      isIdentificationCompleted &&
+      isAccountDetailsCompleted
+    )
+  ) {
+    return <Navigate to={DASHBOARD_KYC} replace />;
   }
 
   return (

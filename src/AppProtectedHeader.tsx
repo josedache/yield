@@ -16,9 +16,12 @@ import usePopover from "hooks/usePopover";
 import useSideNavigation from "hooks/useSideNavigation";
 import { Icon as Iconify } from "@iconify/react";
 import clsx from "clsx";
+import useAuthUser from "hooks/useAuthUser";
 
 function AppProtectedHeader(props: AppBarProps) {
   const { ...restProps } = props;
+
+  const authUser = useAuthUser();
 
   const infoPopover = usePopover();
 
@@ -49,7 +52,7 @@ function AppProtectedHeader(props: AppBarProps) {
               </Icon>
             </IconButton>
             <Typography>
-              Hello, <b>Stephanie</b>
+              Hello, <b>{authUser?.firstname}</b>
             </Typography>
             <div className="flex-1" />
 
@@ -61,7 +64,10 @@ function AppProtectedHeader(props: AppBarProps) {
               </IconButton>
             </div>
 
-            <Avatar>ST</Avatar>
+            <Avatar>
+              {authUser?.firstname?.[0]}
+              {authUser?.lastname?.[0]}
+            </Avatar>
             <Popover
               open={infoPopover.isOpen}
               anchorEl={infoPopover.anchorEl}

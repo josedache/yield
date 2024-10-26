@@ -7,6 +7,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
+  CircularProgress,
   Dialog,
   DialogContent,
   DialogContentText,
@@ -23,57 +24,260 @@ import NumberTextField from "components/NumberTextField";
 import Dropzone from "react-dropzone";
 import { Icon as Iconify } from "@iconify/react";
 import clsx from "clsx";
-import { Link } from "react-router-dom";
-import { DASHBOARD } from "constants/urls";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { DASHBOARD, SIGNIN } from "constants/urls";
+import useAuthUser from "hooks/useAuthUser";
+import { DashboardKycStep } from "../enums/DashboardKycStep";
+import { userApi } from "apis/user-api";
+import { getAssetInfo } from "utils/file";
+import { LoadingButton } from "@mui/lab";
+import { transactionApi } from "apis/transaction-api";
+import { useMemo } from "react";
+import useRtkQueryStatusCallbacks from "hooks/useRtkQueryStatusCallbacks";
 
 function DashboardKyc() {
   const { enqueueSnackbar } = useSnackbar();
-  const stepper = useStepper();
+
+  const navigate = useNavigate();
+
+  const authUser = useAuthUser();
+
+  const [verifyUserClientKycMutation] =
+    userApi.useVerifyUserClientKycMutation();
+  const [uploadUserFileMutation] = userApi.useUploadUserFileMutation();
+
+  const transactionOutwardBankListQueryResult =
+    transactionApi.useGetTransactionOutwardBankListQuery(undefined);
+
+  const banks = transactionOutwardBankListQueryResult.data?.data;
+
+  const normalizedBanks = useMemo(
+    () =>
+      banks?.reduce((acc, curr) => {
+        acc[curr.id] = curr;
+        return acc;
+      }, {} as Record<string, (typeof banks)[0]>),
+    [banks]
+  );
+
+  const isBasicInformationCompleted =
+    authUser?.firstname &&
+    authUser?.lastname &&
+    authUser?.bvn &&
+    authUser?.mobileNo &&
+    authUser?.email;
+
+  const isIdentificationCompleted = authUser?.nin;
+
+  const isAccountDetailsCompleted =
+    authUser?.bank_details?.accountnumber &&
+    authUser?.bank_details?.accountname;
+
+  const stepper = useStepper({
+    initialStep: getEnumStepIndex(
+      !isBasicInformationCompleted
+        ? DashboardKycStep.BASIC_INFORMATION
+        : !isIdentificationCompleted
+        ? DashboardKycStep.IDENTIFICATION
+        : DashboardKycStep.ACCOUNT_DETAILS
+    ),
+  });
+
+  const enumStep = STEPS_INDEX[stepper.step];
 
   const formik = useFormik({
     initialValues: {
-      bvn: "",
-      nin: "",
-      dateOfBirth: "",
-      gender: "",
-      mobileNo: "",
-      emailAddress: "",
-      firstname: "",
-      lastname: "",
-      middlename: "",
-      addressId: "",
-      typeId: 36,
-      addressLine1: "",
-      addressLine2: "",
-      addressLine3: "",
-      stateProvinceId: "",
-      stateName: "",
-      city: "",
-      countryId: "",
-      countryName: "",
-      accountnumber: "",
-      accountname: "",
-      bankId: "",
+      bvn: authUser.bvn ?? "",
+      nin: authUser?.nin ?? "",
+      // dateOfBirth: "",
+      // gender: "",
+      mobileNo: authUser?.mobileNo ?? "",
+      emailAddress: authUser.email ?? "",
+      firstname: authUser.firstname ?? "",
+      lastname: authUser.lastname ?? "",
+      // middlename: "",
+      // addressId: "",
+      // typeId: 36,
+      // addressLine1: "",
+      // addressLine2: "",
+      // addressLine3: "",
+      // stateProvinceId: "",
+      // stateName: "",
+      // city: "",
+      // countryId: "",
+      // countryName: "",
+      accountnumber: authUser.bank_details?.accountnumber ?? "",
+      accountname: authUser.bank_details?.accountname ?? "",
+      bankId: authUser.bank_details?.bankId ?? "",
       // is_bvn_validated: true,
       // is_mobile_no_validated: true,
       // is_email_validated: true,
       // is_nin_validated: true,
       // is_client_identifier_validated: "",
       // isActive: true,
+      document: {
+        file: null as File,
+        type: "nin_slip",
+        id_number: authUser?.nin ?? "",
+        // date_of_issue: '',
+        // country_of_issue: '',
+        // expiry_date: ''
+      },
     },
-    validationSchema: yup.object({}),
-    onSubmit: async () => {
+    enableReinitialize: true,
+    validationSchema: yup.object({
+      ...{
+        [DashboardKycStep.BASIC_INFORMATION]: {
+          bvn: yup.string().label("BVN").length(11).required(),
+          emailAddress: yup.string().label("Email Address").required(),
+          firstname: yup.string().label("First Name").required(),
+          lastname: yup.string().label("Last Name").required(),
+        },
+        [DashboardKycStep.IDENTIFICATION]: {
+          document: yup.object({
+            file: yup
+              .mixed()
+              .label("Document")
+              .test(
+                "file",
+                "Document is not a file",
+                (value) => value instanceof File
+              )
+              .required(),
+            id_number: yup.string().label("NIN").min(11).required(),
+          }),
+        },
+        [DashboardKycStep.ACCOUNT_DETAILS]: {
+          accountnumber: yup.string().label("Account Number").required(),
+          accountname: yup.string().label("Account Name").required(),
+          bankId: yup.string().label("Bank").required(),
+        },
+      }[enumStep],
+    }),
+    onSubmit: async (values) => {
       try {
+        switch (enumStep) {
+          case DashboardKycStep.BASIC_INFORMATION: {
+            const data = await verifyUserClientKycMutation({
+              body: { ...values, document: undefined },
+            }).unwrap();
+            enqueueSnackbar(
+              data?.message || "Basic information updated Successfully!",
+              {
+                variant: "success",
+              }
+            );
+
+            if (isAccountDetailsCompleted) {
+              return stepper.go(getEnumStepIndex(DashboardKycStep.SUCCESS));
+            }
+
+            if (isIdentificationCompleted) {
+              return stepper.go(
+                getEnumStepIndex(DashboardKycStep.ACCOUNT_DETAILS)
+              );
+            }
+
+            break;
+          }
+          case DashboardKycStep.IDENTIFICATION: {
+            const assetInfo = getAssetInfo(values.document.file);
+
+            const data = await uploadUserFileMutation({
+              body: {
+                tier_level: authUser.kycLevel,
+                title: values.document.file.name,
+                type: values.document.type,
+                fileExtension: assetInfo.type,
+                mimeType: assetInfo.mimeType,
+                details: {
+                  id_number: values.document.id_number,
+                },
+              },
+            }).unwrap();
+            enqueueSnackbar(
+              data?.message || "Document uploaded successfully!",
+              {
+                variant: "success",
+              }
+            );
+            break;
+          }
+          case DashboardKycStep.ACCOUNT_DETAILS: {
+            const data = await verifyUserClientKycMutation({
+              body: {
+                ...values,
+                bankId: values.bankId,
+                nin: values.document.id_number,
+                document: undefined,
+              },
+            }).unwrap();
+            enqueueSnackbar(
+              data?.message || "Account details updated Successfully!",
+              {
+                variant: "success",
+              }
+            );
+
+            return navigate(SIGNIN);
+          }
+          default:
+            break;
+        }
+
         stepper.next();
       } catch (error) {
-        enqueueSnackbar(error?.data?.message || "Failed to update KYC");
+        const message = Array.isArray(error?.data?.message)
+          ? error?.data?.message?.[0]
+          : error?.data?.message;
+
+        enqueueSnackbar(message || "Failed to update KYC", {
+          variant: "error",
+        });
       }
     },
   });
 
+  const transactionOutwardNameEnquiryQueryResult =
+    transactionApi.useGetTransactionOutwardNameEnquiryQuery(
+      useMemo(
+        () => ({
+          params: {
+            bankCode: normalizedBanks?.[formik.values.bankId]?.bank_sort_code,
+            accountNumber: formik.values.accountnumber,
+          },
+        }),
+        [formik.values.accountnumber, formik.values.bankId, normalizedBanks]
+      ),
+      {
+        skip: !(
+          formik.values.bankId &&
+          formik.values.accountnumber &&
+          formik.values.accountnumber?.length === 10
+        ),
+      }
+    );
+
+  const transactionOutwardNameEnquiry =
+    transactionOutwardNameEnquiryQueryResult.data?.data;
+
+  useRtkQueryStatusCallbacks(transactionOutwardNameEnquiryQueryResult, {
+    onSuccess(queryResult) {
+      formik.setFieldValue("accountname", queryResult.data?.data?.accountName);
+    },
+  });
+
+  if (
+    isBasicInformationCompleted &&
+    isIdentificationCompleted &&
+    isAccountDetailsCompleted
+  ) {
+    return <Navigate to={DASHBOARD} replace />;
+  }
+
   const actionButtons = (
-    <div className="grid grid-cols-2 gap-2">
-      <Button
+    <div className="grid grid-cols-1 gap-2">
+      {/* <Button
         variant="outlined"
         size="large"
         onClick={() => {
@@ -84,10 +288,16 @@ function DashboardKyc() {
         }}
       >
         {stepper.step ? "Previous" : "Edit"}
-      </Button>
-      <Button size="large" onClick={formik.handleSubmit as any}>
+      </Button> */}
+      <LoadingButton
+        size="large"
+        loading={formik.isSubmitting}
+        loadingPosition="start"
+        startIcon={<></>}
+        onClick={formik.handleSubmit as any}
+      >
         Save
-      </Button>
+      </LoadingButton>
     </div>
   );
 
@@ -107,40 +317,53 @@ function DashboardKyc() {
           {[
             {
               title: "Basic Information",
+              completed: isBasicInformationCompleted,
               content: (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <TextField
                     fullWidth
                     label="First Name"
-                    placeholder="Stephanie"
-                    {...getFormikTextFieldProps(formik, "firstname")}
+                    placeholder="Enter First Name"
+                    value={formik.values.firstname}
+                    disabled
+                    // {...getFormikTextFieldProps(formik, "firstname")}
                   />
                   <TextField
                     fullWidth
                     label="Last Name"
-                    placeholder="Takeme"
-                    {...getFormikTextFieldProps(formik, "lastname")}
+                    placeholder="Enter Last Name"
+                    value={formik.values.lastname}
+                    disabled
+                    // {...getFormikTextFieldProps(formik, "lastname")}
                   />
                   <NumberTextField
                     freeSolo
                     fullWidth
                     label="BVN"
-                    placeholder="22876543210"
-                    {...getFormikTextFieldProps(formik, "bvn")}
+                    placeholder="Enter a valid BVN"
+                    {...(authUser.bvn
+                      ? { value: formik.values.bvn, disabled: true }
+                      : getFormikTextFieldProps(formik, "bvn"))}
+                    // {...getFormikTextFieldProps(formik, "bvn")}
                   />
                   <NumberTextField
                     freeSolo
                     fullWidth
                     label="Phone Number"
-                    placeholder="08012345678"
-                    {...getFormikTextFieldProps(formik, "mobileNo")}
+                    placeholder="Enter a valid Phone number"
+                    value={formik.values.mobileNo}
+                    disabled
+                    // {...getFormikTextFieldProps(formik, "mobileNo")}
                   />
                   <TextField
                     fullWidth
                     label="Email Address"
-                    placeholder="stephanietakeme@yahoo.com"
+                    placeholder="Enter a valid email address"
                     type="email"
-                    {...getFormikTextFieldProps(formik, "emailAddress")}
+                    {...(authUser.email
+                      ? { value: formik.values.emailAddress, disabled: true }
+                      : getFormikTextFieldProps(formik, "emailAddress"))}
+                    // {...getFormikTextFieldProps(formik, "emailAddress")}
                   />
                   <div className="flex items-end">
                     <div className="flex-1">{actionButtons}</div>
@@ -150,6 +373,7 @@ function DashboardKyc() {
             },
             {
               title: "Identification",
+              completed: isIdentificationCompleted,
               content: (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <TextField
@@ -157,12 +381,11 @@ function DashboardKyc() {
                     label="ID Type"
                     placeholder="NIN"
                     select
-                    {...getFormikTextFieldProps(formik, "idType")}
+                    value={formik.values.document.type}
+                    disabled
+                    // {...getFormikTextFieldProps(formik, "document.type")}
                   >
-                    {[
-                      { name: "NIN", id: "" },
-                      { name: "ID Number", id: "idNumber" },
-                    ].map((option) => (
+                    {[{ name: "NIN", id: "nin_slip" }].map((option) => (
                       <MenuItem key={option.id} value={option.name}>
                         {option.name}
                       </MenuItem>
@@ -173,17 +396,18 @@ function DashboardKyc() {
                     fullWidth
                     label="ID Number"
                     placeholder="Enter ID Number"
-                    {...getFormikTextFieldProps(formik, "idNumber")}
+                    {...getFormikTextFieldProps(formik, "document.id_number")}
                   />
                   <Dropzone
                     multiple={false}
+                    maxSize={1024 * 1024 * 2}
                     accept={{
                       "image/*": [],
                       "application/pdf": [],
                     }}
                     onDropAccepted={(files) => {
                       const file = files[0];
-                      formik.setFieldValue("document", file);
+                      formik.setFieldValue("document.file", file);
                     }}
                     onDropRejected={(fileRejection) => {
                       enqueueSnackbar(
@@ -199,7 +423,7 @@ function DashboardKyc() {
                           {...getRootProps({
                             variant: "outlined",
                             onClick: open,
-                            className: "p-4 bg-gray-100 ",
+                            className: "p-4 bg-gray-100",
                           })}
                         >
                           <input {...getInputProps()} />
@@ -212,17 +436,17 @@ function DashboardKyc() {
                                 />
                                 <div>
                                   <Typography className="">
-                                    Steph’s Document 1.jpeg
+                                    {formik.values.document.file?.name}
                                   </Typography>
                                   <Typography color="textSecondary">
-                                    1.2 MB
+                                    2 MB
                                   </Typography>
                                 </div>
                                 <div className="flex-1" />
                                 <IconButton
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    formik.setFieldValue("document", null);
+                                    formik.setFieldValue("document.file", null);
                                   }}
                                   size="small"
                                   variant="soft"
@@ -258,17 +482,17 @@ function DashboardKyc() {
                               <Typography variant="h6">
                                 Upload a file or drag and drop
                               </Typography>
-                              <Typography>PNG, JPG, PDF up to 3MB</Typography>
+                              <Typography>PNG, JPG, PDF up to 2MB</Typography>
                             </div>
                           )}
                         </Paper>
 
-                        {!!formik.errors.document && (
+                        {!!formik.errors.document?.file && (
                           <Typography
                             color="error"
                             className="text-[10px] mt-[3px] text-center"
                           >
-                            {formik.errors.document}
+                            {formik.errors.document?.file as any}
                           </Typography>
                         )}
                       </div>
@@ -283,6 +507,7 @@ function DashboardKyc() {
             },
             {
               title: "Account Details",
+              completed: isAccountDetailsCompleted,
               content: (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <TextField
@@ -292,8 +517,8 @@ function DashboardKyc() {
                     select
                     {...getFormikTextFieldProps(formik, "bankId")}
                   >
-                    {[{ name: "First Bank", id: "fb" }].map((option) => (
-                      <MenuItem key={option.id} value={option.name}>
+                    {banks?.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
                         {option.name}
                       </MenuItem>
                     ))}
@@ -304,17 +529,33 @@ function DashboardKyc() {
                       fullWidth
                       label="Account Number"
                       placeholder="Enter Account Number"
-                      {...getFormikTextFieldProps(formik, "accountNumber")}
+                      {...getFormikTextFieldProps(formik, "accountnumber")}
                     />
-                    <div className="flex items-center gap-2 text-success-main">
-                      <Iconify
-                        icon="lets-icons:check-fill"
-                        className="text-lg"
-                      />
-                      <Typography variant="body2" className="font-medium">
-                        Stephanie O. Takeme
-                      </Typography>
-                    </div>
+                    <>
+                      {transactionOutwardNameEnquiryQueryResult.isFetching ? (
+                        <Typography variant="body2">
+                          Resolving Account <CircularProgress size={10} />
+                        </Typography>
+                      ) : transactionOutwardNameEnquiryQueryResult.isSuccess ? (
+                        <div className="flex items-center gap-2 text-success-main">
+                          <Iconify
+                            icon="lets-icons:check-fill"
+                            className="text-lg"
+                          />
+                          <Typography variant="body2" className="font-medium">
+                            {transactionOutwardNameEnquiry?.accountName}
+                          </Typography>
+                        </div>
+                      ) : transactionOutwardNameEnquiryQueryResult.isError ? (
+                        <Typography variant="body2" color="error">
+                          {
+                            (
+                              transactionOutwardNameEnquiryQueryResult.error as any
+                            )?.data?.message
+                          }
+                        </Typography>
+                      ) : null}
+                    </>
                   </div>
                   <div />
                   <div className="flex items-end mt-4">
@@ -323,7 +564,7 @@ function DashboardKyc() {
                 </div>
               ),
             },
-          ].map(({ title, content }, index) => {
+          ].map(({ title, content, completed }, index) => {
             return (
               <Accordion
                 key={title}
@@ -342,7 +583,7 @@ function DashboardKyc() {
                 <AccordionSummary expandIcon={<Icon>expand_more</Icon>}>
                   <div className="flex items-center gap-2">
                     <Icon
-                      color={stepper.step > index ? "primary" : "disabled"}
+                      color={completed ? "primary" : "disabled"}
                       className="material-symbols-outlined-fill"
                     >
                       check_circle
@@ -350,7 +591,7 @@ function DashboardKyc() {
                     <Typography
                       variant="h6"
                       className={clsx(
-                        stepper.step === index ? "font-semibold" : "font-normal"
+                        completed ? "font-semibold" : "font-normal"
                       )}
                     >
                       {title}
@@ -394,3 +635,25 @@ function DashboardKyc() {
 export const Component = DashboardKyc;
 
 export default DashboardKyc;
+
+function getEnumStepIndex(enumStep: DashboardKycStep) {
+  const index = STEPS_INDEX.indexOf(enumStep);
+  return index > -1 ? index : undefined;
+}
+
+const STEPS_INDEX = [
+  DashboardKycStep.BASIC_INFORMATION,
+  DashboardKycStep.IDENTIFICATION,
+  DashboardKycStep.ACCOUNT_DETAILS,
+  DashboardKycStep.SUCCESS,
+];
+
+// {
+//   "bvn": "22355371277",
+//   "nin": "74592067445",
+//   "mobileNo": "08188542677",
+//   "emailAddress": "aduramimo@gmail.com",
+//   "firstname": "OLUDARE",
+//   "lastname": "ADURAMIMO",
+//   "accountnumber": "",
+// }

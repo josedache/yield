@@ -3,7 +3,6 @@ import { ApiRequest, ApiResponse } from "./api";
 export type UserLoginApiRequest = ApiRequest<{
   password: string;
   phone: string;
-  device_id: string;
   login_method: string;
   channel: string;
   version: string;
@@ -23,7 +22,7 @@ export type UserClientKycApiResponse = ApiResponse<{
   // "middlename": "uwtube",
   // "mobileNo": "004333430",
   email: string;
-  // "is_selfie_validated": false,
+  // "is_selfie_validated": boolean,
   // "bvn" : "223174432321",
   dateOfBirth: string;
   typeId: 38;
@@ -91,3 +90,64 @@ export type UserResetPasswordApiRequest = ApiRequest<{
 }>;
 
 export type UserResetPasswordApiResponse = ApiResponse<boolean>;
+
+export type UserSignupYieldApiRequest = ApiRequest<{
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  email?: string;
+  bvn: string;
+  nin?: string;
+  device_id?: string;
+  fcm_token?: string;
+  referal_code?: string;
+  alternate_number?: string;
+}>;
+
+export type UserSignupYieldApiResponse = ApiResponse<{
+  user: {
+    phone: string;
+  };
+  token: string;
+}>;
+
+export type UserVerifyOtpApiRequest = ApiRequest<{
+  channel: "email" | "phone";
+  otp: string;
+}>;
+
+export type UserVerifyOtpApiResponse = ApiResponse<{
+  id: number;
+  client_id: string;
+  tier_level: string;
+  bvn: string;
+  nin: string;
+  referal_code: string;
+  alternate_number: string;
+  is_active: boolean;
+  is_2fa: boolean;
+  is_suspended: boolean;
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+  hashed_pin: string;
+  is_phone_verified: boolean;
+  is_email_verified: boolean;
+  is_bvn_verified: boolean;
+  onboarding_stage: string;
+  is_nin_verified: boolean;
+  created_at: string;
+  updated_at: string;
+  cba_wallet_id: string;
+}>;
+
+export type UserCreatePasswordApiRequest = ApiRequest<{
+  password: string;
+}>;
+
+export type UserCreatePasswordApiResponse = ApiResponse<any>;
+
+export type UserFileUploadPasswordApiRequest = ApiRequest<any>;
+
+export type UserFileUploadPasswordApiResponse = ApiResponse<any>;
