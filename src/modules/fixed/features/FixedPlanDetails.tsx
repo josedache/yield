@@ -18,7 +18,7 @@ export default function FixedPlanDetails(props: DrawerProps) {
   const { onClose, ...rest } = props;
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
 
-  const getSavingsQuery = savingsApi.useGetSavingsQuery({
+  const getSavingsQuery = savingsApi.useGetSavingsAccountQuery({
     params: { savingsId: 552 },
   });
 

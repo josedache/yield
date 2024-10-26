@@ -16,15 +16,32 @@ import WalletTransactionFlowSvg from "assets/svgs/wallet--transaction-flow.svg?r
 import * as dfns from "date-fns";
 import FlexFund from "../features/FlexFund";
 import YieldWithdraw from "../features/FlexWithdraw";
+import { savingsApi } from "apis/savings-api";
+import { useMemo } from "react";
 
 function Flex() {
   const [isFAQ, toggleFAQ] = useToggle(true);
 
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
 
+  const savingsAccountsQuery = savingsApi.useGetSavingsAccountsQuery(
+    useMemo(
+      () => ({
+        params: {
+          type: "recurring_deposit",
+        },
+      }),
+      []
+    )
+  );
+
+  const totalAvailableBalance =
+    savingsAccountsQuery.data?.data?.totalAvailableBalance;
+  const savingsAccount = savingsAccountsQuery.data?.data?.savingsAccounts?.[0];
+
   const savedCard = true;
 
-  const isActive = true;
+  const isActive = Number(totalAvailableBalance) > 0;
 
   return (
     <div className="space-y-8">
@@ -49,7 +66,7 @@ function Flex() {
                     className="font-bold"
                     blur={isWalletBalanceVisible}
                   >
-                    0
+                    {}
                   </CurrencyTypography>
                   <IconButton onClick={toggleWalletBalanceVisible}>
                     <Iconify

@@ -111,3 +111,33 @@ export type GetSavingsResponse = ApiResponse<{
 
 export type SavingsFixedDepositProductInformationApiResponse =
   ApiResponse<SavingsFixedDepositProductInformation>;
+
+export type SavingsAccountsApiResponse = ApiResponse<{
+  totalAvailableBalance: string;
+  savingsAccounts: {
+    id: number;
+    client_name: string;
+    product_id: number;
+    client_id: number;
+    plan_name: string;
+    submitted_date: string;
+    deposit_type: string;
+    account_no: string;
+    last_transaction_date: string;
+    type: string;
+    available_balance: string;
+    currency: string;
+    total_deposits: string;
+    total_interest: string;
+    interest_not_posted: string;
+    total_interest_overdraft: string;
+    account_status: string;
+    account_status_code: number;
+    active: boolean;
+    approved: boolean;
+    closed: boolean;
+    prematureClosed: boolean;
+    rejected: boolean;
+    matured: boolean;
+  }[];
+}>;

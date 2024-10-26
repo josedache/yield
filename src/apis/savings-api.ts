@@ -3,6 +3,7 @@ import * as tags from "constants/tags";
 import { ApiRequest } from "src/types/api";
 import {
   GetSavingsResponse,
+  SavingsAccountsApiResponse,
   SavingsActivateAccountRequest,
   SavingsActivateAccountResponse,
   SavingsCalculatorApiRequest,
@@ -64,10 +65,19 @@ export const savingsApi = coreApi.injectEndpoints({
       providesTags: [tags.SAVINGS],
     }),
 
-    getSavings: builder.query<
-      GetSavingsResponse,
-      ApiRequest<void, void, { savingsId: number }>
+    getSavingsAccounts: builder.query<
+      SavingsAccountsApiResponse,
+      ApiRequest<void, void, { type?: string }>
     >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/accounts",
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.SAVINGS],
+    }),
+
+    getSavingsAccount: builder.query<GetSavingsResponse, ApiRequest>({
       query: ({ ...config }) => ({
         url: BASE_URL + "/account",
         method: "GET",
