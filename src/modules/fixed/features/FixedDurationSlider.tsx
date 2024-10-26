@@ -1,6 +1,6 @@
 import { Slider, styled } from "@mui/material";
 
-const DurationSlider = styled(Slider)({
+const FixedDurationSlider = styled(Slider)({
   color: "#D8E5CB",
   height: 8,
   "& .MuiSlider-track": {
@@ -41,4 +41,4 @@ const DurationSlider = styled(Slider)({
   },
 });
 
-export default DurationSlider;
+export default FixedDurationSlider;

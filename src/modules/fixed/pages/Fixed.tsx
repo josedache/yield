@@ -19,6 +19,7 @@ import useTable from "hooks/useTable";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 import FixedPlanDetails from "../features/FixedPlanDetails";
+import FixedPlanListActionMenu from "../features/FixedPlanListActionMenu";
 
 function Fixed() {
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
@@ -75,8 +76,8 @@ function Fixed() {
         <Typography variant="h5">Fixed Yield</Typography>
       </div>
       <div className="flex flex-col md:flex-row gap-6">
-        <div className="space-y-8 w-full md:w-[65%]">
-          <Paper className="p-4">
+        <div className="space-y-8 w-full md:w-[60%]">
+          <Paper className="p-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="w-full md:w-[70%]">
                 <Typography variant="body2" color="textSecondary" gutterBottom>
@@ -84,7 +85,7 @@ function Fixed() {
                 </Typography>
                 <div className="flex items-center mt-1">
                   <CurrencyTypography
-                    variant="h4"
+                    variant="h3"
                     className="font-bold"
                     blur={isWalletBalanceVisible}
                   >
@@ -183,7 +184,7 @@ function Fixed() {
             </Paper>
           </div>
         </div>
-        <div className="space-y-8 w-full md:w-[35%]">
+        <div className="space-y-8 w-full md:w-[40%]">
           <Paper variant="outlined" className="p-4 pb-8 space-y-8">
             <Typography variant="h6" className="font-medium">
               Saved Card(s)
@@ -284,9 +285,7 @@ const columns: ColumnDef<any>[] = [
     cell: (info) => {
       return (
         <div>
-          <Typography className="font-semibold">
-            {info.row.original.planName}
-          </Typography>
+          <Typography>{info.row.original.planName}</Typography>
         </div>
       );
     },
@@ -296,9 +295,7 @@ const columns: ColumnDef<any>[] = [
     accessorKey: "amount",
     cell: (info) => {
       return (
-        <CurrencyTypography className="font-semibold">
-          {info.row.original.amount}
-        </CurrencyTypography>
+        <CurrencyTypography>{info.row.original.amount}</CurrencyTypography>
       );
     },
   },
@@ -308,7 +305,20 @@ const columns: ColumnDef<any>[] = [
     cell: (info) => {
       return (
         <div>
-          <Typography className="font-semibold">
+          <Typography>
+            {format(info.row.original.maturityDate, "PP") || "-"}
+          </Typography>
+        </div>
+      );
+    },
+  },
+  {
+    header: "Status",
+    accessorKey: "status",
+    cell: (info) => {
+      return (
+        <div>
+          <Typography>
             {format(info.row.original.maturityDate, "PP") || "-"}
           </Typography>
         </div>
@@ -318,6 +328,6 @@ const columns: ColumnDef<any>[] = [
 
   {
     header: "Action",
-    cell: () => <div></div>,
+    cell: () => <FixedPlanListActionMenu />,
   },
 ];

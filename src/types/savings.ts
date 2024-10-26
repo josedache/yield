@@ -39,7 +39,7 @@ export type SavingsCalculatorApiResponse = ApiResponse<{
   nominalAnnualInterestRate: number;
 }>;
 
-export type SavingsActivateAccountResponse = {
+export type SavingsActivateAccountResponse = ApiResponse<{
   message: string;
   reference: string;
 
@@ -47,9 +47,9 @@ export type SavingsActivateAccountResponse = {
   clientId: number;
   savingsId: number;
   resourceId: number;
-};
+}>;
 
-export type SavingsFixedDepositProductInformation = {
+export type SavingsFixedDepositProductInformation = ApiResponse<{
   id: string;
   product_id: string;
   name: string;
@@ -80,7 +80,34 @@ export type SavingsFixedDepositProductInformation = {
   platform: string;
   created_at: string;
   updated_at: string;
-};
+}>;
+
+export type GetSavingsResponse = ApiResponse<{
+  id: number;
+  client_name: string;
+  product_id: number;
+  client_id: number;
+  plan_name: string;
+  submitted_date: string;
+  deposit_type: string;
+  account_no: string;
+  last_transaction_date: string;
+  type: string;
+  available_balance: string;
+  currency: string;
+  total_deposits: string;
+  total_interest: string;
+  interest_not_posted: string;
+  total_interest_overdraft: string;
+  account_status: string;
+  account_status_code: number;
+  active: boolean;
+  approved: boolean;
+  closed: boolean;
+  prematureClosed: boolean;
+  rejected: boolean;
+  matured: boolean;
+}>;
 
 export type SavingsFixedDepositProductInformationApiResponse =
   ApiResponse<SavingsFixedDepositProductInformation>;

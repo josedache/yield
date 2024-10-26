@@ -1,10 +1,11 @@
 import { FormHelperText, TextField, Typography } from "@mui/material";
-import CurrencyTextField from "components/CurrencyTextField";
-import DurationSlider from "./DurationSlider";
-import { FixedCreatePlanContentProps } from "../types/FixedCreatePlan";
 import { useMemo } from "react";
+
+import CurrencyTextField from "components/CurrencyTextField";
+import { FixedCreatePlanContentProps } from "../types/FixedCreatePlan";
 import { formatNumberToCurrency } from "utils/number";
 import { getFormikTextFieldProps } from "utils/formik";
+import FixedDurationSlider from "./FixedDurationSlider";
 
 export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
   const { formik, savingsFixedProductInformation } = props;
@@ -22,7 +23,7 @@ export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
         <FormHelperText className="1">
           Move the slider to select how long you’ll like to save for.
         </FormHelperText>
-        <DurationSlider
+        <FixedDurationSlider
           className="1"
           slotProps={{
             thumb: ({ value }) => ({ value }),
