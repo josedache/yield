@@ -11,6 +11,8 @@ import {
   SavingsFixedDepositCreateApiRequest,
   SavingsFixedDepositCreateApiResponse,
   SavingsFixedDepositProductInformationApiResponse,
+  SavingsTransactionApiResponse,
+  SavingsTransactionsApiResponse,
 } from "src/types/savings";
 
 export const BASE_URL = "/savings";
@@ -80,6 +82,38 @@ export const savingsApi = coreApi.injectEndpoints({
     getSavingsAccount: builder.query<GetSavingsResponse, ApiRequest>({
       query: ({ ...config }) => ({
         url: BASE_URL + "/account",
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.SAVINGS],
+    }),
+
+    getSavingsTransactions: builder.query<
+      SavingsTransactionsApiResponse,
+      ApiRequest<void, void, { savingsId: number; all?: boolean }>
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/transactions",
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.SAVINGS],
+    }),
+
+    getSavingsTransaction: builder.query<
+      SavingsTransactionApiResponse,
+      ApiRequest<
+        void,
+        void,
+        {
+          type: "recurring_deposit" | "fixed_deposit";
+          savingsId?: number;
+          transactionId?: number;
+        }
+      >
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/transaction",
         method: "GET",
         ...config,
       }),

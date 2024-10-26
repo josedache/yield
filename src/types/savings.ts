@@ -98,6 +98,7 @@ export type GetSavingsResponse = ApiResponse<{
   total_deposits: string;
   total_interest: string;
   interest_not_posted: string;
+  interest_rate: string;
   total_interest_overdraft: string;
   account_status: string;
   account_status_code: number;
@@ -130,6 +131,7 @@ export type SavingsAccountsApiResponse = ApiResponse<{
     total_deposits: string;
     total_interest: string;
     interest_not_posted: string;
+    interest_rate: string;
     total_interest_overdraft: string;
     account_status: string;
     account_status_code: number;
@@ -141,3 +143,28 @@ export type SavingsAccountsApiResponse = ApiResponse<{
     matured: boolean;
   }[];
 }>;
+
+export type SavingsTransactionsApiResponse = ApiResponse<
+  {
+    transactionId: number;
+    accountNo: string;
+    title: string;
+    type: string;
+    amount: string;
+    transaction_date: string;
+    transaction_status: string;
+  }[]
+>;
+
+export type SavingsTransactionApiResponse = ApiResponse<
+  {
+    transactionId: number;
+    accountNo: string;
+    transaction_nature: string;
+    title: string;
+    type: string;
+    amount: string;
+    transaction_date: string;
+    transaction_status: string;
+  }[]
+>;
