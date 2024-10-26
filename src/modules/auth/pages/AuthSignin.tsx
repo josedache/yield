@@ -20,7 +20,6 @@ function AuthSignin() {
     initialValues: {
       password: "",
       phone: "",
-      device_id: "kdkdkdd",
       login_method: "password",
       channel: "yield",
       version: "1",

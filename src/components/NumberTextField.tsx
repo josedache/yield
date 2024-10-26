@@ -58,7 +58,7 @@ export default NumberTextField;
 
 export type NumberTextFieldProps = {
   freeSolo?: boolean;
-  maskOptions: MaskOptions;
+  maskOptions?: MaskOptions;
 } & TextFieldProps;
 
 export type MaskOptions = {

@@ -433,6 +433,13 @@ export const theme = responsiveFontSizes(
                 border: "none",
               },
 
+              "& .MuiInputBase-input": {
+                "&:-webkit-autofill": {
+                  WebkitBoxShadow: `0 0 0 100px transparent inset`,
+                  WebkitTextFillColor: "#000000",
+                },
+              },
+
               ...(ownerState.variant === "outlined"
                 ? {
                     paddingTop: ownerState.label

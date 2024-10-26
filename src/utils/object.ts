@@ -183,6 +183,10 @@ export function objectToFormData(data) {
       for (const arrData of data[key]) {
         fd.append(key, arrData);
       }
+    } else if (isObject(data[key])) {
+      for (const currKey in data[key]) {
+        fd.set(`${key}[${currKey}]`, data[key][currKey])
+      }
     } else {
       fd.set(key, data[key]);
     }

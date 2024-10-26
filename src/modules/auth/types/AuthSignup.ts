@@ -3,8 +3,18 @@ import useStepper from "hooks/useStepper";
 import { AuthSignupStep } from "../enums/AuthSignupStep";
 
 export interface AuthSignupFormikValues {
-  phoneNumber?: string;
-  token?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  email?: string;
+  bvn: string;
+  nin?: string;
+  referal_code?: string;
+  alternate_number?: string;
+  otp?: string;
+  password?: string;
+  confirmPassword?: string;
+  igree?: boolean;
 }
 
 export interface AuthSignupStepContentDataRef {
@@ -12,6 +22,7 @@ export interface AuthSignupStepContentDataRef {
   stepper: ReturnType<typeof useStepper>;
   enumStep: AuthSignupStep;
   getEnumStepIndex: (enumStep: AuthSignupStep) => number;
+  maskedPhone?: string
 }
 
 export type AuthSignupStepContentProps = AuthSignupStepContentDataRef;

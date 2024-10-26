@@ -11,13 +11,11 @@ import {
 } from "@mui/material";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import { AuthSignupStep } from "../enums/AuthSignupStep";
-import OtpInput from "components/OtpInput";
-import { LoadingButton } from "@mui/lab";
 import { Link, useNavigate } from "react-router-dom";
 import { SIGNIN } from "constants/urls";
 
 function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
-  const { formik, enumStep, stepper } = props;
+  const { formik, enumStep } = props;
 
   const navigate = useNavigate();
 
@@ -49,75 +47,9 @@ function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
           margin="normal"
           label="Confirm Password"
           placeholder="Pas$word99"
-          {...getFormikTextFieldProps(formik, "password")}
+          {...getFormikTextFieldProps(formik, "confirmPassword")}
         />
       </div>
-
-      <Dialog
-        component="form"
-        onSubmit={formik.handleSubmit as any}
-        fullWidth
-        open={enumStep === AuthSignupStep.VERIFICATION}
-      >
-        <DialogTitleXCloseButton
-          onClose={() => stepper.previous()}
-        ></DialogTitleXCloseButton>
-        <DialogContent className="space-y-8 max-w-md mx-auto">
-          <div>
-            <Typography variant="h5" className="text-center mb-4">
-              Verify OTP
-            </Typography>
-            <Typography color="textSecondary" className="text-center">
-              Please, enter the six(6) digit verification code sent to
-              +23491******72.
-            </Typography>
-          </div>
-          <div className="space-y-2">
-            <OtpInput
-              value={formik.values.token}
-              onChange={(token) => {
-                formik.setFieldValue("token", token);
-              }}
-              numInputs={6}
-              shouldAutoFocus
-              // inputType="password"
-              slotProps={{
-                input: {
-                  style: { opacity: formik.isSubmitting ? 0.5 : 1 },
-                  disabled: formik.isSubmitting,
-                },
-              }}
-            />
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              className="text-center"
-            >
-              Resend OTP in{" "}
-              <Typography
-                component="span"
-                color="primary"
-                className="font-semibold"
-              >
-                1:00
-              </Typography>
-            </Typography>
-          </div>
-          <Typography color="primary" className="text-center font-semibold">
-            I don’t have access to this phone number.
-          </Typography>
-          <LoadingButton
-            type="submit"
-            fullWidth
-            size="large"
-            loading={formik.isSubmitting}
-            loadingPosition="end"
-            endIcon={<></>}
-          >
-            Verify
-          </LoadingButton>
-        </DialogContent>
-      </Dialog>
 
       <Dialog fullWidth open={enumStep === AuthSignupStep.SUCCESS}>
         <DialogTitleXCloseButton
