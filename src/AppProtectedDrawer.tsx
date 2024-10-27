@@ -1,28 +1,27 @@
 import {
+  Dialog,
+  DialogContent,
   Divider,
   Drawer,
   Icon,
   IconButton,
   List,
+  Paper,
   Toolbar,
   Typography,
   useMediaQuery,
+  Link as MuiLink,
 } from "@mui/material";
 import clsx from "clsx";
 import Logo from "components/Logo";
-import {
-  DASHBOARD,
-  FLEX,
-  PROFILE,
-  SETTINGS,
-  SUPPORT,
-  YIELD,
-} from "constants/urls";
+import { DASHBOARD, FLEX, PROFILE } from "constants/urls";
 import MediaBreakpoint from "enums/MediaBreakpoint";
 import useSideNavigation from "hooks/useSideNavigation";
 import { NavLink, NavLinkProps } from "react-router-dom";
 import { Icon as Iconify } from "@iconify-icon/react";
 import useLogout from "hooks/useLogout";
+import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
+import useToggle from "hooks/useToggle";
 
 function AppProtectedDrawer() {
   const islg = useMediaQuery(MediaBreakpoint.LG);
@@ -30,6 +29,8 @@ function AppProtectedDrawer() {
   const { logout } = useLogout();
 
   const sideNavigation = useSideNavigation();
+
+  const [isSupport, toggleSupport] = useToggle();
 
   const NAV_LINKS = [
     {
@@ -56,13 +57,13 @@ function AppProtectedDrawer() {
         {
           icon: "ep:chat-dot-round",
           children: "Support",
-          to: SUPPORT,
+          onClick: toggleSupport,
         },
-        {
-          icon: "la:cog",
-          children: "Settings",
-          to: SETTINGS,
-        },
+        // {
+        //   icon: "la:cog",
+        //   children: "Settings",
+        //   to: SETTINGS,
+        // },
         {
           icon: "ion:power-outline",
           children: "Logout",
@@ -156,6 +157,51 @@ function AppProtectedDrawer() {
         </ButtonBase>
       </div> */}
       </Drawer>
+
+      <Dialog open={isSupport} maxWidth="xs" fullWidth>
+        <DialogTitleXCloseButton
+          onClose={toggleSupport}
+          className="text-center"
+        >
+          Customer Support
+        </DialogTitleXCloseButton>
+        <DialogContent>
+          <div className="space-y-4 w-full max-w-lg mx-auto">
+            {[
+              {
+                label: "Email Address",
+                icon: "lucide:mail",
+                href: "mailto:contact@creditdirect.ng",
+                hrefText: "contact@creditdirect.ng",
+              },
+              {
+                label: "Support Line 1",
+                icon: "lucide:phone",
+                href: "tel:02014482225",
+                hrefText: "02014482225",
+              },
+              {
+                label: "Support Line 2",
+                icon: "lucide:phone",
+                href: "tel:02017005120",
+                hrefText: "02017005120",
+              },
+            ].map(({ icon, label, href, hrefText }) => {
+              return (
+                <Paper key={label} className="flex items-center gap-4 p-4">
+                  <Iconify className="text-lg" icon={icon} />
+                  <div>
+                    <Typography variant="body2" color="textSecondary">
+                      {label}
+                    </Typography>
+                    <MuiLink color="info" href={href}>{hrefText}</MuiLink>
+                  </div>
+                </Paper>
+              );
+            })}
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

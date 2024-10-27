@@ -113,8 +113,14 @@ function DashboardMain() {
                   loading={walletQueryResult.isLoading}
                   error={walletQueryResult.isError}
                   onRetry={walletQueryResult.refetch}
+                  className="w-full max-w-48"
                   renderLoading={() => (
-                    <Skeleton variant="rectangular" className="h-2"></Skeleton>
+                    <Skeleton
+                      variant="rectangular"
+                      height={32}
+                      width="100%"
+                      className="rounded-lg"
+                    />
                   )}
                 >
                   {() => (
