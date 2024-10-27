@@ -82,7 +82,7 @@ export type SavingsFixedDepositProductInformation = ApiResponse<{
   updated_at: string;
 }>;
 
-export type GetSavingsResponse = ApiResponse<{
+export type GetSavingsResponse = {
   id: number;
   client_name: string;
   product_id: number;
@@ -107,12 +107,12 @@ export type GetSavingsResponse = ApiResponse<{
   prematureClosed: boolean;
   rejected: boolean;
   matured: boolean;
-}>;
+};
 
 export type SavingsFixedDepositProductInformationApiResponse =
   ApiResponse<SavingsFixedDepositProductInformation>;
 
-export type SavingsAccountsApiResponse = ApiResponse<{
+export type SavingsAccountsApiResponse = {
   totalAvailableBalance: string;
   savingsAccounts: {
     id: number;
@@ -140,4 +140,4 @@ export type SavingsAccountsApiResponse = ApiResponse<{
     rejected: boolean;
     matured: boolean;
   }[];
-}>;
+};
