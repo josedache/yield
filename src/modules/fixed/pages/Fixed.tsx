@@ -19,20 +19,21 @@ import TanStandardTable from "components/TanStandardTable";
 import useTable from "hooks/useTable";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
-import FixedPlanDetails from "../features/FixedPlanDetails";
 import FixedPlanListActionMenu from "../features/FixedPlanListActionMenu";
 import { savingsApi } from "apis/savings-api";
 import FixedStatusChip from "../features/FixedStatusChip";
 import LoadingContent from "components/LoadingContent";
 import DashboardWithdrawalAccountCard from "modules/dashboard/features/DashboardWithdrawalaccountCard";
+import { ALL_ACTIVE_SAVINGS_ACCOUNT_STATUS_TYPE } from "constants/savings";
+import { useState } from "react";
 
 function Fixed() {
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
   const [isFixedCreatePlan, toggleFixedCreatePlan] = useToggle();
-  const [isPlanDetails, togglePlanDetails] = useToggle();
+  const [statusId, setStatusId] = useState<string>();
 
   const getSavingsAccountsQuery = savingsApi.useGetSavingsAccountsQuery({
-    params: { type: "fixed_deposit" },
+    params: { type: "fixed_deposit", ...(statusId ? { statusId } : {}) },
   });
 
   const savedCard = false;
@@ -40,10 +41,7 @@ function Fixed() {
   const tableInstance = useTable({
     columns,
     data: getSavingsAccountsQuery?.data?.data?.savingsAccounts || null,
-    // pageCount: customersQuery?.data?.data?.pages ?? -1,
     manualPagination: true,
-    // state: { pagination },
-    // onPaginationChange: setPagination,
   });
 
   return (
@@ -60,13 +58,24 @@ function Fixed() {
                   Total Balance
                 </Typography>
                 <div className="flex items-center mt-1">
-                  <CurrencyTypography
-                    variant="h3"
-                    className="font-bold"
-                    blur={isWalletBalanceVisible}
-                  >
-                    {getSavingsAccountsQuery?.data?.data?.totalAvailableBalance}
-                  </CurrencyTypography>
+                  {getSavingsAccountsQuery?.isLoading ? (
+                    <Skeleton
+                      variant="text"
+                      width={100}
+                      sx={{ fontSize: "3rem" }}
+                    />
+                  ) : (
+                    <CurrencyTypography
+                      variant="h3"
+                      className="font-bold"
+                      blur={isWalletBalanceVisible}
+                    >
+                      {
+                        getSavingsAccountsQuery?.data?.data
+                          ?.totalAvailableBalance
+                      }
+                    </CurrencyTypography>
+                  )}
                   <IconButton onClick={toggleWalletBalanceVisible}>
                     <Iconify
                       icon={
@@ -102,7 +111,31 @@ function Fixed() {
             error={getSavingsAccountsQuery?.isError}
             onRetry={getSavingsAccountsQuery.refetch}
             renderLoading={() => (
-              <Skeleton variant="rounded" className="w-full h-[350px] " />
+              <Paper variant="outlined" className="p-0 overflow-hidden w-full">
+                <div className="flex items-center justify-between p-4">
+                  <Skeleton variant="rounded" className="w-[100px] h-[20px] " />
+                  <Skeleton variant="rounded" className="w-[100px] h-[40px] " />
+                </div>
+
+                <Skeleton variant="rectangular" className="w-full h-[50px] " />
+
+                <div className="grid grid-cols-1 gap-2 mt-2">
+                  {[...Array(5)].map((index) => (
+                    <div
+                      key={index}
+                      className="flex gap-1 items-center justify-between p-2"
+                    >
+                      {[...Array(5)].map((item) => (
+                        <Skeleton
+                          key={item}
+                          variant="rounded"
+                          className="w-[100px] h-[20px] p-2"
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </Paper>
             )}
           >
             <div>
@@ -126,13 +159,19 @@ function Fixed() {
                     </Typography>
                     <TextField
                       select
+                      value={statusId}
+                      onChange={(e) => {
+                        setStatusId(e.target.value);
+                      }}
                       placeholder="Filter By"
                       size="small"
                       className="min-w-24"
                     >
-                      {[].map(() => (
-                        <MenuItem></MenuItem>
-                      ))}
+                      {ALL_ACTIVE_SAVINGS_ACCOUNT_STATUS_TYPE.map(
+                        ({ id, name }) => (
+                          <MenuItem value={id}>{name}</MenuItem>
+                        )
+                      )}
                     </TextField>
                   </div>
                 ) : null}
@@ -250,10 +289,6 @@ function Fixed() {
           open={isFixedCreatePlan}
         />
       )}
-
-      {isPlanDetails && (
-        <FixedPlanDetails onClose={togglePlanDetails} open={isPlanDetails} />
-      )}
     </div>
   );
 }
@@ -269,7 +304,9 @@ const columns: ColumnDef<any>[] = [
     cell: (info) => {
       return (
         <div>
-          <Typography>{info.row.original.plan_name}</Typography>
+          <Typography className="capitalize">
+            {info.row.original.plan_name}
+          </Typography>
         </div>
       );
     },

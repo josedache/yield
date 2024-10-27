@@ -27,3 +27,13 @@ export const SAVINGS_ACCOUNT_STATUS_TYPE = {
   PRE_MATURE_CLOSURE: 700,
   MATURED: 800,
 };
+
+export const ALL_ACTIVE_SAVINGS_ACCOUNT_STATUS_TYPE = [
+  { id: null, name: "All" },
+  { id: 100, name: "Draft" },
+  { id: 200, name: "Approved" },
+  { id: 300, name: "Active" },
+  { id: 500, name: "Rejected" },
+  { id: 600, name: "Closed" },
+  { id: 800, name: "Matured" },
+];

@@ -30,6 +30,9 @@ import PaymentGatewayInlineInline from "libs/payment-gateway-inline/inline";
 import { PAYSTACK_PUBLIC_KEY } from "constants/env";
 import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
 import { FIXED_PRODUCT_ID } from "constants/savings";
+import CdlLogo from "assets/imgs/cdl-logo.png";
+import { walletApi } from "apis/wallet-api";
+import { formatNumber, formatNumberToCurrency } from "utils/number";
 
 export default function FixedCreatePlan(
   props: DialogProps & { onClose: () => void }
@@ -42,6 +45,11 @@ export default function FixedCreatePlan(
     savingsApi.useGetSavingsProductInformationQuery({
       params: { productId: FIXED_PRODUCT_ID },
     });
+
+  const walletQueryResult = walletApi.useGetWalletQuery(undefined, {
+    skip: stepper.step !== 2,
+  });
+  const wallet = walletQueryResult.data?.data;
 
   const [
     savingsFixedDepositCalculationMutation,
@@ -126,9 +134,10 @@ export default function FixedCreatePlan(
             break;
         }
       } catch (error) {
+        console.log({ error });
         enqueueSnackbar(
-          error?.data?.message ||
-            error?.data?.message?.[0] ||
+          error?.data?.message ??
+            error?.data?.message?.[0] ??
             "Failed to process funding",
           {
             variant: "error",
@@ -157,7 +166,7 @@ export default function FixedCreatePlan(
     PaymentGatewayInlineInline({
       provider: PaymentGatewayInlineProvider.PAYSTACK,
       key: PAYSTACK_PUBLIC_KEY,
-      reference: resp?.reference,
+      reference: resp?.data?.reference,
       name: "Joseph Edache",
       email: "josedache@tmpbox.net",
       amount: formik.values.depositAmount,
@@ -192,6 +201,10 @@ export default function FixedCreatePlan(
     }
   }
 
+  async function handlePayWithTransfer() {
+    stepper.step(3);
+  }
+
   const tabs = [
     {
       title: "Create Yield Plan",
@@ -208,28 +221,53 @@ export default function FixedCreatePlan(
         <div className="space-y-4">
           {[
             {
+              icon: <img src={CdlLogo} width={32} height={32} />,
+              label: "Pay with transfer (recommended)",
+              onClick: handlePayWithTransfer,
+              disabled: savingsActivateAccountMutationResult.isLoading,
+            },
+            {
               icon: <Iconify icon="ph:wallet-light" className="text-4xl" />,
-              label: "Fund via Yield Wallet",
+              label: `Fund via Yield Wallet`,
+              more: `Wallet balance: ₦${formatNumberToCurrency(
+                String(wallet?.balance || 0)
+              )}`,
               onClick: handleWallet,
+              disabled:
+                walletQueryResult?.isLoading ||
+                savingsActivateAccountMutationResult.isLoading ||
+                (wallet?.balance &&
+                  formik.values.depositAmount > wallet?.balance),
             },
             {
               icon: <img src={PaystackIconPngUrl} width={32} height={32} />,
               label: "Fund via Paystack",
               onClick: handlePaystack,
+              disabled: savingsActivateAccountMutationResult.isLoading,
             },
-          ].map(({ label, icon, ...restProps }) => {
+          ].map(({ label, more, icon, ...restProps }) => {
             return (
               <ButtonBase
-                disabled={savingsActivateAccountMutationResult.isLoading}
                 key={label}
                 component={Paper}
-                className="flex items-center text-left gap-4 p-2 rounded"
+                className={clsx(
+                  "flex items-center justify-between gap-4 p-2 rounded ",
+                  restProps?.disabled ? "text-neutral-400" : ""
+                )}
                 {...restProps}
               >
-                <div className="flex items-center justify-center w-8 h-8">
-                  {icon}
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-8 h-8">
+                    {icon}
+                  </div>
+                  <div>
+                    <Typography className="flex-1">{label}</Typography>
+                    <Typography variant="caption" className="flex-1">
+                      {more}
+                    </Typography>
+                  </div>
                 </div>
-                <Typography className="flex-1">{label}</Typography>
+
                 <Iconify
                   icon="weui:arrow-filled"
                   className="text-lg text-text-secondary"
@@ -254,6 +292,35 @@ export default function FixedCreatePlan(
           </div>
           <Typography variant="h4" className="text-center mb-4 font-bold">
             Success!
+          </Typography>
+          <Typography className="text-center">
+            You’ve successfully created a Yield plan.
+          </Typography>
+          <Button
+            fullWidth
+            onClick={() => {
+              onClose();
+            }}
+          >
+            Okay
+          </Button>
+        </div>
+      ),
+    },
+    {
+      content: (
+        <div className="space-y-8 max-w-md mx-auto">
+          <div className="flex justify-center text-6xl">
+            <Icon
+              fontSize="inherit"
+              color="success"
+              className="material-symbols-outlined-fill "
+            >
+              check_circle
+            </Icon>
+          </div>
+          <Typography variant="h4" className="text-center mb-4 font-bold">
+            Checking test
           </Typography>
           <Typography className="text-center">
             You’ve successfully created a Yield plan.
@@ -297,7 +364,8 @@ export default function FixedCreatePlan(
               getSavingsProductInformationQuery.isLoading ||
               savingsFixedDepositCalculationMutationResult.isLoading ||
               savingsFixedDepositCreateMutationResult?.isLoading ||
-              savingsActivateAccountMutationResult.isLoading
+              savingsActivateAccountMutationResult.isLoading ||
+              walletQueryResult?.isLoading
             }
             error={getSavingsProductInformationQuery.isError}
             onRetry={getSavingsProductInformationQuery.refetch}
