@@ -14,7 +14,7 @@ import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import useToggle from "hooks/useToggle";
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { getFormikTextFieldProps } from "utils/formik";
 import { useSnackbar } from "notistack";
 import CurrencyTextField from "components/CurrencyTextField";
@@ -27,6 +27,7 @@ import {
   PaymentGatewayInlineProvider,
 } from "libs/payment-gateway-inline";
 import { PAYSTACK_PUBLIC_KEY } from "constants/env";
+import { savingsApi } from "apis/savings-api";
 
 function FlexFund(props: FlexFundProps) {
   const { children, onClose, ...restProps } = props;
@@ -37,13 +38,33 @@ function FlexFund(props: FlexFundProps) {
 
   const stepper = useStepper();
 
+  const savingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
+    useMemo(
+      () => ({
+        params: {
+          type: "recurring_deposit",
+        },
+      }),
+      []
+    )
+  );
+
+  const totalAvailableBalance =
+    savingsAccountsQueryResult.data?.data?.totalAvailableBalance ?? 0;
+
+  const isLowBalance = !(Number(totalAvailableBalance) > 0);
+
   const formik = useFormik({
     initialValues: {
       amount: 0,
     },
     enableReinitialize: true,
     validationSchema: yup.object({
-      amount: yup.number().label("Amount").min(1).required(),
+      amount: yup
+        .number()
+        .label("Amount")
+        .min(isLowBalance ? 50_000 : 1)
+        .required(),
     }),
     onSubmit: async () => {
       try {
@@ -100,13 +121,14 @@ function FlexFund(props: FlexFundProps) {
             {...getFormikTextFieldProps(
               formik,
               "amount",
-              "Min. amount: ₦50,000.00"
+              isLowBalance ? "Min. amount: ₦50,000.00" : null
             )}
           />
           <div className="space-y-4">
             <LoadingButton
               size="large"
               fullWidth
+              disabled={!formik.isValid}
               onClick={formik.handleSubmit as any}
             >
               Continue

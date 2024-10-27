@@ -14,15 +14,17 @@ import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import useToggle from "hooks/useToggle";
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { getFormikTextFieldProps } from "utils/formik";
 import { useSnackbar } from "notistack";
 import CurrencyTextField from "components/CurrencyTextField";
 import useStepper from "hooks/useStepper";
 import { Icon as Iconify } from "@iconify-icon/react";
-import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
+import CdlLogoPngUrl from "assets/imgs/cdl-logo.png";
 import CurrencyTypography from "components/CurrencyTypography";
 import OtpInput from "components/OtpInput";
+import { savingsApi } from "apis/savings-api";
+import { walletApi } from "apis/wallet-api";
 
 function FlexWithdraw(props: FlexWithdrawProps) {
   const { children, onClose, ...restProps } = props;
@@ -33,7 +35,19 @@ function FlexWithdraw(props: FlexWithdrawProps) {
 
   const stepper = useStepper();
 
-  const availableBalance = 70000;
+  const walletQueryResult = walletApi.useGetWalletQuery(undefined);
+
+  const wallet = walletQueryResult.data?.data;
+
+  const fixedSavingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
+    useMemo(() => ({ params: { type: "recurring_deposit" } }), [])
+  );
+
+  const fixedSavingsAccounts = fixedSavingsAccountsQueryResult.data?.data;
+
+  const availableBalance = Number(
+    fixedSavingsAccounts?.totalAvailableBalance ?? 0
+  );
   const minimumBalance = 50000;
 
   const formik = useFormik({
@@ -43,7 +57,12 @@ function FlexWithdraw(props: FlexWithdrawProps) {
     },
     enableReinitialize: true,
     validationSchema: yup.object({
-      amount: yup.number().label("Amount").min(1).required(),
+      amount: yup
+        .number()
+        .label("Amount")
+        .min(1)
+        .max(availableBalance)
+        .required(),
     }),
     onSubmit: async () => {
       try {
@@ -69,7 +88,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
     setOpen(false);
   }
 
-  function handlePaystack() {
+  function handleBank() {
     formik.submitForm();
   }
 
@@ -87,25 +106,26 @@ function FlexWithdraw(props: FlexWithdrawProps) {
             fullWidth
             label="Amount"
             margin="normal"
+            maskOptions={{ min: 1, max: availableBalance }}
             {...getFormikTextFieldProps(
               formik,
               "amount",
               <>
                 Available amount:{" "}
                 <CurrencyTypography component="span">
-                  {availableBalance}
+                  {availableBalance - formik.values.amount}
                 </CurrencyTypography>
               </>
             )}
           />
-          <Paper
+          {/* <Paper
             variant="outlined"
             className="border-[#5EB1BF] bg-[#5EB1BF1A] max-w-md mx-auto"
           >
             <Typography className="text-center" color="">
               You have 3 free withdrawals left this month
             </Typography>
-          </Paper>
+          </Paper> */}
           {minimumBalanceCheck ? (
             <div className="flex items-start gap-2 text-text-secondary font-medium">
               <Iconify
@@ -128,14 +148,17 @@ function FlexWithdraw(props: FlexWithdrawProps) {
             <LoadingButton
               size="large"
               fullWidth
+              disabled={minimumBalanceCheck}
               onClick={async (e) => {
                 if (minimumBalanceCheck) {
-                  await formik.setFieldValue("amount", availableBalance);
+                  return;
+                  // await formik.setFieldValue("amount", availableBalance);
                 }
                 formik.handleSubmit(e as any);
               }}
             >
-              {minimumBalanceCheck ? "Yes, Withdraw" : "Continue"}
+              Continue
+              {/* {minimumBalanceCheck ? "Yes, Withdraw" : "Continue"} */}
             </LoadingButton>
           </div>
         </div>
@@ -145,7 +168,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
       description:
         Number(formik.values.amount) >= availableBalance
           ? "You’ve decided to empty your flex yield balance. Please select an option below to receive your funds."
-          : "Please select a source to add money to your yield.",
+          : "Please select a destination for withdrawal.",
       content: (
         <div className="space-y-8">
           <div className="space-y-2 text-center">
@@ -157,14 +180,14 @@ function FlexWithdraw(props: FlexWithdrawProps) {
           <div className="space-y-4">
             {[
               {
-                icon: <img src={PaystackIconPngUrl} width={32} height={32} />,
-                label: "FCMB",
-                value: "2893015264",
-                onClick: handlePaystack,
+                icon: <img src={CdlLogoPngUrl} width={32} height={32} />,
+                label: "Credit Direct",
+                value: wallet?.account_number,
+                onClick: handleBank,
               },
               {
                 icon: <Iconify icon="ph:wallet-light" className="text-4xl" />,
-                label: "Fund via Yield Wallet",
+                label: "Yield Wallet",
                 onClick: handleWallet,
               },
             ].map(({ label, value, icon, ...restProps }) => {

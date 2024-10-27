@@ -19,18 +19,21 @@ const NumberTextField = forwardRef(
       onInput,
       ...restProps
     } = props;
-    const { precision, thousandSeparator } = maskOptions || {};
+    const { precision, thousandSeparator, min, max } = maskOptions || {};
 
     const options = useMemo(
       () => ({
         ...(freeSolo
-          ? { mask: /^[0-9]+$/i }
+          ? // { mask: /^[0-9]+$/i }
+            { mask: new RegExp(`^[0-9]{${min || 1},${max ?? ""}}$`) }
           : maskitoNumberOptionsGenerator({
               precision: precision ?? 2,
               thousandSeparator: thousandSeparator ?? ",",
+              min,
+              max,
             })),
       }),
-      [freeSolo, precision, thousandSeparator]
+      [freeSolo, max, min, precision, thousandSeparator]
     );
 
     const inputRef = useMaskito({ options });
@@ -64,4 +67,6 @@ export type NumberTextFieldProps = {
 export type MaskOptions = {
   precision?: number;
   thousandSeparator: string;
+  min: number;
+  max: number;
 };
