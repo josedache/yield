@@ -12,10 +12,10 @@ import { PaymentGatewayInlineOptions } from "./types";
 function PaymentGatewayInlineInline(config: PaymentGatewayInlineOptions) {
   switch (config.provider) {
     case PaymentGatewayInlineProvider.PAYSTACK: {
-      if (!window.PaystackPop) {
+      if (!(window as any).PaystackPop) {
         throw new Error("PaystackPop not available");
       }
-      const paystack = new window.PaystackPop();
+      const paystack = new (window as any).PaystackPop();
 
       paystack.newTransaction({
         key: config.key,
@@ -44,10 +44,10 @@ function PaymentGatewayInlineInline(config: PaymentGatewayInlineOptions) {
       return paystack;
     }
     case PaymentGatewayInlineProvider.FLUTTERWAVE: {
-      if (!window.FlutterwaveCheckout) {
+      if (!(window as any).FlutterwaveCheckout) {
         throw new Error("FlutterwaveCheckout not available");
       }
-      const flutterwaveCheckout = window.FlutterwaveCheckout({
+      const flutterwaveCheckout = (window as any).FlutterwaveCheckout({
         public_key: config.key,
         tx_ref: config.reference,
         currency: config.currency,
@@ -84,14 +84,14 @@ function PaymentGatewayInlineInline(config: PaymentGatewayInlineOptions) {
       return flutterwaveCheckout;
     }
     case PaymentGatewayInlineProvider.REMITA: {
-      if (!window.RmPaymentEngine) {
+      if (!(window as any).RmPaymentEngine) {
         throw new Error("RmPaymentEngine not available");
       }
-      const rmPaymentEngine = window.RmPaymentEngine.init({
+      const rmPaymentEngine = (window as any).RmPaymentEngine.init({
         key: config.key,
         transactionId: config.reference,
-        firstName: config.firstName,
-        lastName: config.lastName,
+        // firstName: config.firstName,
+        // lastName: config.lastName,
         customerId: config.email,
         email: config.email,
         currency: config.currency,
@@ -106,8 +106,9 @@ function PaymentGatewayInlineInline(config: PaymentGatewayInlineOptions) {
       return rmPaymentEngine;
     }
     case PaymentGatewayInlineProvider.SEERBIT: {
-      if (!window.SeerbitPay) throw new Error("SeerbitPay not available");
-      const seerbitPay = window.SeerbitPay(
+      if (!(window as any).SeerbitPay)
+        throw new Error("SeerbitPay not available");
+      const seerbitPay = (window as any).SeerbitPay(
         {
           public_key: config.key,
           tranref: config.reference,
