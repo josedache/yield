@@ -24,6 +24,7 @@ import FixedPlanListActionMenu from "../features/FixedPlanListActionMenu";
 import { savingsApi } from "apis/savings-api";
 import FixedStatusChip from "../features/FixedStatusChip";
 import LoadingContent from "components/LoadingContent";
+import DashboardWithdrawalAccountCard from "modules/dashboard/features/DashboardWithdrawalaccountCard";
 
 function Fixed() {
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
@@ -239,6 +240,8 @@ function Fixed() {
               )}
             </div>
           </Paper>
+
+          <DashboardWithdrawalAccountCard />
         </div>
       </div>
       {isFixedCreatePlan && (
