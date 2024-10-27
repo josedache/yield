@@ -134,7 +134,6 @@ export default function FixedCreatePlan(
             break;
         }
       } catch (error) {
-        console.log({ error });
         enqueueSnackbar(
           error?.data?.message ??
             error?.data?.message?.[0] ??

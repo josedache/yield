@@ -1,7 +1,7 @@
 import { Chip, ChipProps } from "@mui/material";
 import { SAVING_STATUS_COLOR } from "constants/savings";
 
-export default function FixedStatusChip(props: ChipProps & { id?: number }) {
+export default function FixedStatusChip(props: ChipProps & { id: any }) {
   const { id, label, ...rest } = props;
   return (
     <Chip

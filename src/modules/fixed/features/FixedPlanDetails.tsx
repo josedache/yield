@@ -129,7 +129,6 @@ export default function FixedPlanDetails(
     },
   ];
 
-  console.log({ isFixedLiquidate });
   return (
     <Fragment>
       <Drawer
@@ -151,7 +150,7 @@ export default function FixedPlanDetails(
                 {info?.plan_name || "..."}
               </Typography>
               <FixedStatusChip
-                id={Number(getSavingsQuery?.data?.data.account_status_code)}
+                id={getSavingsQuery?.data?.data.account_status_code as any}
                 label={
                   getSavingsQuery?.data?.data.account_status || "Loading..."
                 }
