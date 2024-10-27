@@ -4,8 +4,6 @@ import {
   Paper,
   Typography,
   Link as MuiLink,
-  TextField,
-  MenuItem,
 } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
 import CurrencyTypography from "components/CurrencyTypography";
@@ -17,13 +15,22 @@ import * as dfns from "date-fns";
 import FlexFund from "../features/FlexFund";
 import YieldWithdraw from "../features/FlexWithdraw";
 import { savingsApi } from "apis/savings-api";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import LoadingContent from "components/LoadingContent";
+import {
+  TRANSACTION_TYPE_ID_TO_COLOR,
+  TRANSACTION_TYPE_ID_TO_ICON,
+  TRANSACTION_TYPE_ID_TO_SIGN,
+  TRANSACTION_TYPE_ID_TO_TITLE,
+} from "constants/transactions";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 function Flex() {
   const [isFAQ, toggleFAQ] = useToggle(true);
 
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
+
+  const transactionsParentRef = useRef(null);
 
   const savingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
     useMemo(
@@ -64,7 +71,7 @@ function Flex() {
       useMemo(
         () => ({
           params: {
-            savingsId: listSavingsAccount?.id,
+            savingsId: 552, //listSavingsAccount?.id,
             all: true,
           },
         }),
@@ -76,6 +83,15 @@ function Flex() {
   const savingsTransactions = savingsTransactionsQueryResult.data?.data;
 
   const savedCard = false;
+
+  const virtualizer = useVirtualizer({
+    count: savingsTransactions?.length,
+    getScrollElement: () => transactionsParentRef.current,
+    estimateSize: () => 56,
+    overscan: 5,
+  });
+
+  const virtualItems = virtualizer.getVirtualItems();
 
   const isLoading =
     savingsAccountsQueryResult.isLoading || savingsAccountQueryResult.isLoading;
@@ -187,12 +203,12 @@ function Flex() {
                 </div>
               </Paper>
 
-              <Paper variant="outlined" className="p-4 pb-8 space-y-8">
+              <Paper variant="outlined" className="p-4 pb-8 space-y-4">
                 <div className="flex items-center justify-between">
                   <Typography variant="h6" className="font-medium" gutterBottom>
                     Recent Transactions
                   </Typography>
-                  {savingsTransactions?.length ? (
+                  {/* {savingsTransactions?.length ? (
                     <TextField
                       select
                       placeholder="Filter By"
@@ -203,7 +219,7 @@ function Flex() {
                         <MenuItem></MenuItem>
                       ))}
                     </TextField>
-                  ) : null}
+                  ) : null} */}
                 </div>
                 <LoadingContent
                   loading={savingsTransactionsQueryResult.isLoading}
@@ -213,60 +229,85 @@ function Flex() {
                   {() => (
                     <>
                       {savingsTransactions?.length ? (
-                        <div className="space-y-6">
-                          {savingsTransactions?.map((transaction) => {
-                            const config = {
-                              CREDIT: {
-                                color: "success",
-                                sign: "+",
-                                icon: "ic:twotone-plus",
-                              },
-                              DEBIT: {
-                                color: "error",
-                                sign: "-",
-                                icon: "ic:baseline-minus",
-                              },
-                              CHARGE: {
-                                color: "success",
-                                sign: "+",
-                                icon: "ic:sharp-percent",
-                              },
-                            }[transaction?.type || "CHARGE"];
-                            return (
-                              <div
-                                key={transaction?.type}
-                                className="flex items-center gap-4"
-                              >
-                                <IconButton
-                                  variant="soft"
-                                  color={config?.color as any}
-                                >
-                                  <Iconify icon={config?.icon} />
-                                </IconButton>
-                                <div>
-                                  <Typography variant="body1" gutterBottom>
-                                    {transaction?.title}
-                                  </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    color="textSecondary"
+                        <div
+                          className="overflow-y-auto h-96"
+                          style={{ contain: "strict" }}
+                          ref={transactionsParentRef}
+                        >
+                          <div
+                            className="relative w-full"
+                            style={{
+                              height: virtualizer.getTotalSize(),
+                            }}
+                          >
+                            <div
+                              className="absolute left0 top-0 w-full"
+                              style={{
+                                transform: `translateY(${
+                                  virtualItems[0]?.start ?? 0
+                                }px)`,
+                              }}
+                            >
+                              {virtualItems.map((virtualItem) => {
+                                const transaction =
+                                  savingsTransactions?.[virtualItem.index];
+                                return (
+                                  <div
+                                    key={transaction?.transactionId}
+                                    className="flex items-center gap-4 py-2"
+                                    data-index={virtualItem.index}
+                                    ref={virtualizer.measureElement}
                                   >
-                                    {dfns.format(
-                                      new Date(transaction?.transaction_date),
-                                      "dd MMM, yyyy"
-                                    )}
-                                  </Typography>
-                                </div>
-                                <div className="flex-1" />
-                                <Typography>
-                                  {config?.sign}
-                                  <CurrencyTypography component="span">
-                                    {transaction?.amount}
-                                  </CurrencyTypography>
-                                </Typography>
-                              </div>
-                            );
-                          })}
+                                    <IconButton
+                                      variant="soft"
+                                      color={
+                                        TRANSACTION_TYPE_ID_TO_COLOR[
+                                          transaction?.transaction_type_code
+                                        ] as any
+                                      }
+                                    >
+                                      <Iconify
+                                        icon={
+                                          TRANSACTION_TYPE_ID_TO_ICON[
+                                            transaction?.transaction_type_code
+                                          ] as any
+                                        }
+                                      />
+                                    </IconButton>
+                                    <div>
+                                      <Typography variant="body1" gutterBottom>
+                                        {TRANSACTION_TYPE_ID_TO_TITLE[
+                                          transaction?.transaction_type_code
+                                        ] || "----"}
+                                      </Typography>
+                                      <Typography
+                                        variant="body2"
+                                        color="textSecondary"
+                                      >
+                                        {dfns.format(
+                                          new Date(
+                                            transaction?.transaction_date
+                                          ),
+                                          "dd MMM, yyyy"
+                                        )}
+                                      </Typography>
+                                    </div>
+                                    <div className="flex-1" />
+                                    <Typography>
+                                      {
+                                        TRANSACTION_TYPE_ID_TO_SIGN[
+                                          transaction?.transaction_type_code
+                                        ] as any
+                                      }
+                                      <CurrencyTypography component="span">
+                                        {transaction?.amount}
+                                      </CurrencyTypography>
+                                    </Typography>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-8 text-center">

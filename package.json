@@ -24,6 +24,7 @@
     "@mui/x-date-pickers": "^7.20.0",
     "@reduxjs/toolkit": "^2.3.0",
     "@tanstack/react-table": "^8.20.5",
+    "@tanstack/react-virtual": "^3.10.8",
     "clsx": "^2.1.1",
     "crypto-js": "^4.2.0",
     "currency.js": "^2.0.4",
