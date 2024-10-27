@@ -15,7 +15,6 @@ import CurrencyTypography from "components/CurrencyTypography";
 import { format } from "date-fns";
 import LoadingContent from "components/LoadingContent";
 import FixedStatusChip from "./FixedStatusChip";
-import { SavingsSavingsAccount } from "src/types/savings-api";
 import { savingsApi } from "apis/savings-api";
 import WalletTransactionFlowSvg from "assets/svgs/wallet--transaction-flow.svg?react";
 import {
@@ -29,7 +28,7 @@ import { Fragment, useMemo } from "react";
 import FixedLiquidate from "./FixedLiquidate";
 
 export default function FixedPlanDetails(
-  props: DrawerProps & { onClose: () => void; info: SavingsSavingsAccount }
+  props: DrawerProps & { onClose: () => void; info: any }
 ) {
   const { onClose, info, ...rest } = props;
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
@@ -152,7 +151,7 @@ export default function FixedPlanDetails(
                 {info?.plan_name || "..."}
               </Typography>
               <FixedStatusChip
-                id={getSavingsQuery?.data?.data.account_status_code as any}
+                id={Number(getSavingsQuery?.data?.data.account_status_code)}
                 label={
                   getSavingsQuery?.data?.data.account_status || "Loading..."
                 }

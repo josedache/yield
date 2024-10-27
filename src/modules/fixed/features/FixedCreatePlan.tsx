@@ -32,7 +32,7 @@ import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
 import { FIXED_PRODUCT_ID } from "constants/savings";
 import CdlLogo from "assets/imgs/cdl-logo.png";
 import { walletApi } from "apis/wallet-api";
-import { formatNumber, formatNumberToCurrency } from "utils/number";
+import { formatNumberToCurrency } from "utils/number";
 
 export default function FixedCreatePlan(
   props: DialogProps & { onClose: () => void }
