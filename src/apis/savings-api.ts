@@ -67,7 +67,7 @@ export const savingsApi = coreApi.injectEndpoints({
 
     getSavingsAccounts: builder.query<
       SavingsAccountsApiResponse,
-      ApiRequest<void, void, { type?: string }>
+      ApiRequest<void, void, { type?: "fixed_deposit" | "recurring" }>
     >({
       query: ({ ...config }) => ({
         url: BASE_URL + "/accounts",

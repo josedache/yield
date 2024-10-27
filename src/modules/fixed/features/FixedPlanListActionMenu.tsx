@@ -4,7 +4,7 @@ import usePopover from "hooks/usePopover";
 import FixedPlanDetails from "./FixedPlanDetails";
 import useToggle from "hooks/useToggle";
 
-export default function FixedPlanListActionMenu() {
+export default function FixedPlanListActionMenu({ info: any }) {
   const popover = usePopover();
   const [isPlanDetails, togglePlanDetails] = useToggle();
   // zondicons:view-show

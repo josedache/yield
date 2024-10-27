@@ -14,7 +14,9 @@ import { format } from "date-fns";
 import { savingsApi } from "apis/savings-api";
 import LoadingContent from "components/LoadingContent";
 
-export default function FixedPlanDetails(props: DrawerProps) {
+export default function FixedPlanDetails(
+  props: DrawerProps & { onClose: () => void }
+) {
   const { onClose, ...rest } = props;
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
 

@@ -6,6 +6,7 @@ import {
   Link as MuiLink,
   TextField,
   MenuItem,
+  Skeleton,
 } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
 import CurrencyTypography from "components/CurrencyTypography";
@@ -20,50 +21,24 @@ import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 import FixedPlanDetails from "../features/FixedPlanDetails";
 import FixedPlanListActionMenu from "../features/FixedPlanListActionMenu";
+import { savingsApi } from "apis/savings-api";
+import FixedStatusChip from "../features/FixedStatusChip";
+import LoadingContent from "components/LoadingContent";
 
 function Fixed() {
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
   const [isFixedCreatePlan, toggleFixedCreatePlan] = useToggle();
   const [isPlanDetails, togglePlanDetails] = useToggle();
 
-  const savedCard = false;
+  const getSavingsAccountsQuery = savingsApi.useGetSavingsAccountsQuery({
+    params: { type: "fixed_deposit" },
+  });
 
-  const data = [
-    {
-      planName: "Plan 1",
-      amount: 100000,
-      maturityDate: new Date(),
-      status: "Active",
-    },
-    {
-      planName: "Plan 2",
-      amount: 200000,
-      maturityDate: new Date(),
-      status: "Active",
-    },
-    {
-      planName: "Plan 3",
-      amount: 300000,
-      maturityDate: new Date(),
-      status: "Active",
-    },
-    {
-      planName: "Plan 4",
-      amount: 400000,
-      maturityDate: new Date(),
-      status: "Active",
-    },
-    {
-      planName: "Plan 5",
-      amount: 500000,
-      maturityDate: new Date(),
-      status: "Active",
-    },
-  ];
+  const savedCard = false;
 
   const tableInstance = useTable({
     columns,
-    data: data || null,
+    data: getSavingsAccountsQuery?.data?.data?.savingsAccounts || null,
     // pageCount: customersQuery?.data?.data?.pages ?? -1,
     manualPagination: true,
     // state: { pagination },
@@ -89,7 +64,7 @@ function Fixed() {
                     className="font-bold"
                     blur={isWalletBalanceVisible}
                   >
-                    0
+                    {getSavingsAccountsQuery?.data?.data?.totalAvailableBalance}
                   </CurrencyTypography>
                   <IconButton onClick={toggleWalletBalanceVisible}>
                     <Iconify
@@ -113,6 +88,7 @@ function Fixed() {
               <Button
                 className="w-full md:w-[30%]"
                 fullWidth
+                disabled={getSavingsAccountsQuery?.isLoading}
                 onClick={toggleFixedCreatePlan}
               >
                 Create Plan
@@ -120,69 +96,74 @@ function Fixed() {
             </div>
           </Paper>
 
-          <div>
-            {!data?.length && (
-              <Typography variant="h6" className="font-medium" gutterBottom>
-                My Plans
-              </Typography>
+          <LoadingContent
+            loading={getSavingsAccountsQuery.isLoading}
+            error={getSavingsAccountsQuery?.isError}
+            onRetry={getSavingsAccountsQuery.refetch}
+            renderLoading={() => (
+              <Skeleton variant="rounded" className="w-full h-[350px] " />
             )}
-
-            <Paper variant="outlined" className="p-0 overflow-hidden">
-              {data?.length ? (
-                <div className="flex items-center justify-between p-4">
-                  <Typography variant="h6" className="font-medium" gutterBottom>
-                    My Plans
-                  </Typography>
-                  <TextField
-                    select
-                    placeholder="Filter By"
-                    size="small"
-                    className="min-w-24"
-                  >
-                    {[].map(() => (
-                      <MenuItem></MenuItem>
-                    ))}
-                  </TextField>
-                </div>
-              ) : null}
-
-              {data?.length ? (
-                <div>
-                  <TanStandardTable
-                    instance={tableInstance}
-                    // slots={{ bodyRow: ButtonBase }}
-                    // slotProps={{
-                    //   bodyRow(bodyRow) {
-                    //     // const organization = bodyRow.original;
-                    //     return {
-                    //       onClick: () => {
-                    //         togglePlanDetails();
-                    //       },
-                    //     };
-                    //   },
-                    // }}
-                    // loading={customersQuery?.isFetching}
-                    // error={customersQuery.isError}
-                    // onErrorRetry={customersQuery.refetch}
-                    // onEmptyRetry={customersQuery.refetch}
-                    pagination={false}
-                  />
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-8 text-center py-20">
-                  <EmptyPlanSvg />
-                  <div className="space-y-1">
-                    <Typography variant="h6" className="font-semibold">
-                      No Plans
-                    </Typography>
-                    <Typography variant="body1" color="textSecondary">
-                      You have no plans yet.
-                    </Typography>
-                  </div>
-                </div>
+          >
+            <div>
+              {!getSavingsAccountsQuery?.data?.data?.savingsAccounts
+                ?.length && (
+                <Typography variant="h6" className="font-medium" gutterBottom>
+                  My Plans
+                </Typography>
               )}
-            </Paper>
-          </div>
+
+              <Paper variant="outlined" className="p-0 overflow-hidden">
+                {getSavingsAccountsQuery?.data?.data?.savingsAccounts
+                  ?.length ? (
+                  <div className="flex items-center justify-between p-4">
+                    <Typography
+                      variant="h6"
+                      className="font-medium"
+                      gutterBottom
+                    >
+                      My Plans
+                    </Typography>
+                    <TextField
+                      select
+                      placeholder="Filter By"
+                      size="small"
+                      className="min-w-24"
+                    >
+                      {[].map(() => (
+                        <MenuItem></MenuItem>
+                      ))}
+                    </TextField>
+                  </div>
+                ) : null}
+
+                {getSavingsAccountsQuery?.data?.data?.savingsAccounts
+                  ?.length ? (
+                  <div>
+                    <TanStandardTable
+                      instance={tableInstance}
+                      loading={getSavingsAccountsQuery?.isFetching}
+                      error={getSavingsAccountsQuery.isError}
+                      onErrorRetry={getSavingsAccountsQuery.refetch}
+                      onEmptyRetry={getSavingsAccountsQuery.refetch}
+                      pagination={false}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-8 text-center py-20">
+                    <EmptyPlanSvg />
+                    <div className="space-y-1">
+                      <Typography variant="h6" className="font-semibold">
+                        No Plans
+                      </Typography>
+                      <Typography variant="body1" color="textSecondary">
+                        You have no plans yet.
+                      </Typography>
+                    </div>
+                  </div>
+                )}
+              </Paper>
+            </div>
+          </LoadingContent>
         </div>
         <div className="space-y-8 w-full md:w-[40%]">
           <Paper variant="outlined" className="p-4 pb-8 space-y-8">
@@ -281,32 +262,36 @@ export default Fixed;
 const columns: ColumnDef<any>[] = [
   {
     header: "Plan Name",
-    accessorKey: "planName",
+    accessorKey: "plan_name",
     cell: (info) => {
       return (
         <div>
-          <Typography>{info.row.original.planName}</Typography>
+          <Typography>{info.row.original.plan_name}</Typography>
         </div>
       );
     },
   },
   {
     header: "Amount",
-    accessorKey: "amount",
+    accessorKey: "maturity_amount",
     cell: (info) => {
       return (
-        <CurrencyTypography>{info.row.original.amount}</CurrencyTypography>
+        <CurrencyTypography>
+          {info.row.original.maturity_amount}
+        </CurrencyTypography>
       );
     },
   },
   {
     header: "Maturity Date",
-    accessorKey: "maturityDate",
+    accessorKey: "maturity_date",
     cell: (info) => {
       return (
         <div>
           <Typography>
-            {format(info.row.original.maturityDate, "PP") || "-"}
+            {info.row.original.maturity_date
+              ? format(info.row.original.maturity_date, "PP")
+              : "-"}
           </Typography>
         </div>
       );
@@ -318,9 +303,10 @@ const columns: ColumnDef<any>[] = [
     cell: (info) => {
       return (
         <div>
-          <Typography>
-            {format(info.row.original.maturityDate, "PP") || "-"}
-          </Typography>
+          <FixedStatusChip
+            id={info.row.original.account_status_code as any}
+            label={info.row.original.account_status}
+          />
         </div>
       );
     },
@@ -328,6 +314,6 @@ const columns: ColumnDef<any>[] = [
 
   {
     header: "Action",
-    cell: () => <FixedPlanListActionMenu />,
+    cell: (info) => <FixedPlanListActionMenu info={info.row.original} />,
   },
 ];
