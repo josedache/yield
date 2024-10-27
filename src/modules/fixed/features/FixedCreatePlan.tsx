@@ -21,7 +21,6 @@ import FixedCreatePlanCalculatorTab from "./FixedCreatePlanCalculatorTab";
 import FixedCreatePlanTab from "./FixedCreatePlanTab";
 import { FixedCreatePlanFormikType } from "../types/FixedCreatePlan";
 import { savingsApi } from "apis/savings-api";
-import { FIXED_PRODUCT_ID } from "constants/global";
 import LoadingContent from "components/LoadingContent";
 import {
   PaymentGatewayInlineChannel,
@@ -30,6 +29,7 @@ import {
 import PaymentGatewayInlineInline from "libs/payment-gateway-inline/inline";
 import { PAYSTACK_PUBLIC_KEY } from "constants/env";
 import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
+import { FIXED_PRODUCT_ID } from "constants/savings";
 
 export default function FixedCreatePlan(
   props: DialogProps & { onClose: () => void }

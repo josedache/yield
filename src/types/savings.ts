@@ -85,20 +85,22 @@ export type SavingsFixedDepositProductInformation = ApiResponse<{
 export type GetSavingsResponse = {
   id: number;
   client_name: string;
-  product_id: number;
   client_id: number;
   plan_name: string;
   submitted_date: string;
   deposit_type: string;
   account_no: string;
-  last_transaction_date: string;
+  interest_rate: number;
   type: string;
   available_balance: string;
   currency: string;
   total_deposits: string;
-  total_interest: string;
-  interest_not_posted: string;
-  total_interest_overdraft: string;
+  total_interest_earned: string;
+  interest_posted: string;
+  duration: number;
+  duration_type: string;
+  maturity_amount: number;
+  maturity_date: string;
   account_status: string;
   account_status_code: number;
   active: boolean;
@@ -141,3 +143,30 @@ export type SavingsAccountsApiResponse = {
     matured: boolean;
   }[];
 };
+
+export type SavingsTransactionsApiResponse = ApiResponse<
+  {
+    transactionId: number;
+    accountNo: string;
+    title: string;
+    type: string;
+    transaction_type: string;
+    transaction_type_code: number;
+    amount: string;
+    transaction_date: string;
+    transaction_status: string;
+  }[]
+>;
+
+export type SavingsTransactionApiResponse = ApiResponse<
+  {
+    transactionId: number;
+    accountNo: string;
+    transaction_nature: string;
+    title: string;
+    type: string;
+    amount: string;
+    transaction_date: string;
+    transaction_status: string;
+  }[]
+>;
