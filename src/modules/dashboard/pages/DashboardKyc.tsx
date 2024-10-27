@@ -24,8 +24,8 @@ import NumberTextField from "components/NumberTextField";
 import Dropzone from "react-dropzone";
 import { Icon as Iconify } from "@iconify/react";
 import clsx from "clsx";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { DASHBOARD, SIGNIN } from "constants/urls";
+import { Link } from "react-router-dom";
+import { DASHBOARD } from "constants/urls";
 import useAuthUser from "hooks/useAuthUser";
 import { DashboardKycStep } from "../enums/DashboardKycStep";
 import { userApi } from "apis/user-api";
@@ -37,8 +37,6 @@ import useRtkQueryStatusCallbacks from "hooks/useRtkQueryStatusCallbacks";
 
 function DashboardKyc() {
   const { enqueueSnackbar } = useSnackbar();
-
-  const navigate = useNavigate();
 
   const authUser = useAuthUser();
 
@@ -79,7 +77,9 @@ function DashboardKyc() {
         ? DashboardKycStep.BASIC_INFORMATION
         : !isIdentificationCompleted
         ? DashboardKycStep.IDENTIFICATION
-        : DashboardKycStep.ACCOUNT_DETAILS
+        : !isAccountDetailsCompleted
+        ? DashboardKycStep.ACCOUNT_DETAILS
+        : DashboardKycStep.SUCCESS
     ),
   });
 
@@ -159,7 +159,11 @@ function DashboardKyc() {
         switch (enumStep) {
           case DashboardKycStep.BASIC_INFORMATION: {
             const data = await verifyUserClientKycMutation({
-              body: { ...values, document: undefined },
+              body: {
+                ...values,
+                bankId: String(values.bankId),
+                document: undefined,
+              },
             }).unwrap();
             enqueueSnackbar(
               data?.message || "Basic information updated Successfully!",
@@ -207,7 +211,7 @@ function DashboardKyc() {
             const data = await verifyUserClientKycMutation({
               body: {
                 ...values,
-                bankId: values.bankId,
+                bankId: String(values.bankId),
                 nin: values.document.id_number,
                 document: undefined,
               },
@@ -219,7 +223,7 @@ function DashboardKyc() {
               }
             );
 
-            return navigate(SIGNIN);
+            break;
           }
           default:
             break;
@@ -267,13 +271,13 @@ function DashboardKyc() {
     },
   });
 
-  if (
-    isBasicInformationCompleted &&
-    isIdentificationCompleted &&
-    isAccountDetailsCompleted
-  ) {
-    return <Navigate to={DASHBOARD} replace />;
-  }
+  // if (
+  //   isBasicInformationCompleted &&
+  //   isIdentificationCompleted &&
+  //   isAccountDetailsCompleted
+  // ) {
+  //   return <Navigate to={DASHBOARD} replace />;
+  // }
 
   const actionButtons = (
     <div className="grid grid-cols-1 gap-2">
@@ -605,7 +609,7 @@ function DashboardKyc() {
         </div>
       </div>
 
-      <Dialog fullWidth open={stepper.step === 3}>
+      <Dialog fullWidth open={enumStep === DashboardKycStep.SUCCESS}>
         <DialogContent className="space-y-8 max-w-md mx-auto">
           <div className="flex justify-center text-6xl">
             <Icon

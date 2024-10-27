@@ -15,7 +15,7 @@ import CurrencyTypography from "components/CurrencyTypography";
 import { format } from "date-fns";
 import LoadingContent from "components/LoadingContent";
 import FixedStatusChip from "./FixedStatusChip";
-import { SavingsSavingsAccount } from "src/types/savings";
+import { SavingsSavingsAccount } from "src/types/savings-api";
 import { savingsApi } from "apis/savings-api";
 import WalletTransactionFlowSvg from "assets/svgs/wallet--transaction-flow.svg?react";
 import {

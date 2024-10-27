@@ -2,7 +2,7 @@ import { FormikProps } from "formik";
 import {
   SavingsCalculatorApiResponse,
   SavingsFixedDepositProductInformationApiResponse,
-} from "src/types/savings";
+} from "src/types/savings-api";
 
 export type FixedCreatePlanFormikType = Partial<{
   productId: number;

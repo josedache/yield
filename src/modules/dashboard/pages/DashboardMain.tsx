@@ -5,6 +5,7 @@ import {
   Divider,
   IconButton,
   Paper,
+  Skeleton,
   Typography,
 } from "@mui/material";
 import clsx from "clsx";
@@ -14,6 +15,10 @@ import DashboardEmptyActivitySvg from "assets/svgs/dashboard-empty-activity.svg?
 import { Navigate } from "react-router-dom";
 import { DASHBOARD_KYC } from "constants/urls";
 import useAuthUser from "hooks/useAuthUser";
+import { walletApi } from "apis/wallet-api";
+import LoadingContent from "components/LoadingContent";
+import { savingsApi } from "apis/savings-api";
+import { useMemo } from "react";
 
 function DashboardMain() {
   const authUser = useAuthUser();
@@ -21,6 +26,58 @@ function DashboardMain() {
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
   const [isFixedYieldVisible, toggleFixedYieldVisible] = useToggle();
   const [isFlexYieldVisible, toggleFlexYieldVisible] = useToggle();
+
+  const walletQueryResult = walletApi.useGetWalletQuery(undefined);
+
+  const wallet = walletQueryResult.data?.data;
+
+  const flexSavingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
+    useMemo(() => ({ params: { type: "recurring_deposit" } }), [])
+  );
+
+  const flexSavingsAccounts = flexSavingsAccountsQueryResult.data?.data;
+
+  const listFlexSavingsAccount =
+    flexSavingsAccountsQueryResult.data?.data?.savingsAccounts?.[0];
+
+  const flexSavingsAccountQueryResult = savingsApi.useGetSavingsAccountQuery(
+    useMemo(
+      () => ({
+        params: {
+          savingType: "recurring_deposit",
+          savingsId: listFlexSavingsAccount?.id,
+        },
+      }),
+      [listFlexSavingsAccount?.id]
+    ),
+    { skip: !listFlexSavingsAccount?.id }
+  );
+
+  const flexSavingsAccount = flexSavingsAccountQueryResult.data?.data;
+
+  const fixedSavingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
+    useMemo(() => ({ params: { type: "fixed_deposit" } }), [])
+  );
+
+  const fixedSavingsAccounts = fixedSavingsAccountsQueryResult.data?.data;
+
+  const listFixedSavingsAccount =
+    flexSavingsAccountsQueryResult.data?.data?.savingsAccounts?.[0];
+
+  const fixedSavingsAccountQueryResult = savingsApi.useGetSavingsAccountQuery(
+    useMemo(
+      () => ({
+        params: {
+          savingType: "fixed_deposit",
+          savingsId: listFixedSavingsAccount?.id,
+        },
+      }),
+      [listFixedSavingsAccount?.id]
+    ),
+    { skip: !listFixedSavingsAccount?.id }
+  );
+
+  const fixedSavingsAccount = fixedSavingsAccountQueryResult.data?.data;
 
   const quickAccess = [
     {
@@ -72,32 +129,45 @@ function DashboardMain() {
             <Paper className="p-4 md:p-8 flex flex-col md:flex-row gap-2 md:col-span-2">
               <div className="md:w-[75%] w-full">
                 <Typography variant="body2" color="textSecondary" gutterBottom>
-                  Yield Wallet
+                  Wallet
                 </Typography>
-                <div className="flex items-center">
-                  <CurrencyTypography
-                    variant="h3"
-                    className="font-bold"
-                    blur={isWalletBalanceVisible}
-                  >
-                    10950
-                  </CurrencyTypography>
-                  <IconButton onClick={toggleWalletBalanceVisible}>
-                    <Icon
-                      icon={
-                        isWalletBalanceVisible
-                          ? "cuida:visibility-off-outline"
-                          : "cuida:visibility-on-outline"
-                      }
-                    />
-                  </IconButton>
-                </div>
+                <LoadingContent
+                  loading={walletQueryResult.isLoading}
+                  error={walletQueryResult.isError}
+                  onRetry={walletQueryResult.refetch}
+                  renderLoading={() => (
+                    <Skeleton variant="rectangular" className="h-2"></Skeleton>
+                  )}
+                >
+                  {() => (
+                    <div className="flex items-center">
+                      <CurrencyTypography
+                        variant="h3"
+                        className="font-bold"
+                        blur={isWalletBalanceVisible}
+                      >
+                        {wallet?.balance}
+                      </CurrencyTypography>
+                      <IconButton onClick={toggleWalletBalanceVisible}>
+                        <Icon
+                          icon={
+                            isWalletBalanceVisible
+                              ? "cuida:visibility-off-outline"
+                              : "cuida:visibility-on-outline"
+                          }
+                        />
+                      </IconButton>
+                    </div>
+                  )}
+                </LoadingContent>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-1 gap-2 w-full md:w-[25%]">
                 <Button fullWidth>Fund Wallet</Button>
-                <Button fullWidth variant="outlined">
-                  Withdraw
-                </Button>
+                {wallet?.balance ? (
+                  <Button fullWidth variant="outlined">
+                    Withdraw
+                  </Button>
+                ) : null}
               </div>
             </Paper>
 
@@ -106,8 +176,8 @@ function DashboardMain() {
                 icon: "material-symbols-light:lock-outline",
                 iconClassName: "bg-[#5EB1BF] text-white",
                 label: "Fixed Yield",
-                value: 0,
-                interestRate: "15 - 20% P.A",
+                value: fixedSavingsAccounts?.totalAvailableBalance ?? 0,
+                interestRate: `${fixedSavingsAccount?.interest_rate}% P.A.`,
                 isValueVisible: isFixedYieldVisible,
                 onValueVisibilityClick: toggleFixedYieldVisible,
               },
@@ -115,8 +185,8 @@ function DashboardMain() {
                 icon: "icon-park-outline:target",
                 iconClassName: "bg-[#4920AA] text-white",
                 label: "Flex Yield",
-                value: 0,
-                interestRate: "14% P.A.",
+                value: flexSavingsAccounts?.totalAvailableBalance ?? 0,
+                interestRate: `${flexSavingsAccount?.interest_rate}% P.A.`,
                 isValueVisible: isFlexYieldVisible,
                 onValueVisibilityClick: toggleFlexYieldVisible,
               },

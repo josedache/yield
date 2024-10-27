@@ -205,73 +205,85 @@ function Flex() {
                     </TextField>
                   ) : null}
                 </div>
-
-                {savingsTransactions?.length ? (
-                  <div className="space-y-6">
-                    {savingsTransactions?.map((transaction) => {
-                      const config = {
-                        CREDIT: {
-                          color: "success",
-                          sign: "+",
-                          icon: "ic:twotone-plus",
-                        },
-                        DEBIT: {
-                          color: "error",
-                          sign: "-",
-                          icon: "ic:baseline-minus",
-                        },
-                        CHARGE: {
-                          color: "success",
-                          sign: "+",
-                          icon: "ic:sharp-percent",
-                        },
-                      }[transaction?.type || "CHARGE"];
-                      return (
-                        <div
-                          key={transaction?.type}
-                          className="flex items-center gap-4"
-                        >
-                          <IconButton
-                            variant="soft"
-                            color={config?.color as any}
-                          >
-                            <Iconify icon={config?.icon} />
-                          </IconButton>
-                          <div>
-                            <Typography variant="body1" gutterBottom>
-                              {transaction?.title}
+                <LoadingContent
+                  loading={savingsTransactionsQueryResult.isLoading}
+                  error={savingsTransactionsQueryResult.isError}
+                  onRetry={savingsTransactionsQueryResult.refetch}
+                >
+                  {() => (
+                    <>
+                      {savingsTransactions?.length ? (
+                        <div className="space-y-6">
+                          {savingsTransactions?.map((transaction) => {
+                            const config = {
+                              CREDIT: {
+                                color: "success",
+                                sign: "+",
+                                icon: "ic:twotone-plus",
+                              },
+                              DEBIT: {
+                                color: "error",
+                                sign: "-",
+                                icon: "ic:baseline-minus",
+                              },
+                              CHARGE: {
+                                color: "success",
+                                sign: "+",
+                                icon: "ic:sharp-percent",
+                              },
+                            }[transaction?.type || "CHARGE"];
+                            return (
+                              <div
+                                key={transaction?.type}
+                                className="flex items-center gap-4"
+                              >
+                                <IconButton
+                                  variant="soft"
+                                  color={config?.color as any}
+                                >
+                                  <Iconify icon={config?.icon} />
+                                </IconButton>
+                                <div>
+                                  <Typography variant="body1" gutterBottom>
+                                    {transaction?.title}
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                  >
+                                    {dfns.format(
+                                      new Date(transaction?.transaction_date),
+                                      "dd MMM, yyyy"
+                                    )}
+                                  </Typography>
+                                </div>
+                                <div className="flex-1" />
+                                <Typography>
+                                  {config?.sign}
+                                  <CurrencyTypography component="span">
+                                    {transaction?.amount}
+                                  </CurrencyTypography>
+                                </Typography>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-8 text-center">
+                          <WalletTransactionFlowSvg />
+                          <div className="space-y-1">
+                            <Typography variant="h6" className="font-semibold">
+                              No Transactions
                             </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              {dfns.format(
-                                new Date(transaction?.transaction_date),
-                                "dd MMM, yyyy"
-                              )}
+                            <Typography variant="body1" color="textSecondary">
+                              Fund your wallet to see your transactions here.
                             </Typography>
                           </div>
-                          <div className="flex-1" />
-                          <Typography>
-                            {config?.sign}
-                            <CurrencyTypography component="span">
-                              {transaction?.amount}
-                            </CurrencyTypography>
-                          </Typography>
                         </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center gap-8 text-center">
-                    <WalletTransactionFlowSvg />
-                    <div className="space-y-1">
-                      <Typography variant="h6" className="font-semibold">
-                        No Transactions
-                      </Typography>
-                      <Typography variant="body1" color="textSecondary">
-                        Fund your wallet to see your transactions here.
-                      </Typography>
-                    </div>
-                  </div>
-                )}
+                      )}
+                    </>
+                  )}
+                </LoadingContent>
               </Paper>
             </div>
             <div className="space-y-8">

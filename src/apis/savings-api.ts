@@ -1,6 +1,6 @@
 import { coreApi } from "configs/store-query";
 import * as tags from "constants/tags";
-import { ApiRequest, ApiResponse } from "src/types/api";
+import { ApiRequest } from "src/types/api";
 import {
   GetSavingsResponse,
   SavingsAccountsApiResponse,
@@ -13,7 +13,7 @@ import {
   SavingsFixedDepositProductInformationApiResponse,
   SavingsTransactionApiResponse,
   SavingsTransactionsApiResponse,
-} from "src/types/savings";
+} from "src/types/savings-api";
 
 export const BASE_URL = "/savings";
 
@@ -68,10 +68,10 @@ export const savingsApi = coreApi.injectEndpoints({
     }),
 
     getSavingsAccounts: builder.query<
-      ApiResponse<SavingsAccountsApiResponse>,
-      ApiRequest<void, void, { type?: "fixed_deposit" | "recurring" }>
+      SavingsAccountsApiResponse,
+      ApiRequest<void, void, { type?: "fixed_deposit" | "recurring_deposit" }>
     >({
-      query: ({ ...config }) => ({
+      query: (config) => ({
         url: BASE_URL + "/accounts",
         method: "GET",
         ...config,
@@ -79,11 +79,8 @@ export const savingsApi = coreApi.injectEndpoints({
       providesTags: [tags.SAVINGS],
     }),
 
-    getSavingsAccount: builder.query<
-      ApiResponse<GetSavingsResponse>,
-      ApiRequest
-    >({
-      query: ({ ...config }) => ({
+    getSavingsAccount: builder.query<GetSavingsResponse, ApiRequest>({
+      query: (config) => ({
         url: BASE_URL + "/account",
         method: "GET",
         ...config,
