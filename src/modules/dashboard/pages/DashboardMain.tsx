@@ -12,8 +12,8 @@ import clsx from "clsx";
 import CurrencyTypography from "components/CurrencyTypography";
 import useToggle from "hooks/useToggle";
 import DashboardEmptyActivitySvg from "assets/svgs/dashboard-empty-activity.svg?react";
-import { Navigate } from "react-router-dom";
-import { DASHBOARD_KYC } from "constants/urls";
+import { Link, Navigate } from "react-router-dom";
+import { DASHBOARD_KYC, FIXED, FLEX } from "constants/urls";
 import useAuthUser from "hooks/useAuthUser";
 import { walletApi } from "apis/wallet-api";
 import LoadingContent from "components/LoadingContent";
@@ -37,23 +37,12 @@ function DashboardMain() {
 
   const flexSavingsAccounts = flexSavingsAccountsQueryResult.data?.data;
 
-  const listFlexSavingsAccount =
-    flexSavingsAccountsQueryResult.data?.data?.savingsAccounts?.[0];
+  const flexSavingsProductQueryResult =
+    savingsApi.useGetSavingsProductInformationQuery(
+      useMemo(() => ({ params: { productId: 10 } }), [])
+    );
 
-  const flexSavingsAccountQueryResult = savingsApi.useGetSavingsAccountQuery(
-    useMemo(
-      () => ({
-        params: {
-          savingType: "recurring_deposit",
-          savingsId: listFlexSavingsAccount?.id,
-        },
-      }),
-      [listFlexSavingsAccount?.id]
-    ),
-    { skip: !listFlexSavingsAccount?.id }
-  );
-
-  const flexSavingsAccount = flexSavingsAccountQueryResult.data?.data;
+  const flexSavingsProduct = flexSavingsProductQueryResult.data?.data;
 
   const fixedSavingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
     useMemo(() => ({ params: { type: "fixed_deposit" } }), [])
@@ -61,23 +50,12 @@ function DashboardMain() {
 
   const fixedSavingsAccounts = fixedSavingsAccountsQueryResult.data?.data;
 
-  const listFixedSavingsAccount =
-    flexSavingsAccountsQueryResult.data?.data?.savingsAccounts?.[0];
+  const fixedSavingsProductQueryResult =
+    savingsApi.useGetSavingsProductInformationQuery(
+      useMemo(() => ({ params: { productId: 1 } }), [])
+    );
 
-  const fixedSavingsAccountQueryResult = savingsApi.useGetSavingsAccountQuery(
-    useMemo(
-      () => ({
-        params: {
-          savingType: "fixed_deposit",
-          savingsId: listFixedSavingsAccount?.id,
-        },
-      }),
-      [listFixedSavingsAccount?.id]
-    ),
-    { skip: !listFixedSavingsAccount?.id }
-  );
-
-  const fixedSavingsAccount = fixedSavingsAccountQueryResult.data?.data;
+  const fixedSavingsProduct = fixedSavingsProductQueryResult.data?.data;
 
   const quickAccess = [
     {
@@ -177,18 +155,22 @@ function DashboardMain() {
                 iconClassName: "bg-[#5EB1BF] text-white",
                 label: "Fixed Yield",
                 value: fixedSavingsAccounts?.totalAvailableBalance ?? 0,
-                interestRate: `${fixedSavingsAccount?.interest_rate}% P.A.`,
+                interestRate: `${
+                  fixedSavingsProduct?.interest_rate ?? 0
+                }% P.A.`,
                 isValueVisible: isFixedYieldVisible,
                 onValueVisibilityClick: toggleFixedYieldVisible,
+                to: FIXED,
               },
               {
                 icon: "icon-park-outline:target",
                 iconClassName: "bg-[#4920AA] text-white",
                 label: "Flex Yield",
                 value: flexSavingsAccounts?.totalAvailableBalance ?? 0,
-                interestRate: `${flexSavingsAccount?.interest_rate}% P.A.`,
+                interestRate: `${flexSavingsProduct?.interest_rate ?? 0}% P.A.`,
                 isValueVisible: isFlexYieldVisible,
                 onValueVisibilityClick: toggleFlexYieldVisible,
+                to: FLEX,
               },
             ].map(
               (
@@ -200,11 +182,14 @@ function DashboardMain() {
                   interestRate,
                   isValueVisible,
                   onValueVisibilityClick,
+                  to,
                 },
                 id
               ) => {
                 return (
                   <Paper
+                    component={Link}
+                    to={to}
                     className={clsx(
                       id === 0 ? "border-[#5EB1BF80]" : "border-[#4920AA4D]",
                       "p-4 md:p-6 w-full"

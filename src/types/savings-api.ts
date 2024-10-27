@@ -49,7 +49,36 @@ export type SavingsActivateAccountResponse = ApiResponse<{
   resourceId: number;
 }>;
 
-export type SavingsFixedDepositProductInformation = ApiResponse<{
+export type GetSavingsResponse = ApiResponse<{
+  id: number;
+  client_name: string;
+  client_id: number;
+  plan_name: string;
+  submitted_date: string;
+  deposit_type: string;
+  account_no: string;
+  interest_rate: number;
+  type: string;
+  available_balance: string;
+  currency: string;
+  total_deposits: string;
+  total_interest_earned: string;
+  interest_posted: string;
+  duration: number;
+  duration_type: string;
+  maturity_amount: number;
+  maturity_date: string;
+  account_status: string;
+  account_status_code: number;
+  active: boolean;
+  approved: boolean;
+  closed: boolean;
+  prematureClosed: boolean;
+  rejected: boolean;
+  matured: boolean;
+}>;
+
+export type SavingsFixedDepositProductInformationApiResponse = ApiResponse<{
   id: string;
   product_id: string;
   name: string;
@@ -81,38 +110,6 @@ export type SavingsFixedDepositProductInformation = ApiResponse<{
   created_at: string;
   updated_at: string;
 }>;
-
-export type GetSavingsResponse = ApiResponse<{
-  id: number;
-  client_name: string;
-  client_id: number;
-  plan_name: string;
-  submitted_date: string;
-  deposit_type: string;
-  account_no: string;
-  interest_rate: number;
-  type: string;
-  available_balance: string;
-  currency: string;
-  total_deposits: string;
-  total_interest_earned: string;
-  interest_posted: string;
-  duration: number;
-  duration_type: string;
-  maturity_amount: number;
-  maturity_date: string;
-  account_status: string;
-  account_status_code: number;
-  active: boolean;
-  approved: boolean;
-  closed: boolean;
-  prematureClosed: boolean;
-  rejected: boolean;
-  matured: boolean;
-}>;
-
-export type SavingsFixedDepositProductInformationApiResponse =
-  ApiResponse<SavingsFixedDepositProductInformation>;
 
 export type SavingsAccounts = {
   totalAvailableBalance: string;
