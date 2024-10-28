@@ -7,6 +7,7 @@ import {
   Paper,
   Skeleton,
   Typography,
+  Link as MuiLink,
 } from "@mui/material";
 import clsx from "clsx";
 import CurrencyTypography from "components/CurrencyTypography";
@@ -101,7 +102,35 @@ function DashboardMain() {
 
   return (
     <div className="space-y-8">
-      <Typography variant="h5">Dashboard</Typography>
+      <div className="flex items-center flex-wrap gap-2">
+        <Typography variant="h5">Dashboard</Typography>
+        <div className="flex-1" />
+        <Paper
+          variant="outlined"
+          className="flex items-center gap-2 p-2 bg-[#5EB1BF1A] border-[#5EB1BFB2]"
+        >
+          <Iconify
+            icon="icon-park-outline:send-one"
+            className="text-lg text-[#5EB1BF]"
+          />
+          <Typography>
+            <span className="text-text-secondary">{wallet?.bank}:</span>
+            {"  "}
+            <WalletFund>
+              {({ toggleOpen }) => (
+                <MuiLink
+                  color="textPrimary"
+                  className="font-semibold cursor-pointer"
+                  component="span"
+                  onClick={toggleOpen}
+                >
+                  {wallet?.account_number}
+                </MuiLink>
+              )}
+            </WalletFund>
+          </Typography>
+        </Paper>
+      </div>
 
       <div className="flex gap-8 flex-col md:flex-row">
         <div className="w-full md:w-[75%]">

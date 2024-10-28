@@ -111,11 +111,34 @@ function Flex() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-2">
-        <IconButton variant="soft" color="primary" className="rounded-3xl px-3">
-          <Iconify icon="ic:baseline-arrow-back" />
-        </IconButton>
+      <div className="flex items-center flex-wrap gap-2">
         <Typography variant="h5">Flex Yield</Typography>
+        <div className="flex-1" />
+        <Paper
+          variant="outlined"
+          className="flex items-center gap-2 p-2 bg-[#5EB1BF1A] border-[#5EB1BFB2]"
+        >
+          <Iconify
+            icon="icon-park-outline:send-one"
+            className="text-lg text-[#5EB1BF]"
+          />
+          <Typography>
+            <span className="text-text-secondary">Credit Direct Limited:</span>
+            {"  "}
+            <FlexFund>
+              {({ toggleOpen }) => (
+                <MuiLink
+                  color="textPrimary"
+                  className="font-semibold cursor-pointer"
+                  component="span"
+                  onClick={toggleOpen}
+                >
+                  {savingsAccount?.account_no}
+                </MuiLink>
+              )}
+            </FlexFund>
+          </Typography>
+        </Paper>
       </div>
 
       <LoadingContent loading={isLoading} error={isError} onRetry={onRefetch}>
