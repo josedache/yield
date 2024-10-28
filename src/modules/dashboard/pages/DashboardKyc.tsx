@@ -34,6 +34,7 @@ import { LoadingButton } from "@mui/lab";
 import { transactionApi } from "apis/transaction-api";
 import { useMemo } from "react";
 import useRtkQueryStatusCallbacks from "hooks/useRtkQueryStatusCallbacks";
+import { removeEmptyProperties } from "utils/object";
 
 function DashboardKyc() {
   const { enqueueSnackbar } = useSnackbar();
@@ -159,11 +160,11 @@ function DashboardKyc() {
         switch (enumStep) {
           case DashboardKycStep.BASIC_INFORMATION: {
             const data = await verifyUserClientKycMutation({
-              body: {
+              body: removeEmptyProperties({
                 ...values,
                 bankId: String(values.bankId),
                 document: undefined,
-              },
+              }),
             }).unwrap();
             enqueueSnackbar(
               data?.message || "Basic information updated Successfully!",
@@ -209,12 +210,12 @@ function DashboardKyc() {
           }
           case DashboardKycStep.ACCOUNT_DETAILS: {
             const data = await verifyUserClientKycMutation({
-              body: {
+              body: removeEmptyProperties({
                 ...values,
                 bankId: String(values.bankId),
                 nin: values.document.id_number,
                 document: undefined,
-              },
+              }),
             }).unwrap();
             enqueueSnackbar(
               data?.message || "Account details updated Successfully!",
