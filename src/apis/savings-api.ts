@@ -15,6 +15,7 @@ import {
   SavingsFixedDepositProductInformationApiResponse,
   SavingsTransactionApiResponse,
   SavingsTransactionsApiResponse,
+  SendSavingsOtpAPiRequest,
   UpdateDraftSavingsAPiRequest,
 } from "src/types/savings-api";
 
@@ -101,6 +102,18 @@ export const savingsApi = coreApi.injectEndpoints({
     >({
       query: (config) => ({
         url: BASE_URL + "/fixeddeposit/liquidate",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.SAVINGS_CALCULATOR],
+    }),
+
+    sendSavingsOtp: builder.mutation<
+      ApiResponse<string>,
+      SendSavingsOtpAPiRequest
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/send_otp",
         method: "POST",
         ...config,
       }),

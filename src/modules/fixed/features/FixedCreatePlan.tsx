@@ -29,16 +29,16 @@ import CdlLogo from "assets/imgs/cdl-logo.png";
 import { walletApi } from "apis/wallet-api";
 import { formatNumberToCurrency } from "utils/number";
 import useClipboard from "hooks/useClipboard";
+import { LoadingButton } from "@mui/lab";
 
 export default function FixedCreatePlan(
   props: DialogProps & { onClose: () => void; savingsId?: string }
 ) {
   const { onClose, savingsId, ...rest } = props;
+
   const stepper = useStepper();
   const { enqueueSnackbar } = useSnackbar();
   const { writeText } = useClipboard();
-
-  const accountNumber = "0060048892";
 
   useEffect(() => {
     if (savingsId) {
@@ -52,7 +52,7 @@ export default function FixedCreatePlan(
     });
 
   const walletQueryResult = walletApi.useGetWalletQuery(undefined, {
-    skip: stepper.step !== 2,
+    skip: stepper.step !== 2 && stepper.step !== 3,
   });
   const wallet = walletQueryResult.data?.data;
 
@@ -156,27 +156,6 @@ export default function FixedCreatePlan(
     savingsDepositCalculator: savingsFixedDepositCalculationMutationResult.data,
   };
 
-  async function handleWallet() {
-    try {
-      await savingsActivateAccountMutation({
-        body: {
-          savingsId: String(
-            savingsFixedDepositCreateMutationResult.data.data.savingsId
-          ) as any,
-          fund_source: "wallet",
-        },
-      }).unwrap();
-      stepper.next();
-    } catch (error) {
-      enqueueSnackbar(
-        error?.data?.message?.[0] || "Failed to process funding",
-        {
-          variant: "error",
-        }
-      );
-    }
-  }
-
   const handleFundYield = async (fundSource) => {
     try {
       await savingsActivateAccountMutation({
@@ -194,7 +173,6 @@ export default function FixedCreatePlan(
       } else {
         stepper.go(4);
       }
-      console.log(">>>>>");
     } catch (error) {
       enqueueSnackbar(
         error?.data?.message ??
@@ -236,7 +214,9 @@ export default function FixedCreatePlan(
               more: `Wallet balance: ₦${formatNumberToCurrency(
                 String(wallet?.balance || 0)
               )}`,
-              onClick: handleWallet,
+              onClick: () => {
+                handleFundYield("wallet");
+              },
               disabled:
                 walletQueryResult?.isLoading ||
                 savingsActivateAccountMutationResult.isLoading ||
@@ -284,40 +264,51 @@ export default function FixedCreatePlan(
     },
 
     {
-      title: "Bank Transfer",
+      title: "Transfer to CDL Account",
       description:
-        "For faster settlement please transfer to your personalized account number",
+        "Add money to your Flex Yield Wallet by transferring to the bank details below.",
       content: (
-        <div className="max-w-md mx-auto">
-          <div className="flex justify-center">
-            <img src={CdlLogo} width={32} height={32} />
-          </div>
-          <Typography className="font-semibold text-center mt-4">
-            Credit Direct Limited
-          </Typography>
-          <Typography className="text-center text-neutral-500 mt-6">
-            Account Number
-          </Typography>
-          <div className="rounded-lg bg-neutral-100 px-2 py-3 mt-1 flex justify-center">
-            <Typography className="text-neutral-600 font-semibold">
-              {accountNumber}
-              <IconButton
-                onClick={() => writeText(accountNumber)}
-                color="primary"
-              >
-                <Iconify icon="akar-icons:copy" width="1rem" height="1rem" />
-              </IconButton>
-            </Typography>
-          </div>
-          <Button
-            className="mt-6"
-            fullWidth
-            onClick={() => {
-              onClose();
-            }}
+        <div className="max-w-md flex flex-col items-center justify-center">
+          <LoadingContent
+            loading={walletQueryResult.isLoading}
+            error={walletQueryResult.isError}
+            onRetry={walletQueryResult.refetch}
           >
-            I have made payment
-          </Button>
+            <>
+              <Typography className="text-neutral-500 text-center mt-6">
+                {wallet?.bank}
+              </Typography>
+
+              <div className="rounded-lg flex justify-center">
+                <Typography
+                  variant="h5"
+                  className="text-neutral-600 font-semibold"
+                >
+                  {wallet?.account_number}
+                  <IconButton
+                    onClick={() => writeText(wallet?.account_number)}
+                    color="primary"
+                  >
+                    <Iconify
+                      icon="akar-icons:copy"
+                      width="1rem"
+                      height="1rem"
+                    />
+                  </IconButton>
+                </Typography>
+              </div>
+              <Typography className="text-center ">{wallet?.name}</Typography>
+              <LoadingButton
+                className="mt-6 max-auto"
+                variant="soft"
+                onClick={() => {
+                  onClose();
+                }}
+              >
+                I've sent the money
+              </LoadingButton>
+            </>
+          </LoadingContent>
         </div>
       ),
     },
@@ -335,7 +326,7 @@ export default function FixedCreatePlan(
             </Icon>
           </div>
           <Typography variant="h4" className="text-center mb-4 font-bold">
-            Checking test
+            Success!
           </Typography>
           <Typography className="text-center">
             You’ve successfully created a Yield plan.
