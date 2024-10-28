@@ -25,6 +25,7 @@ import CurrencyTypography from "components/CurrencyTypography";
 import OtpInput from "components/OtpInput";
 import { savingsApi } from "apis/savings-api";
 import { walletApi } from "apis/wallet-api";
+import { FlexWithdrawChannel } from "../enums/FlexWithdrawChannel";
 
 function FlexWithdraw(props: FlexWithdrawProps) {
   const { children, onClose, ...restProps } = props;
@@ -53,7 +54,8 @@ function FlexWithdraw(props: FlexWithdrawProps) {
   const formik = useFormik({
     initialValues: {
       amount: 0,
-      token: "",
+      otp: "",
+      channel: "",
     },
     enableReinitialize: true,
     validationSchema: yup.object({
@@ -86,14 +88,6 @@ function FlexWithdraw(props: FlexWithdrawProps) {
     stepper.reset();
     onClose?.(e, reason);
     setOpen(false);
-  }
-
-  function handleBank() {
-    formik.submitForm();
-  }
-
-  function handleWallet() {
-    formik.submitForm();
   }
 
   const stepConfigs = [
@@ -183,13 +177,19 @@ function FlexWithdraw(props: FlexWithdrawProps) {
                 icon: <img src={CdlLogoPngUrl} width={32} height={32} />,
                 label: "Credit Direct",
                 value: wallet?.account_number,
-                onClick: handleBank,
+                onClick: async (e) => {
+                  await formik.setFieldValue(
+                    "channel",
+                    FlexWithdrawChannel.CREDIT_DIRECT
+                  );
+                  formik.handleSubmit(e);
+                },
               },
-              {
-                icon: <Iconify icon="ph:wallet-light" className="text-4xl" />,
-                label: "Yield Wallet",
-                onClick: handleWallet,
-              },
+              // {
+              //   icon: <Iconify icon="ph:wallet-light" className="text-4xl" />,
+              //   label: "Yield Wallet",
+              //   onClick: handleWallet,
+              // },
             ].map(({ label, value, icon, ...restProps }) => {
               return (
                 <ButtonBase
@@ -223,9 +223,9 @@ function FlexWithdraw(props: FlexWithdrawProps) {
           <div className="space-y-4">
             <OtpInput
               containerStyle={{ justifyContent: "center" }}
-              value={formik.values.token}
-              onChange={(token) => {
-                formik.setFieldValue("token", token);
+              value={formik.values.otp}
+              onChange={(otp) => {
+                formik.setFieldValue("otp", otp);
               }}
               numInputs={6}
               shouldAutoFocus

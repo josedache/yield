@@ -15,6 +15,8 @@ import {
   SavingsFixedDepositProductInformationApiResponse,
   SavingsTransactionApiResponse,
   SavingsTransactionsApiResponse,
+  SavingsTransferApiRequest,
+  SavingsTransferApiResponse,
   UpdateDraftSavingsAPiRequest,
 } from "src/types/savings-api";
 
@@ -182,6 +184,30 @@ export const savingsApi = coreApi.injectEndpoints({
         ...config,
       }),
       providesTags: [tags.SAVINGS],
+    }),
+
+    transferSavings: builder.mutation<
+      SavingsTransferApiResponse,
+      SavingsTransferApiRequest
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/transfer",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.SAVINGS],
+    }),
+
+    sendSavingsOtp: builder.mutation<
+      SavingsTransferApiResponse,
+      SavingsTransferApiRequest
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/send_otp",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.SAVINGS],
     }),
   }),
 });

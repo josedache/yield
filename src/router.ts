@@ -1,5 +1,5 @@
 import AppErrorBoundary from "./AppErrorBoundary";
-import { DASHBOARD, ENTRY, FIXED, FLEX } from "constants/urls";
+import { DASHBOARD, ENTRY, FIXED, FLEX, PROFILE } from "constants/urls";
 import AuthRoutes from "modules/auth/AuthRoutes";
 import DashboardRoutes from "modules/dashboard/DashboardRoutes";
 import FixedRoutes from "modules/fixed/FixedRoutes";
@@ -47,6 +47,10 @@ const router = createBrowserRouter([
             path: FIXED,
             lazy: () => import("modules/fixed/Fixed"),
             children: FixedRoutes,
+          },
+          {
+            path: PROFILE,
+            lazy: () => import("modules/profile/Profile"),
           },
         ],
       },

@@ -200,3 +200,16 @@ export type LiquidateSavingsApiResponse = ApiResponse<{
   matured: boolean;
   prematureClosed: boolean;
 }>;
+
+export type SavingsTransferApiRequest = ApiRequest<{
+  type: "withdraw" | "transfer";
+  otp: number;
+  savingsId: number;
+  transferAmount: number;
+  transferDescription?: string;
+}>;
+
+export type SavingsTransferApiResponse = ApiResponse<{
+  savingsId: number;
+  resourceId: number;
+}>;
