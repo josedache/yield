@@ -144,7 +144,10 @@ export function objectAccessor(obj, desc) {
  * @param {{allowEmptyArray: boolean}} options
  * @returns
  */
-export function removeEmptyProperties(values, options = {}) {
+export function removeEmptyProperties<T>(
+  values: T,
+  options = {} as { allowEmptyArray?: boolean }
+) {
   const { allowEmptyArray } = options;
   const newTarget = Array.isArray(values) ? [] : isObject(values) ? {} : values;
 
@@ -155,7 +158,7 @@ export function removeEmptyProperties(values, options = {}) {
         (Array.isArray(value) && (allowEmptyArray || value.length)) ||
         (isObject(value) && Object.entries(value).length !== 0)
       ) {
-        newTarget[key] =
+        newTarget[key as any] =
           value instanceof File ? value : removeEmptyProperties(value);
       } else if (
         value !== undefined &&
@@ -164,7 +167,7 @@ export function removeEmptyProperties(values, options = {}) {
         !Array.isArray(value) &&
         !isObject(value)
       ) {
-        newTarget[key] = removeEmptyProperties(value);
+        newTarget[key as any] = removeEmptyProperties(value);
       }
     }
   }
@@ -185,7 +188,7 @@ export function objectToFormData(data) {
       }
     } else if (isObject(data[key])) {
       for (const currKey in data[key]) {
-        fd.set(`${key}[${currKey}]`, data[key][currKey])
+        fd.set(`${key}[${currKey}]`, data[key][currKey]);
       }
     } else {
       fd.set(key, data[key]);
@@ -195,13 +198,16 @@ export function objectToFormData(data) {
 }
 
 /**
- * @template T
+ * @template {{id?: string}} T
  * @param {T[]} array
  * @param {{getKey: (item: T) => string; getValue: <R>(item: T) => R}} options
  * @returns {{[x: string]: any}}
  */
-export function normalizeArray(array, options = {}) {
-  const { getKey = ({ id }) => id, getValue = (value) => value } = options;
+export function normalizeArray<T>(
+  array: T[],
+  options = {} as { getKey?: (item: T) => string; getValue: <R>(item: T) => R }
+) {
+  const { getKey = ({ id }: any) => id, getValue = (value) => value } = options;
   return array?.reduce((acc, curr) => {
     acc[getKey(curr)] = getValue(curr);
     return acc;
