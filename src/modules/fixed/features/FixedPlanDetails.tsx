@@ -30,16 +30,34 @@ import {
 import { formatNumberToCurrency } from "utils/number";
 import FixedLiquidate from "./FixedLiquidate";
 import FixedCreatePlan from "./FixedCreatePlan";
+import FixedDeleteDraft from "./FixedDeleteDraft";
 
 export default function FixedPlanDetails(
   props: DrawerProps & { onClose: () => void; info: any }
 ) {
   const { onClose, info, ...rest } = props;
+  const { enqueueSnackbar } = useSnackbar();
+  const [deleteSavingMutation, deleteSavingMutationResult] =
+    savingsApi.useDeleteDraftSavingsMutation();
+
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
   const [isFixedLiquidate, toggleFixedLiquidate] = useToggle();
   const [isCompletePayment, toggleCompletePayment] = useToggle();
+  const [isDeleteSavings, toggleDeleteSavings] = useToggle();
 
-  const { enqueueSnackbar } = useSnackbar();
+  async function handleDelete() {
+    try {
+      await deleteSavingMutation({
+        body: { savingsId: String(info.id), note: "" },
+      }).unwrap();
+      enqueueSnackbar("Deleted successfully", { variant: "success" });
+      toggleDeleteSavings();
+    } catch (error) {
+      enqueueSnackbar(error.data?.message || "Failed to delete", {
+        variant: "error",
+      });
+    }
+  }
 
   const isActive = info?.account_status_code === 300;
 
@@ -105,13 +123,13 @@ export default function FixedPlanDetails(
       disabled: getSavingsQuery?.isLoading,
       onClick: toggleFixedLiquidate,
     },
-    // {
-    //   name: "Edit Name",
-    //   icon: "fluent:edit-20-regular",
-    //   color: "success",
-    //   variant: "soft",
-    //   status: [],
-    // },
+    {
+      name: "Edit Name",
+      icon: "fluent:edit-20-regular",
+      color: "success",
+      variant: "soft",
+      status: [],
+    },
 
     {
       name: "Complete Payment",
@@ -137,33 +155,34 @@ export default function FixedPlanDetails(
       color: "error",
       variant: "soft",
       status: [100],
+      onClick: toggleDeleteSavings,
       disabled: getSavingsQuery?.isLoading,
     },
   ];
 
-  const titleFormik = useFormik({
-    initialValues: {
-      name: "",
-    },
-    enableReinitialize: true,
-    validationSchema: yup.object({
-      // name: yup.string().label("Plan Name").required("Required"),
-    }),
-    onSubmit: async (values) => {
-      try {
-        console.log({ values });
-      } catch (error) {
-        enqueueSnackbar(
-          error?.data?.message ??
-            error?.data?.message?.[0] ??
-            "Failed to process funding",
-          {
-            variant: "error",
-          }
-        );
-      }
-    },
-  });
+  // const titleFormik = useFormik({
+  //   initialValues: {
+  //     name: "",
+  //   },
+  //   enableReinitialize: true,
+  //   validationSchema: yup.object({
+  //     // name: yup.string().label("Plan Name").required("Required"),
+  //   }),
+  //   onSubmit: async (values) => {
+  //     try {
+  //       console.log({ values });
+  //     } catch (error) {
+  //       enqueueSnackbar(
+  //         error?.data?.message ??
+  //           error?.data?.message?.[0] ??
+  //           "Failed to process funding",
+  //         {
+  //           variant: "error",
+  //         }
+  //       );
+  //     }
+  //   },
+  // });
 
   return (
     <Fragment>
@@ -182,17 +201,10 @@ export default function FixedPlanDetails(
         <div className="py-6">
           <div className="flex justify-between gap-2 items-center px-6">
             <div className="flex gap-1 items-center">
-              <Typography
-                contentEditable="plaintext-only"
-                onBlur={titleFormik.handleBlur}
-                id="name"
-                className="capitalize"
-              >
+              <Typography className="capitalize">
                 {info?.plan_name || "..."}{" "}
               </Typography>
-              <IconButton>
-                <Iconify icon="fluent:edit-20-regular" />
-              </IconButton>
+
               <FixedStatusChip
                 id={getSavingsQuery?.data?.data.account_status_code as any}
                 label={
@@ -433,6 +445,16 @@ export default function FixedPlanDetails(
           savingsId={info.id}
           open={isCompletePayment}
           onClose={toggleCompletePayment}
+        />
+      )}
+
+      {isDeleteSavings && (
+        <FixedDeleteDraft
+          savingsId={info.id}
+          isLoading={deleteSavingMutationResult.isLoading}
+          handleDelete={handleDelete}
+          onClose={toggleDeleteSavings}
+          open={isDeleteSavings}
         />
       )}
     </Fragment>

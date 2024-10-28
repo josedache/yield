@@ -12,6 +12,7 @@ export type FixedCreatePlanFormikType = Partial<{
   depositPeriod: number;
   depositPeriodFrequencyId: number;
   name: string;
+  fundSource?: string;
 }>;
 
 export type FixedCreatePlanContentProps = {

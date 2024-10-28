@@ -14,6 +14,7 @@ import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import { Icon as Iconify } from "@iconify-icon/react";
 import clsx from "clsx";
+import { useEffect } from "react";
 
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import useStepper from "hooks/useStepper";
@@ -23,19 +24,10 @@ import FixedCreatePlanTab from "./FixedCreatePlanTab";
 import { FixedCreatePlanFormikType } from "../types/FixedCreatePlan";
 import { savingsApi } from "apis/savings-api";
 import LoadingContent from "components/LoadingContent";
-import {
-  PaymentGatewayInlineChannel,
-  PaymentGatewayInlineProvider,
-} from "libs/payment-gateway-inline";
-import PaymentGatewayInlineInline from "libs/payment-gateway-inline/inline";
-import { PAYSTACK_PUBLIC_KEY } from "constants/env";
-import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
 import { FIXED_PRODUCT_ID } from "constants/savings";
 import CdlLogo from "assets/imgs/cdl-logo.png";
 import { walletApi } from "apis/wallet-api";
 import { formatNumberToCurrency } from "utils/number";
-import { useEffect } from "react";
-import useToggle from "hooks/useToggle";
 import useClipboard from "hooks/useClipboard";
 
 export default function FixedCreatePlan(
@@ -43,7 +35,6 @@ export default function FixedCreatePlan(
 ) {
   const { onClose, savingsId, ...rest } = props;
   const stepper = useStepper();
-  const [isBankTransfer, toggleBankTransfer] = useToggle();
   const { enqueueSnackbar } = useSnackbar();
   const { writeText } = useClipboard();
 
@@ -53,7 +44,7 @@ export default function FixedCreatePlan(
     if (savingsId) {
       stepper.go(2);
     }
-  }, [stepper, savingsId]);
+  }, [savingsId]);
 
   const getSavingsProductInformationQuery =
     savingsApi.useGetSavingsProductInformationQuery({
@@ -92,6 +83,7 @@ export default function FixedCreatePlan(
       depositAmount: null,
       lockinPeriodFrequency: 0,
       lockinPeriodFrequencyType: 0,
+      fundSource: "",
     },
     enableReinitialize: true,
     validationSchema: yup.object({
@@ -112,18 +104,18 @@ export default function FixedCreatePlan(
         .required("Required"),
       name: yup.string().label("Plan Name").required("Required"),
     }),
-    onSubmit: async () => {
+    onSubmit: async (values) => {
       try {
         switch (stepper.step) {
           case 0:
             await savingsFixedDepositCalculationMutation({
               body: {
-                depositAmount: Number(formik.values.depositAmount),
-                depositPeriod: String(formik.values.depositPeriod) as any,
+                depositAmount: Number(values.depositAmount),
+                depositPeriod: String(values.depositPeriod) as any,
                 depositPeriodFrequencyId: String(
-                  formik.values.depositPeriodFrequencyId
+                  values.depositPeriodFrequencyId
                 ) as any,
-                productId: String(formik.values.productId) as any,
+                productId: String(values.productId) as any,
               },
             }).unwrap();
             stepper.next();
@@ -131,15 +123,13 @@ export default function FixedCreatePlan(
           case 1:
             await savingsFixedDepositCreateMutation({
               body: {
-                productId: formik.values.productId,
-                lockinPeriodFrequency: formik.values.lockinPeriodFrequency,
-                lockinPeriodFrequencyType:
-                  formik.values.lockinPeriodFrequencyType,
-                depositAmount: Number(formik.values.depositAmount),
-                depositPeriod: formik.values.depositPeriod,
-                depositPeriodFrequencyId:
-                  formik.values.depositPeriodFrequencyId,
-                name: formik.values.name,
+                productId: values.productId,
+                lockinPeriodFrequency: values.lockinPeriodFrequency,
+                lockinPeriodFrequencyType: values.lockinPeriodFrequencyType,
+                depositAmount: Number(values.depositAmount),
+                depositPeriod: values.depositPeriod,
+                depositPeriodFrequencyId: values.depositPeriodFrequencyId,
+                name: values.name,
               },
             }).unwrap();
             stepper.next();
@@ -166,40 +156,12 @@ export default function FixedCreatePlan(
     savingsDepositCalculator: savingsFixedDepositCalculationMutationResult.data,
   };
 
-  async function handlePaystack() {
-    const resp = await savingsActivateAccountMutation({
-      body: {
-        savingsId: String(
-          savingsFixedDepositCreateMutationResult.data.data.savingsId
-        ) as any,
-        fund_source: "paystack",
-      },
-    }).unwrap();
-
-    PaymentGatewayInlineInline({
-      provider: PaymentGatewayInlineProvider.PAYSTACK,
-      key: PAYSTACK_PUBLIC_KEY,
-      reference: resp?.data?.reference,
-      name: "Joseph Edache",
-      email: "josedache@tmpbox.net",
-      amount: formik.values.depositAmount,
-      channels: [PaymentGatewayInlineChannel.CARD],
-      currency: "NGN",
-      metadata: {},
-      async onSuccess() {
-        formik.submitForm();
-      },
-      onClose() {},
-    });
-  }
-
   async function handleWallet() {
     try {
       await savingsActivateAccountMutation({
         body: {
           savingsId: String(
-            savingsId ||
-              savingsFixedDepositCreateMutationResult.data.data.savingsId
+            savingsFixedDepositCreateMutationResult.data.data.savingsId
           ) as any,
           fund_source: "wallet",
         },
@@ -207,9 +169,7 @@ export default function FixedCreatePlan(
       stepper.next();
     } catch (error) {
       enqueueSnackbar(
-        error?.data?.message ||
-          error?.data?.message?.[0] ||
-          "Failed to process funding",
+        error?.data?.message?.[0] || "Failed to process funding",
         {
           variant: "error",
         }
@@ -217,10 +177,35 @@ export default function FixedCreatePlan(
     }
   }
 
-  async function handlePayWithTransfer() {
-    toggleBankTransfer();
-    stepper.next();
-  }
+  const handleFundYield = async (fundSource) => {
+    try {
+      await savingsActivateAccountMutation({
+        body: {
+          savingsId: String(
+            savingsId ||
+              savingsFixedDepositCreateMutationResult.data.data.savingsId
+          ) as any,
+          fund_source: fundSource as any,
+        },
+      }).unwrap();
+
+      if (fundSource === "transfer") {
+        stepper.go(3);
+      } else {
+        stepper.go(4);
+      }
+      console.log(">>>>>");
+    } catch (error) {
+      enqueueSnackbar(
+        error?.data?.message ??
+          error?.data?.message?.[0] ??
+          "Failed to process funding",
+        {
+          variant: "error",
+        }
+      );
+    }
+  };
 
   const tabs = [
     {
@@ -240,7 +225,9 @@ export default function FixedCreatePlan(
             {
               icon: <img src={CdlLogo} width={32} height={32} />,
               label: "Pay with transfer (recommended)",
-              onClick: handlePayWithTransfer,
+              onClick: () => {
+                handleFundYield("transfer");
+              },
               disabled: savingsActivateAccountMutationResult.isLoading,
             },
             {
@@ -256,12 +243,12 @@ export default function FixedCreatePlan(
                 (wallet?.balance &&
                   formik.values.depositAmount > wallet?.balance),
             },
-            {
-              icon: <img src={PaystackIconPngUrl} width={32} height={32} />,
-              label: "Fund via Paystack",
-              onClick: handlePaystack,
-              disabled: savingsActivateAccountMutationResult.isLoading,
-            },
+            // {
+            //   icon: <img src={PaystackIconPngUrl} width={32} height={32} />,
+            //   label: "Fund via Paystack",
+            //   onClick: handlePaystack,
+            //   disabled: savingsActivateAccountMutationResult.isLoading,
+            // },
           ].map(({ label, more, icon, ...restProps }) => {
             return (
               <ButtonBase
@@ -295,49 +282,46 @@ export default function FixedCreatePlan(
         </div>
       ),
     },
-    ...(isBankTransfer
-      ? [
-          {
-            content: (
-              <div className="max-w-md mx-auto">
-                <div className="flex justify-center">
-                  <img src={CdlLogo} width={32} height={32} />
-                </div>
-                <Typography className="font-semibold text-center mt-4">
-                  Credit Direct Limited
-                </Typography>
-                <Typography className="text-center text-neutral-500 mt-6">
-                  Account Number
-                </Typography>
-                <div className="rounded-lg bg-neutral-100 px-2 py-3 mt-1 flex justify-center">
-                  <Typography className="text-neutral-600 font-semibold">
-                    {accountNumber}
-                    <IconButton
-                      onClick={() => writeText(accountNumber)}
-                      color="primary"
-                    >
-                      <Iconify
-                        icon="akar-icons:copy"
-                        width="1rem"
-                        height="1rem"
-                      />
-                    </IconButton>
-                  </Typography>
-                </div>
-                <Button
-                  className="mt-6"
-                  fullWidth
-                  onClick={() => {
-                    onClose();
-                  }}
-                >
-                  I have made payment
-                </Button>
-              </div>
-            ),
-          },
-        ]
-      : []),
+
+    {
+      title: "Bank Transfer",
+      description:
+        "For faster settlement please transfer to your personalized account number",
+      content: (
+        <div className="max-w-md mx-auto">
+          <div className="flex justify-center">
+            <img src={CdlLogo} width={32} height={32} />
+          </div>
+          <Typography className="font-semibold text-center mt-4">
+            Credit Direct Limited
+          </Typography>
+          <Typography className="text-center text-neutral-500 mt-6">
+            Account Number
+          </Typography>
+          <div className="rounded-lg bg-neutral-100 px-2 py-3 mt-1 flex justify-center">
+            <Typography className="text-neutral-600 font-semibold">
+              {accountNumber}
+              <IconButton
+                onClick={() => writeText(accountNumber)}
+                color="primary"
+              >
+                <Iconify icon="akar-icons:copy" width="1rem" height="1rem" />
+              </IconButton>
+            </Typography>
+          </div>
+          <Button
+            className="mt-6"
+            fullWidth
+            onClick={() => {
+              onClose();
+            }}
+          >
+            I have made payment
+          </Button>
+        </div>
+      ),
+    },
+
     {
       content: (
         <div className="space-y-8 max-w-md mx-auto">
@@ -374,7 +358,7 @@ export default function FixedCreatePlan(
       <Dialog fullWidth maxWidth="xs" onClose={onClose} {...rest}>
         <DialogTitleXCloseButton onClose={onClose} className="text-center">
           {tabs[stepper.step]?.title}
-          <Typography variant="body2">
+          <Typography variant="body2" className="text-neutral-500">
             {tabs[stepper.step]?.description}
           </Typography>
         </DialogTitleXCloseButton>

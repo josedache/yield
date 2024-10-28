@@ -1,8 +1,10 @@
 import { coreApi } from "configs/store-query";
 import * as tags from "constants/tags";
-import { ApiRequest } from "src/types/api";
+import { ApiRequest, ApiResponse } from "src/types/api";
 import {
   GetSavingsResponse,
+  LiquidateSavingsAPiRequest,
+  LiquidateSavingsApiResponse,
   SavingsAccountsApiResponse,
   SavingsActivateAccountRequest,
   SavingsActivateAccountResponse,
@@ -13,6 +15,7 @@ import {
   SavingsFixedDepositProductInformationApiResponse,
   SavingsTransactionApiResponse,
   SavingsTransactionsApiResponse,
+  UpdateDraftSavingsAPiRequest,
 } from "src/types/savings-api";
 
 export const BASE_URL = "/savings";
@@ -31,6 +34,55 @@ export const savingsApi = coreApi.injectEndpoints({
       invalidatesTags: [tags.SAVINGS],
     }),
 
+    savingsRename: builder.mutation<
+      ApiResponse<{
+        savingsId: string;
+        name: string;
+      }>,
+      ApiRequest<{
+        officeId: 1;
+        clientId: 609;
+        savingsId: 533;
+        resourceId: 533;
+      }>
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/rename",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.SAVINGS],
+    }),
+
+    updateDraftSavings: builder.mutation<
+      ApiResponse<boolean>,
+      UpdateDraftSavingsAPiRequest
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/update_draft_account",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.SAVINGS],
+    }),
+
+    deleteDraftSavings: builder.mutation<
+      ApiResponse<{
+        officeId: number;
+        clientId: number;
+        savingsId: number;
+        resourceId: number;
+      }>,
+      ApiRequest<{ savingsId: string; note: string }>
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/delete_draft_account",
+        method: "DELETE",
+        ...config,
+      }),
+      invalidatesTags: [tags.SAVINGS],
+    }),
+
     savingsCalculator: builder.mutation<
       SavingsCalculatorApiResponse,
       SavingsCalculatorApiRequest
@@ -40,7 +92,19 @@ export const savingsApi = coreApi.injectEndpoints({
         method: "POST",
         ...config,
       }),
-      invalidatesTags: [tags.SAVINGS],
+      invalidatesTags: [tags.SAVINGS_CALCULATOR],
+    }),
+
+    liquidateSavings: builder.mutation<
+      LiquidateSavingsApiResponse,
+      LiquidateSavingsAPiRequest
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/fixeddeposit/liquidate",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.SAVINGS_CALCULATOR],
     }),
 
     savingsActivateAccount: builder.mutation<
@@ -64,7 +128,7 @@ export const savingsApi = coreApi.injectEndpoints({
         method: "GET",
         ...config,
       }),
-      providesTags: [tags.SAVINGS],
+      providesTags: [tags.SAVINGS_PRODUCT_INFORMATION],
     }),
 
     getSavingsAccounts: builder.query<
