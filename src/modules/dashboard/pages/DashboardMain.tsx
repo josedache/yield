@@ -19,6 +19,7 @@ import { walletApi } from "apis/wallet-api";
 import LoadingContent from "components/LoadingContent";
 import { savingsApi } from "apis/savings-api";
 import { useMemo } from "react";
+import { Icon as Iconify } from "@iconify/react";
 
 function DashboardMain() {
   const authUser = useAuthUser();
@@ -114,6 +115,16 @@ function DashboardMain() {
                   error={walletQueryResult.isError}
                   onRetry={walletQueryResult.refetch}
                   className="w-full max-w-48"
+                  renderError={() => (
+                    <div className="flex items-center gap-2">
+                      <Typography className="font-semibold">
+                        Something went wrong
+                      </Typography>
+                      <IconButton>
+                        <Iconify icon="mdi:reload" />
+                      </IconButton>
+                    </div>
+                  )}
                   renderLoading={() => (
                     <Skeleton
                       variant="rectangular"
@@ -221,7 +232,13 @@ function DashboardMain() {
                       >
                         {value}
                       </CurrencyTypography>
-                      <IconButton onClick={onValueVisibilityClick}>
+                      <IconButton
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onValueVisibilityClick();
+                        }}
+                      >
                         <Icon
                           icon={
                             isValueVisible

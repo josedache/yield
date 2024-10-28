@@ -11,17 +11,20 @@ import {
   Typography,
   useMediaQuery,
   Link as MuiLink,
+  ListItemButton,
+  Collapse,
 } from "@mui/material";
 import clsx from "clsx";
 import Logo from "components/Logo";
-import { DASHBOARD, FLEX, PROFILE } from "constants/urls";
+import { DASHBOARD, FIXED, FLEX, PROFILE } from "constants/urls";
 import MediaBreakpoint from "enums/MediaBreakpoint";
 import useSideNavigation from "hooks/useSideNavigation";
-import { NavLink, NavLinkProps } from "react-router-dom";
-import { Icon as Iconify } from "@iconify-icon/react";
+import { Link, matchPath, useLocation } from "react-router-dom";
+import { Icon as Iconify } from "@iconify/react";
 import useLogout from "hooks/useLogout";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import useToggle from "hooks/useToggle";
+import { useMemo } from "react";
 
 function AppProtectedDrawer() {
   const islg = useMediaQuery(MediaBreakpoint.LG);
@@ -34,44 +37,53 @@ function AppProtectedDrawer() {
 
   const NAV_LINKS = [
     {
-      children: [
+      links: [
         {
           icon: "hugeicons:dashboard-square-02",
-          children: "Dashboard",
+          label: "Dashboard",
           to: DASHBOARD,
         },
         {
           icon: "ph:plant",
-          children: "Yield",
-          to: FLEX,
+          label: "Yield",
+          links: [
+            {
+              label: "Fixed Yield",
+              to: FIXED,
+            },
+            {
+              label: "Flex Yield",
+              to: FLEX,
+            },
+          ],
         },
         {
           icon: "iconoir:profile-circle",
-          children: "Profile",
+          label: "Profile",
           to: PROFILE,
         },
       ],
     },
     {
-      children: [
+      links: [
         {
           icon: "ep:chat-dot-round",
-          children: "Support",
+          label: "Support",
           onClick: toggleSupport,
         },
         // {
         //   icon: "la:cog",
-        //   children: "Settings",
+        //   label: "Settings",
         //   to: SETTINGS,
         // },
         {
           icon: "ion:power-outline",
-          children: "Logout",
+          label: "Logout",
           onClick: logout,
         },
       ],
     },
-  ] as { children: ({ icon?: string } & NavLinkProps)[] }[];
+  ];
 
   return (
     <>
@@ -95,67 +107,18 @@ function AppProtectedDrawer() {
             </IconButton>
           )}
         </Toolbar>
-        <List className="p-4 md:p-6 flex-1 min-h-0 overflow-y-auto space-y-1">
-          {NAV_LINKS.map(({ children }, index) => {
+        <List className="p-4 md:p-6 flex-1 min-h-0 overflow-y-auto space-y-3">
+          {NAV_LINKS.map(({ links }, index) => {
             return (
               <>
                 {index ? <Divider className="bg-white" /> : null}
-                {children.map(({ icon, children, ...linkProps }, index) => {
-                  return (
-                    <NavLink
-                      key={index}
-                      className={({ isActive, ...restRenderProps }) =>
-                        clsx(
-                          "flex items-center justify-start text-left gap-2 px-2 py-2 rounded-xl no-underline",
-                          isActive ? "bg-grey-4 text-grey-11" : "text-grey-9",
-                          typeof linkProps?.className === "function"
-                            ? linkProps?.className?.({
-                                isActive,
-                                ...restRenderProps,
-                              })
-                            : linkProps?.className
-                        )
-                      }
-                      {...linkProps}
-                    >
-                      {(renderProps) => (
-                        <>
-                          <div
-                            className={clsx(
-                              "rounded-xl flex justify-center items-center w-11 h-11",
-                              renderProps.isActive ? "bg-grey-7" : "bg-grey-3"
-                            )}
-                          >
-                            <Iconify className="text-2xl" icon={icon} />
-                          </div>
-                          <Typography component="span" className="font-medium">
-                            {typeof children === "function"
-                              ? children(renderProps)
-                              : children}
-                          </Typography>
-                        </>
-                      )}
-                    </NavLink>
-                  );
+                {links.map((item, index) => {
+                  return <AppProtectedDrawerItem key={index} item={item} />;
                 })}
               </>
             );
           })}
         </List>
-        {/* <div className="p-4 md:px-8">
-        <ButtonBase
-          variant="text"
-          color="error"
-          className="text-left gap-2 px-4 py-3 rounded-xl"
-          onClick={() => logout()}
-        >
-          <Icon>logout</Icon>
-          <div>
-            <Typography>Logout</Typography>
-            <Typography variant="body2">23481370002223</Typography>
-          </div>
-        </ButtonBase>
-      </div> */}
       </Drawer>
 
       <Dialog open={isSupport} maxWidth="xs" fullWidth>
@@ -194,7 +157,9 @@ function AppProtectedDrawer() {
                     <Typography variant="body2" color="textSecondary">
                       {label}
                     </Typography>
-                    <MuiLink color="info" href={href}>{hrefText}</MuiLink>
+                    <MuiLink color="info" href={href}>
+                      {hrefText}
+                    </MuiLink>
                   </div>
                 </Paper>
               );
@@ -207,3 +172,75 @@ function AppProtectedDrawer() {
 }
 
 export default AppProtectedDrawer;
+
+function AppProtectedDrawerItem(props: any) {
+  const item = props.item;
+  const { label, to, links, icon, onClick } = item;
+
+  const isGroup = !!links;
+
+  const location = useLocation();
+
+  const match = useMemo(() => {
+    let result = null;
+    const _links = isGroup ? links : [item];
+    for (const link of _links) {
+      result = matchPath({ path: link.to + "/*" }, location.pathname);
+      if (result) {
+        if (link?.toMatchExclude?.includes(result?.pathname)) {
+          result = null;
+        }
+        break;
+      }
+    }
+    return result;
+  }, [isGroup, links, location.pathname, item]);
+
+  const [isSubMenu, toggleSubMenu] = useToggle();
+
+  return (
+    <>
+      <ListItemButton
+        className={clsx(
+          "rounded-lg flex gap-2 py-3 mb-2",
+          !!match && "bg-primary-main text-primary-contrastText"
+        )}
+        {...(isGroup
+          ? { onClick: toggleSubMenu }
+          : onClick
+          ? { onClick }
+          : { component: Link, to })}
+      >
+        <Iconify icon={icon} className="text-2xl" />
+        <Typography className="font-medium flex-1">{label}</Typography>
+        {isGroup && (
+          <Iconify
+            className="text-2xl"
+            icon={isSubMenu ? "mingcute:up-line" : "mingcute:down-line"}
+          />
+        )}
+      </ListItemButton>
+      {isGroup && (
+        <Collapse in={isSubMenu} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            {links?.map(({ label, to, toMatchExclude, ...rest }, index) => (
+              <ListItemButton
+                key={index}
+                selected={
+                  match?.pathnameBase === to &&
+                  !toMatchExclude?.includes(match?.pathname)
+                }
+                className="pl-12 rounded-lg py-3 mb-2"
+                component={Link}
+                to={to}
+                {...rest}
+              >
+                <Typography className="font-medium">{label}</Typography>
+              </ListItemButton>
+            ))}
+          </List>
+        </Collapse>
+      )}
+    </>
+  );
+}
