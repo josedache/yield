@@ -5,7 +5,7 @@ export function useClipboard() {
 
   async function writeText(
     text = "",
-    onSuccess = () => enqueueSnackbar("Copied!"),
+    onSuccess = () => enqueueSnackbar("Copied!", { variant: "success" }),
     onError = (_error: unknown) =>
       enqueueSnackbar("Copy failed", { variant: "error" })
   ) {

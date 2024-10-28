@@ -19,6 +19,8 @@ import { walletApi } from "apis/wallet-api";
 import LoadingContent from "components/LoadingContent";
 import { savingsApi } from "apis/savings-api";
 import { useMemo } from "react";
+import { Icon as Iconify } from "@iconify/react";
+import WalletFund from "modules/wallet/features/WalletFund";
 
 function DashboardMain() {
   const authUser = useAuthUser();
@@ -114,6 +116,16 @@ function DashboardMain() {
                   error={walletQueryResult.isError}
                   onRetry={walletQueryResult.refetch}
                   className="w-full max-w-48"
+                  renderError={() => (
+                    <div className="flex items-center gap-2">
+                      <Typography className="font-semibold">
+                        Something went wrong
+                      </Typography>
+                      <IconButton>
+                        <Iconify icon="mdi:reload" />
+                      </IconButton>
+                    </div>
+                  )}
                   renderLoading={() => (
                     <Skeleton
                       variant="rectangular"
@@ -146,10 +158,17 @@ function DashboardMain() {
                 </LoadingContent>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-1 gap-2 w-full md:w-[25%]">
-                <Button fullWidth>Fund Wallet</Button>
+                <WalletFund>
+                  {({ toggleOpen }) => (
+                    <Button onClick={toggleOpen} fullWidth>
+                      Fund Wallet
+                    </Button>
+                  )}
+                </WalletFund>
+
                 {wallet?.balance ? (
                   <Button fullWidth variant="outlined">
-                    Withdraw
+                    Transfer
                   </Button>
                 ) : null}
               </div>
@@ -221,7 +240,13 @@ function DashboardMain() {
                       >
                         {value}
                       </CurrencyTypography>
-                      <IconButton onClick={onValueVisibilityClick}>
+                      <IconButton
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onValueVisibilityClick();
+                        }}
+                      >
                         <Icon
                           icon={
                             isValueVisible

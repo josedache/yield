@@ -190,6 +190,7 @@ function DashboardKyc() {
 
             const data = await uploadUserFileMutation({
               body: {
+                file: values.document.file,
                 tier_level: authUser.kycLevel,
                 title: values.document.file.name,
                 type: values.document.type,
