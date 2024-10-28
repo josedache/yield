@@ -9,9 +9,13 @@ import {
   Typography,
 } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
-import useToggle from "hooks/useToggle";
+import { Fragment, useMemo } from "react";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import { useSnackbar } from "notistack";
 
 import CurrencyTypography from "components/CurrencyTypography";
+import useToggle from "hooks/useToggle";
 import { format } from "date-fns";
 import LoadingContent from "components/LoadingContent";
 import FixedStatusChip from "./FixedStatusChip";
@@ -24,8 +28,8 @@ import {
   TRANSACTION_TYPE_ID_TO_TITLE,
 } from "constants/transactions";
 import { formatNumberToCurrency } from "utils/number";
-import { Fragment, useMemo } from "react";
 import FixedLiquidate from "./FixedLiquidate";
+import FixedCreatePlan from "./FixedCreatePlan";
 
 export default function FixedPlanDetails(
   props: DrawerProps & { onClose: () => void; info: any }
@@ -33,6 +37,9 @@ export default function FixedPlanDetails(
   const { onClose, info, ...rest } = props;
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
   const [isFixedLiquidate, toggleFixedLiquidate] = useToggle();
+  const [isCompletePayment, toggleCompletePayment] = useToggle();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const isActive = info?.account_status_code === 300;
 
@@ -95,6 +102,7 @@ export default function FixedPlanDetails(
       color: "success",
       variant: "soft",
       status: [300, 800],
+      disabled: getSavingsQuery?.isLoading,
       onClick: toggleFixedLiquidate,
     },
     // {
@@ -111,6 +119,8 @@ export default function FixedPlanDetails(
       color: "success",
       variant: "soft",
       status: [100],
+      onClick: toggleCompletePayment,
+      disabled: getSavingsQuery?.isLoading,
     },
     {
       name: "Rollover yield",
@@ -119,6 +129,7 @@ export default function FixedPlanDetails(
       variant: "contained",
       className: "bg-[#7CA853] text-neutral-100",
       status: [800],
+      disabled: getSavingsQuery?.isLoading,
     },
     {
       name: "Delete Draft",
@@ -126,8 +137,33 @@ export default function FixedPlanDetails(
       color: "error",
       variant: "soft",
       status: [100],
+      disabled: getSavingsQuery?.isLoading,
     },
   ];
+
+  const titleFormik = useFormik({
+    initialValues: {
+      name: "",
+    },
+    enableReinitialize: true,
+    validationSchema: yup.object({
+      // name: yup.string().label("Plan Name").required("Required"),
+    }),
+    onSubmit: async (values) => {
+      try {
+        console.log({ values });
+      } catch (error) {
+        enqueueSnackbar(
+          error?.data?.message ??
+            error?.data?.message?.[0] ??
+            "Failed to process funding",
+          {
+            variant: "error",
+          }
+        );
+      }
+    },
+  });
 
   return (
     <Fragment>
@@ -146,9 +182,17 @@ export default function FixedPlanDetails(
         <div className="py-6">
           <div className="flex justify-between gap-2 items-center px-6">
             <div className="flex gap-1 items-center">
-              <Typography className="capitalize">
-                {info?.plan_name || "..."}
+              <Typography
+                contentEditable="plaintext-only"
+                onBlur={titleFormik.handleBlur}
+                id="name"
+                className="capitalize"
+              >
+                {info?.plan_name || "..."}{" "}
               </Typography>
+              <IconButton>
+                <Iconify icon="fluent:edit-20-regular" />
+              </IconButton>
               <FixedStatusChip
                 id={getSavingsQuery?.data?.data.account_status_code as any}
                 label={
@@ -381,6 +425,14 @@ export default function FixedPlanDetails(
         <FixedLiquidate
           open={isFixedLiquidate}
           onClose={toggleFixedLiquidate}
+        />
+      )}
+
+      {isCompletePayment && (
+        <FixedCreatePlan
+          savingsId={info.id}
+          open={isCompletePayment}
+          onClose={toggleCompletePayment}
         />
       )}
     </Fragment>

@@ -145,7 +145,7 @@ function DashboardKyc() {
                 (value) => value instanceof File
               )
               .required(),
-            id_number: yup.string().label("NIN").min(11).required(),
+            id_number: yup.string().label("NIN").length(11).required(),
           }),
         },
         [DashboardKycStep.ACCOUNT_DETAILS]: {
@@ -391,7 +391,7 @@ function DashboardKyc() {
                     // {...getFormikTextFieldProps(formik, "document.type")}
                   >
                     {[{ name: "NIN", id: "nin_slip" }].map((option) => (
-                      <MenuItem key={option.id} value={option.name}>
+                      <MenuItem key={option.id} value={option.id}>
                         {option.name}
                       </MenuItem>
                     ))}
@@ -432,7 +432,7 @@ function DashboardKyc() {
                           })}
                         >
                           <input {...getInputProps()} />
-                          {formik.values.document ? (
+                          {formik.values.document?.file ? (
                             <div className="space-y-4">
                               <div className="flex items-start gap-2">
                                 <Iconify

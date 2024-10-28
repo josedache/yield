@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogProps,
   Icon,
+  IconButton,
   Paper,
   Typography,
 } from "@mui/material";
@@ -33,13 +34,26 @@ import { FIXED_PRODUCT_ID } from "constants/savings";
 import CdlLogo from "assets/imgs/cdl-logo.png";
 import { walletApi } from "apis/wallet-api";
 import { formatNumberToCurrency } from "utils/number";
+import { useEffect } from "react";
+import useToggle from "hooks/useToggle";
+import useClipboard from "hooks/useClipboard";
 
 export default function FixedCreatePlan(
-  props: DialogProps & { onClose: () => void }
+  props: DialogProps & { onClose: () => void; savingsId?: string }
 ) {
-  const { onClose, ...rest } = props;
+  const { onClose, savingsId, ...rest } = props;
   const stepper = useStepper();
+  const [isBankTransfer, toggleBankTransfer] = useToggle();
   const { enqueueSnackbar } = useSnackbar();
+  const { writeText } = useClipboard();
+
+  const accountNumber = "0060048892";
+
+  useEffect(() => {
+    if (savingsId) {
+      stepper.go(2);
+    }
+  }, [stepper, savingsId]);
 
   const getSavingsProductInformationQuery =
     savingsApi.useGetSavingsProductInformationQuery({
@@ -184,7 +198,8 @@ export default function FixedCreatePlan(
       await savingsActivateAccountMutation({
         body: {
           savingsId: String(
-            savingsFixedDepositCreateMutationResult.data.data.savingsId
+            savingsId ||
+              savingsFixedDepositCreateMutationResult.data.data.savingsId
           ) as any,
           fund_source: "wallet",
         },
@@ -192,7 +207,9 @@ export default function FixedCreatePlan(
       stepper.next();
     } catch (error) {
       enqueueSnackbar(
-        error?.data?.message?.[0] || "Failed to process funding",
+        error?.data?.message ||
+          error?.data?.message?.[0] ||
+          "Failed to process funding",
         {
           variant: "error",
         }
@@ -201,7 +218,8 @@ export default function FixedCreatePlan(
   }
 
   async function handlePayWithTransfer() {
-    stepper.step(3);
+    toggleBankTransfer();
+    stepper.next();
   }
 
   const tabs = [
@@ -277,35 +295,49 @@ export default function FixedCreatePlan(
         </div>
       ),
     },
-    {
-      content: (
-        <div className="space-y-8 max-w-md mx-auto">
-          <div className="flex justify-center text-6xl">
-            <Icon
-              fontSize="inherit"
-              color="success"
-              className="material-symbols-outlined-fill "
-            >
-              check_circle
-            </Icon>
-          </div>
-          <Typography variant="h4" className="text-center mb-4 font-bold">
-            Success!
-          </Typography>
-          <Typography className="text-center">
-            You’ve successfully created a Yield plan.
-          </Typography>
-          <Button
-            fullWidth
-            onClick={() => {
-              onClose();
-            }}
-          >
-            Okay
-          </Button>
-        </div>
-      ),
-    },
+    ...(isBankTransfer
+      ? [
+          {
+            content: (
+              <div className="max-w-md mx-auto">
+                <div className="flex justify-center">
+                  <img src={CdlLogo} width={32} height={32} />
+                </div>
+                <Typography className="font-semibold text-center mt-4">
+                  Credit Direct Limited
+                </Typography>
+                <Typography className="text-center text-neutral-500 mt-6">
+                  Account Number
+                </Typography>
+                <div className="rounded-lg bg-neutral-100 px-2 py-3 mt-1 flex justify-center">
+                  <Typography className="text-neutral-600 font-semibold">
+                    {accountNumber}
+                    <IconButton
+                      onClick={() => writeText(accountNumber)}
+                      color="primary"
+                    >
+                      <Iconify
+                        icon="akar-icons:copy"
+                        width="1rem"
+                        height="1rem"
+                      />
+                    </IconButton>
+                  </Typography>
+                </div>
+                <Button
+                  className="mt-6"
+                  fullWidth
+                  onClick={() => {
+                    onClose();
+                  }}
+                >
+                  I have made payment
+                </Button>
+              </div>
+            ),
+          },
+        ]
+      : []),
     {
       content: (
         <div className="space-y-8 max-w-md mx-auto">
@@ -341,9 +373,9 @@ export default function FixedCreatePlan(
     <>
       <Dialog fullWidth maxWidth="xs" onClose={onClose} {...rest}>
         <DialogTitleXCloseButton onClose={onClose} className="text-center">
-          {tabs[stepper.step].title}
+          {tabs[stepper.step]?.title}
           <Typography variant="body2">
-            {tabs[stepper.step].description}
+            {tabs[stepper.step]?.description}
           </Typography>
         </DialogTitleXCloseButton>
 
@@ -370,7 +402,7 @@ export default function FixedCreatePlan(
             onRetry={getSavingsProductInformationQuery.refetch}
           >
             <form onSubmit={formik.handleSubmit}>
-              {tabs[stepper.step].content}
+              {tabs[stepper.step]?.content}
               {stepper.step <= 1 ? (
                 <Button
                   type="submit"
