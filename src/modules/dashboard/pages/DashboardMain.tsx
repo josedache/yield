@@ -20,6 +20,7 @@ import LoadingContent from "components/LoadingContent";
 import { savingsApi } from "apis/savings-api";
 import { useMemo } from "react";
 import { Icon as Iconify } from "@iconify/react";
+import WalletFund from "modules/wallet/features/WalletFund";
 
 function DashboardMain() {
   const authUser = useAuthUser();
@@ -157,10 +158,17 @@ function DashboardMain() {
                 </LoadingContent>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-1 gap-2 w-full md:w-[25%]">
-                <Button fullWidth>Fund Wallet</Button>
+                <WalletFund>
+                  {({ toggleOpen }) => (
+                    <Button onClick={toggleOpen} fullWidth>
+                      Fund Wallet
+                    </Button>
+                  )}
+                </WalletFund>
+
                 {wallet?.balance ? (
                   <Button fullWidth variant="outlined">
-                    Withdraw
+                    Transfer
                   </Button>
                 ) : null}
               </div>

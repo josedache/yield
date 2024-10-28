@@ -14,12 +14,12 @@ import { ReactNode, useMemo } from "react";
 import { useSnackbar } from "notistack";
 import useStepper from "hooks/useStepper";
 import { Icon as Iconify } from "@iconify-icon/react";
+import { walletApi } from "apis/wallet-api";
 import useAuthUser from "hooks/useAuthUser";
 import useClipboard from "hooks/useClipboard";
-import { savingsApi } from "apis/savings-api";
 import LoadingContent from "components/LoadingContent";
 
-function FlexFund(props: FlexFundProps) {
+function WalletFund(props: WalletFundProps) {
   const { children, onClose, ...restProps } = props;
 
   const { enqueueSnackbar } = useSnackbar();
@@ -32,22 +32,11 @@ function FlexFund(props: FlexFundProps) {
 
   const stepper = useStepper();
 
-  const savingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
-    useMemo(
-      () => ({
-        params: {
-          type: "recurring_deposit",
-        },
-      }),
-      []
-    )
+  const walletQueryResult = walletApi.useGetWalletQuery(
+    useMemo(() => ({}), [])
   );
 
-  const savingsAccounts = savingsAccountsQueryResult.data?.data;
-
-  // const totalAvailableBalance = savingsAccounts?.totalAvailableBalance ?? 0;
-
-  const savingsAccount = savingsAccounts?.savingsAccounts?.[0];
+  const wallet = walletQueryResult.data?.data;
 
   const formik = useFormik({
     initialValues: {},
@@ -84,34 +73,31 @@ function FlexFund(props: FlexFundProps) {
             color="textSecondary"
             className="text-center"
           >
-            Add money to your Flex Yield Wallet by transferring to the bank
-            details below.
+            Add money to your Wallet by transferring to the bank details below.
           </Typography>
         </DialogTitleXCloseButton>
         <DialogContent>
           <LoadingContent
-            loading={savingsAccountsQueryResult.isLoading}
-            error={savingsAccountsQueryResult.isError}
-            onRetry={savingsAccountsQueryResult.refetch}
+            loading={walletQueryResult.isLoading}
+            error={walletQueryResult.isError}
+            onRetry={walletQueryResult.refetch}
           >
             {() => (
               <>
                 <div className="space-y-8 flex flex-col items-center py-4">
                   <div className="text-center space-y-2">
                     <Typography color="textSecondary">
-                      Credit Direct Limited
+                      {wallet?.bank}
                     </Typography>
                     <div className="flex items-center justify-center gap-1 text-center">
                       <Typography variant="h4" className="font-bold">
-                        {savingsAccount?.account_no}
+                        {wallet?.account_number}
                       </Typography>
                       <IconButton
                         size="small"
                         color="primary"
                         onClick={() =>
-                          clipboard.writeText(
-                            String(savingsAccount?.account_no)
-                          )
+                          clipboard.writeText(String(wallet?.account_number))
                         }
                       >
                         <Iconify icon="material-symbols:file-copy-outline" />
@@ -152,9 +138,9 @@ function FlexFund(props: FlexFundProps) {
   );
 }
 
-export default FlexFund;
+export default WalletFund;
 
-export type FlexFundProps = {
+export type WalletFundProps = {
   id?: string;
   children?:
     | ReactNode
