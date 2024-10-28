@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import {
   Button,
   ButtonBase,
@@ -25,29 +26,61 @@ import useStepper from "hooks/useStepper";
 import CdlLogo from "assets/imgs/cdl-logo.png";
 import BackIconButton from "components/BackIconButton";
 import OtpInput from "components/OtpInput";
+import { savingsApi } from "apis/savings-api";
+import { LoadingButton } from "@mui/lab";
+import { getFormikTextFieldProps } from "utils/formik";
+import useAuthUser from "hooks/useAuthUser";
+import { transactionApi } from "apis/transaction-api";
+import { useMemo, useState } from "react";
 
-export default function FixedLiquidate(props: DialogProps) {
-  const { onClose, ...rest } = props;
+export default function FixedLiquidate(
+  props: DialogProps & { onClose: () => void; info: any }
+) {
+  const userAuth = useAuthUser();
+  const { onClose, info, ...rest } = props;
   const { enqueueSnackbar } = useSnackbar();
+  const [otpEmail, setOptEmail] = useState();
+  const [sendOtpMutation, sendOtpMutationResult] =
+    savingsApi.useSendSavingsOtpMutation();
 
   const stepper = useStepper();
+  const authUser = useAuthUser();
+
+  const [liquidateSavingsMutation, liquidateSavingsMutationResult] =
+    savingsApi.useLiquidateSavingsMutation();
+
+  const transactionOutwardBankListQueryResult =
+    transactionApi.useGetTransactionOutwardBankListQuery(undefined, {
+      skip: !userAuth.bank_details.bankId,
+    });
+  const banks = transactionOutwardBankListQueryResult.data?.data;
+
+  const normalizedBanks = useMemo(
+    () =>
+      banks?.reduce((acc, curr) => {
+        acc[curr.id] = curr;
+        return acc;
+      }, {} as Record<string, (typeof banks)[0]>),
+    [banks]
+  );
 
   const formik = useFormik({
     initialValues: {
-      name: "",
-      depositAmount: null,
-      token: "",
+      savingsId: String(info?.id),
+      note: "others",
+      otp: "",
     },
     enableReinitialize: true,
     validationSchema: yup.object({
-      //   depositPeriod: yup.string().label("Deposit Period").required("Required"),
-      //   depositPeriodFrequencyId: yup
-      //     .string()
-      //     .label("Deposit Period Id")
-      //     .required("Required"),
-      //   name: yup.string().label("Plan Name").required("Required"),
+      ...(stepper.step === 3
+        ? {
+            savingsId: yup.string().label("Savings Id").required("Required"),
+            note: yup.string().label("Reason").required("Required"),
+            otp: yup.string().label("Otp").required("Required"),
+          }
+        : {}),
     }),
-    onSubmit: async () => {
+    onSubmit: async (values) => {
       try {
         switch (stepper.step) {
           case 0:
@@ -57,9 +90,33 @@ export default function FixedLiquidate(props: DialogProps) {
             stepper.next();
             break;
           case 2:
+            const resp = await sendOtpMutation({
+              body: {
+                channel: "phone",
+                action: "liquidate",
+                amount: 4000,
+              },
+            }).unwrap();
+            setOptEmail(resp?.data as any);
+            enqueueSnackbar("OTP sent!", {
+              variant: "success",
+            });
             stepper.next();
             break;
           case 3:
+            await liquidateSavingsMutation({
+              body: {
+                savingsId: values?.savingsId,
+                note: values?.note,
+                otp: Number(values?.otp),
+              },
+            }).unwrap();
+            enqueueSnackbar("Liquidated Successfully", {
+              variant: "success",
+            });
+            stepper.next();
+            break;
+          case 4:
             stepper.next();
             break;
           default:
@@ -78,21 +135,29 @@ export default function FixedLiquidate(props: DialogProps) {
     },
   });
 
-  async function handleWallet() {
+  async function handleResendOpt() {
     try {
-      stepper.next();
+      const resp = await sendOtpMutation({
+        body: {
+          channel: "phone",
+          action: "liquidate",
+          amount: 4000,
+        },
+      }).unwrap();
+      setOptEmail(resp?.data as any);
+      enqueueSnackbar("Otp resent!", {
+        variant: "success",
+      });
     } catch (error) {
       enqueueSnackbar(
-        error?.data?.message?.[0] || "Failed to process funding",
+        error?.data?.message ??
+          error?.data?.message?.[0] ??
+          "Failed to process funding",
         {
           variant: "error",
         }
       );
     }
-  }
-
-  async function handlePayWithTransfer() {
-    stepper.step(3);
   }
 
   const tabs = [
@@ -105,7 +170,7 @@ export default function FixedLiquidate(props: DialogProps) {
             variant="h4"
             className="text-center font-medium mt-6"
           >
-            239393
+            {info?.available_balance}
           </CurrencyTypography>
 
           <div className="flex gap-1 items-start mt-6">
@@ -130,11 +195,7 @@ export default function FixedLiquidate(props: DialogProps) {
       content: (
         <div>
           <FormControl>
-            <RadioGroup
-              aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="female"
-              name="radio-buttons-group"
-            >
+            <RadioGroup {...getFormikTextFieldProps(formik, "note")}>
               {[
                 "Emergency",
                 "Interest rates too low",
@@ -165,23 +226,38 @@ export default function FixedLiquidate(props: DialogProps) {
             variant="h4"
             className="mt-2 text-center font-semibold"
           >
-            20000
+            {info?.available_balance}
           </CurrencyTypography>
           <div className="space-y-4">
             {[
               {
-                icon: <img src={CdlLogo} width={32} height={32} />,
-                label: "Pay with transfer (recommended)",
-                onClick: handlePayWithTransfer,
-                disabled: false,
+                icon: (
+                  <Iconify
+                    icon="teenyicons:bank-outline"
+                    className="text-2xl"
+                  />
+                ),
+                label:
+                  normalizedBanks?.[authUser.bank_details.bankId]?.name || "",
+                more: userAuth?.bank_details?.accountnumber || "",
+                onClick: () => {
+                  formik.handleSubmit();
+                },
+                disabled:
+                  sendOtpMutationResult?.isLoading ||
+                  transactionOutwardBankListQueryResult?.isLoading,
               },
               {
-                icon: <Iconify icon="ph:wallet-light" className="text-4xl" />,
-                label: `Fund via Yield Wallet`,
-                onClick: handleWallet,
-                disabled: false,
+                icon: <Iconify icon="ph:wallet-light" className="text-3xl" />,
+                label: `CDL Wallet`,
+                onClick: () => {
+                  formik.handleSubmit();
+                },
+                disabled:
+                  sendOtpMutationResult?.isLoading ||
+                  transactionOutwardBankListQueryResult?.isLoading,
               },
-            ].map(({ label, icon, ...restProps }) => {
+            ].map(({ label, icon, more, ...restProps }) => {
               return (
                 <ButtonBase
                   key={label}
@@ -202,6 +278,7 @@ export default function FixedLiquidate(props: DialogProps) {
                       </div>
                     </div>
 
+                    {more ? <Typography>{more}</Typography> : null}
                     <Iconify
                       icon="weui:arrow-filled"
                       className="text-lg text-text-secondary"
@@ -216,22 +293,27 @@ export default function FixedLiquidate(props: DialogProps) {
     },
     {
       title: "Verify Transaction",
-      description:
-        "Please, enter the six (6) digit code sent to 081******74 to complete this transaction.",
+      description: `Please, enter the six (6) digit code sent to ${otpEmail} to complete this transaction.`,
       content: (
         <div className="mt-4">
           <OtpInput
             containerStyle={{ justifyContent: "center" }}
-            value={formik.values.token}
+            value={formik.values.otp}
             onChange={(token) => {
-              formik.setFieldValue("token", token);
+              formik.setFieldValue("otp", token);
             }}
             numInputs={6}
             shouldAutoFocus
-            // inputType="password"
             slotProps={{
               input: {
-                style: { opacity: formik.isSubmitting ? 0.5 : 1 },
+                style: {
+                  opacity: formik.isSubmitting ? 0.5 : 1,
+                  ...(!!formik.touched.otp && formik.errors.otp
+                    ? { outline: "1px solid var(--mui-palette-error-main)" }
+                    : {
+                        // outline: "1px solid var(--mui-palette-secondary-light)",
+                      }),
+                },
                 disabled: formik.isSubmitting,
               },
             }}
@@ -245,6 +327,7 @@ export default function FixedLiquidate(props: DialogProps) {
             <Typography
               component="span"
               color="primary"
+              onClick={handleResendOpt}
               className="font-semibold"
             >
               Resend
@@ -257,19 +340,17 @@ export default function FixedLiquidate(props: DialogProps) {
       content: (
         <div className="space-y-8 max-w-md mx-auto">
           <div className="flex justify-center text-6xl">
-            <Icon
-              fontSize="inherit"
-              color="success"
-              className="material-symbols-outlined-fill "
-            >
-              check_circle
-            </Icon>
+            <Iconify
+              icon="ep:warning-filled"
+              className="text-6xl text-warning-main"
+            />
           </div>
           <Typography variant="h4" className="text-center mb-4 font-bold">
-            Success!
+            Processing{" "}
           </Typography>
-          <Typography className="text-center">
-            You’ve successfully liquidated your fixed yield plan.
+          <Typography className="text-center text-neutral-500">
+            Your liquidation request has been sent for processing and will be
+            paid out shortly.{" "}
           </Typography>
           <Button size="large" fullWidth onClick={handleClose}>
             Okay
@@ -309,7 +390,11 @@ export default function FixedLiquidate(props: DialogProps) {
         <form onSubmit={formik.handleSubmit}>
           {tabs[stepper.step].content}
           {stepper.step <= 3 ? (
-            <Button
+            <LoadingButton
+              loading={
+                sendOtpMutationResult?.isLoading ||
+                liquidateSavingsMutationResult?.isLoading
+              }
               type="submit"
               className={clsx(
                 ["mt-6", "mt-3", "mt-3 hidden", "mt-4"][stepper.step]
@@ -321,7 +406,7 @@ export default function FixedLiquidate(props: DialogProps) {
                   stepper.step
                 ]
               }
-            </Button>
+            </LoadingButton>
           ) : null}
         </form>
       </DialogContent>

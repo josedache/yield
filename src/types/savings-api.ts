@@ -39,6 +39,12 @@ export type LiquidateSavingsAPiRequest = ApiRequest<{
   otp: number;
 }>;
 
+export type SendSavingsOtpAPiRequest = ApiRequest<{
+  channel: "email" | "phone";
+  action: "liquidate";
+  amount: number;
+}>;
+
 export type SavingsFixedDepositCreateApiResponse = ApiResponse<{
   officeId: number;
   clientId: number;

@@ -10,8 +10,6 @@ import {
 } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
 import { Fragment, useMemo } from "react";
-import { useFormik } from "formik";
-import * as yup from "yup";
 import { useSnackbar } from "notistack";
 
 import CurrencyTypography from "components/CurrencyTypography";
@@ -123,13 +121,13 @@ export default function FixedPlanDetails(
       disabled: getSavingsQuery?.isLoading,
       onClick: toggleFixedLiquidate,
     },
-    {
-      name: "Edit Name",
-      icon: "fluent:edit-20-regular",
-      color: "success",
-      variant: "soft",
-      status: [],
-    },
+    // {
+    //   name: "Edit Name",
+    //   icon: "fluent:edit-20-regular",
+    //   color: "success",
+    //   variant: "soft",
+    //   status: [300],
+    // },
 
     {
       name: "Complete Payment",
@@ -256,21 +254,37 @@ export default function FixedPlanDetails(
             ) : null}
           </div>
 
-          <div className="flex gap-4 mt-4 px-6">
-            {actions
-              ?.filter((action) =>
-                action.status.includes(info?.account_status_code)
-              )
-              ?.map(({ name, icon, ...rest }) => (
-                <Button
-                  startIcon={<Iconify icon={icon} width="1rem" height="1rem" />}
-                  fullWidth
-                  {...rest}
-                >
-                  {name}
-                </Button>
-              ))}
-          </div>
+          <LoadingContent
+            loading={getSavingsQuery.isLoading}
+            error={getSavingsQuery?.isError}
+            onRetry={getSavingsQuery?.refetch}
+            renderLoading={() => (
+              <div className="flex gap-4 mt-4 px-6">
+                <Skeleton variant="rounded" className="w-full h-[50px]" />
+                <Skeleton variant="rounded" className="w-full h-[50px]" />
+              </div>
+            )}
+          >
+            <div className="flex gap-4 mt-4 px-6">
+              {actions
+                ?.filter((action) =>
+                  action.status.includes(
+                    getSavingsQuery?.data?.data?.account_status_code
+                  )
+                )
+                ?.map(({ name, icon, ...rest }) => (
+                  <Button
+                    startIcon={
+                      <Iconify icon={icon} width="1rem" height="1rem" />
+                    }
+                    fullWidth
+                    {...rest}
+                  >
+                    {name}
+                  </Button>
+                ))}
+            </div>
+          </LoadingContent>
 
           <div className="mt-6">
             <Typography className="font-semibold px-6">Details</Typography>
@@ -435,6 +449,7 @@ export default function FixedPlanDetails(
 
       {isFixedLiquidate && (
         <FixedLiquidate
+          info={info}
           open={isFixedLiquidate}
           onClose={toggleFixedLiquidate}
         />

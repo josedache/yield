@@ -17,6 +17,7 @@ import {
   SavingsTransactionsApiResponse,
   SavingsTransferApiRequest,
   SavingsTransferApiResponse,
+  SendSavingsOtpAPiRequest,
   UpdateDraftSavingsAPiRequest,
 } from "src/types/savings-api";
 
@@ -109,6 +110,18 @@ export const savingsApi = coreApi.injectEndpoints({
       invalidatesTags: [tags.SAVINGS_CALCULATOR],
     }),
 
+    sendSavingsOtp: builder.mutation<
+      ApiResponse<string>,
+      SendSavingsOtpAPiRequest
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/send_otp",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.SAVINGS_CALCULATOR],
+    }),
+
     savingsActivateAccount: builder.mutation<
       SavingsActivateAccountResponse,
       SavingsActivateAccountRequest
@@ -192,18 +205,6 @@ export const savingsApi = coreApi.injectEndpoints({
     >({
       query: (config) => ({
         url: BASE_URL + "/transfer",
-        method: "POST",
-        ...config,
-      }),
-      invalidatesTags: [tags.SAVINGS],
-    }),
-
-    sendSavingsOtp: builder.mutation<
-      SavingsTransferApiResponse,
-      SavingsTransferApiRequest
-    >({
-      query: (config) => ({
-        url: BASE_URL + "/send_otp",
         method: "POST",
         ...config,
       }),
