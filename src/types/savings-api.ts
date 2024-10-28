@@ -20,7 +20,23 @@ export type SavingsCalculatorApiRequest = ApiRequest<{
 }>;
 export type SavingsActivateAccountRequest = ApiRequest<{
   savingsId: string;
-  fund_source: "wallet" | "paystack";
+  fund_source: "wallet" | "paystack" | "transfer";
+}>;
+
+export type UpdateDraftSavingsAPiRequest = ApiRequest<{
+  productId: 1;
+  savingsId: 555;
+  depositAmount: 78000;
+  depositPeriod: 11;
+  depositPeriodFrequencyId: 2;
+  recurringFrequency: 6;
+  recurringFrequencyType: 2;
+}>;
+
+export type LiquidateSavingsAPiRequest = ApiRequest<{
+  savingsId: string;
+  note: string;
+  otp: number;
 }>;
 
 export type SavingsFixedDepositCreateApiResponse = ApiResponse<{
@@ -173,3 +189,14 @@ export type SavingsTransactionApiResponse = ApiResponse<
     transaction_status: string;
   }[]
 >;
+
+export type LiquidateSavingsApiResponse = ApiResponse<{
+  officeId: number;
+  clientId: number;
+  savingsId: number;
+  resourceId: number;
+  closedOnDate: string;
+  note: string;
+  matured: boolean;
+  prematureClosed: boolean;
+}>;
