@@ -26,8 +26,8 @@ function AuthSignin() {
     },
     validateOnBlur: true,
     validationSchema: yup.object().shape({
-      phone: yup.string().label("Phone").required(),
-      password: yup.string().label("Password").required(),
+      phone: yup.string().label("Phone Number").required("${path} is required"),
+      password: yup.string().label("Password").required("${path} is required"),
     }),
     onSubmit: async (values) => {
       try {
@@ -109,7 +109,7 @@ function AuthSignin() {
                 component={Link}
                 to={SIGNUP}
               >
-                Signup
+                Sign up
               </Typography>
             </Typography>
           </div>
