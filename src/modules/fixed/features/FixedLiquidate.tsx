@@ -8,7 +8,6 @@ import {
   DialogProps,
   FormControl,
   FormControlLabel,
-  Icon,
   Paper,
   Radio,
   RadioGroup,
@@ -23,7 +22,7 @@ import { Icon as Iconify } from "@iconify/react";
 import clsx from "clsx";
 
 import useStepper from "hooks/useStepper";
-import CdlLogo from "assets/imgs/cdl-logo.png";
+// import CdlLogo from "assets/imgs/cdl-logo.png";
 import BackIconButton from "components/BackIconButton";
 import OtpInput from "components/OtpInput";
 import { savingsApi } from "apis/savings-api";

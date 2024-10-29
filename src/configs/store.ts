@@ -40,7 +40,9 @@ store.subscribe(
 function saveState(state: Partial<{ [K in keyof StoreState]: any }>) {
   try {
     localStorage.setItem("@state", JSON.stringify(state));
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 function loadState(initialState = {}) {
@@ -51,7 +53,9 @@ function loadState(initialState = {}) {
       Object.assign(newState, mergeDeep(newState, storageState));
     }
     return newState;
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
   return undefined;
 }
 

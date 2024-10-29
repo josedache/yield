@@ -49,6 +49,7 @@ export default function FixedCreatePlan(
     if (savingsId && isPayment) {
       stepper.go(2);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savingsId]);
 
   const getSavingsQuery = savingsApi.useGetSavingsAccountQuery(

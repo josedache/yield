@@ -6,7 +6,8 @@ export function useClipboard() {
   async function writeText(
     text = "",
     onSuccess = () => enqueueSnackbar("Copied!", { variant: "success" }),
-    onError = (_error: unknown) =>
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onError = (error: unknown) =>
       enqueueSnackbar("Copy failed", { variant: "error" })
   ) {
     try {
