@@ -2,8 +2,6 @@ import {
   AppBar,
   AppBarProps,
   Avatar,
-  Badge,
-  Container,
   Icon,
   IconButton,
   Popover,
@@ -41,7 +39,7 @@ function AppProtectedHeader(props: AppBarProps) {
         {...restProps}
       >
         <Toolbar disableGutters>
-          <Container className="flex items-center justify-center gap-2 px-8">
+          <div className="flex items-center justify-center gap-2 px-8 w-full">
             <IconButton
               className="lg:hidden"
               color="inherit"
@@ -57,10 +55,10 @@ function AppProtectedHeader(props: AppBarProps) {
             <div className="flex-1" />
 
             <div className=" border rounded-full w-10 h-10 border-neutral-100 ">
-              <IconButton color="inherit" className="">
-                <Badge badgeContent={7} color="error">
-                  <Iconify className="MuiIcon-root" icon="mdi:bell-outline" />
-                </Badge>
+              <IconButton color="inherit" className="" disabled>
+                {/* <Badge badgeContent={7} color="error"> */}
+                <Iconify className="MuiIcon-root" icon="mdi:bell-outline" />
+                {/* </Badge> */}
               </IconButton>
             </div>
 
@@ -76,7 +74,7 @@ function AppProtectedHeader(props: AppBarProps) {
               transformOrigin={{ vertical: "top", horizontal: "right" }}
               className="p-2"
             ></Popover>
-          </Container>
+          </div>
         </Toolbar>
       </AppBar>
     </>
