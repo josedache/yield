@@ -18,7 +18,7 @@ import {
   SavingsTransferApiRequest,
   SavingsTransferApiResponse,
   SendSavingsOtpAPiRequest,
-  UpdateDraftSavingsAPiRequest,
+  UpdateDraftSavingsApiRequest,
 } from "src/types/savings-api";
 
 export const BASE_URL = "/savings";
@@ -39,19 +39,19 @@ export const savingsApi = coreApi.injectEndpoints({
 
     savingsRename: builder.mutation<
       ApiResponse<{
-        savingsId: string;
-        name: string;
+        officeId: number;
+        clientId: number;
+        savingsId: number;
+        resourceId: number;
       }>,
       ApiRequest<{
-        officeId: 1;
-        clientId: 609;
-        savingsId: 533;
-        resourceId: 533;
+        savingsId: string;
+        name: string;
       }>
     >({
       query: ({ ...config }) => ({
         url: BASE_URL + "/rename",
-        method: "POST",
+        method: "PUT",
         ...config,
       }),
       invalidatesTags: [tags.SAVINGS],
@@ -59,7 +59,7 @@ export const savingsApi = coreApi.injectEndpoints({
 
     updateDraftSavings: builder.mutation<
       ApiResponse<boolean>,
-      UpdateDraftSavingsAPiRequest
+      UpdateDraftSavingsApiRequest
     >({
       query: ({ ...config }) => ({
         url: BASE_URL + "/update_draft_account",
@@ -107,7 +107,7 @@ export const savingsApi = coreApi.injectEndpoints({
         method: "POST",
         ...config,
       }),
-      invalidatesTags: [tags.SAVINGS_CALCULATOR],
+      invalidatesTags: (_result, error) => (error ? [] : [tags.SAVINGS]),
     }),
 
     sendSavingsOtp: builder.mutation<
@@ -119,7 +119,6 @@ export const savingsApi = coreApi.injectEndpoints({
         method: "POST",
         ...config,
       }),
-      invalidatesTags: [tags.SAVINGS_CALCULATOR],
     }),
 
     savingsActivateAccount: builder.mutation<
@@ -131,7 +130,7 @@ export const savingsApi = coreApi.injectEndpoints({
         method: "POST",
         ...config,
       }),
-      invalidatesTags: [tags.SAVINGS],
+      invalidatesTags: (_result, error) => (error ? [] : [tags.SAVINGS]),
     }),
 
     getSavingsProductInformation: builder.query<

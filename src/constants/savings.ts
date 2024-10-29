@@ -2,7 +2,7 @@ export const FIXED_PRODUCT_ID = 1;
 
 export const SAVING_STATUS_COLOR = {
   0: "error",
-  100: "initial",
+  100: "info",
   200: "success",
   300: "success",
   303: "warning",
@@ -29,7 +29,7 @@ export const SAVINGS_ACCOUNT_STATUS_TYPE = {
 };
 
 export const ALL_ACTIVE_SAVINGS_ACCOUNT_STATUS_TYPE = [
-  { id: null, name: "All" },
+  { id: 0, name: "All" },
   { id: 100, name: "Draft" },
   { id: 200, name: "Approved" },
   { id: 300, name: "Active" },

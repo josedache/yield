@@ -23,20 +23,21 @@ export type SavingsActivateAccountRequest = ApiRequest<{
   fund_source: "wallet" | "paystack" | "transfer";
 }>;
 
-export type UpdateDraftSavingsAPiRequest = ApiRequest<{
-  productId: 1;
-  savingsId: 555;
-  depositAmount: 78000;
-  depositPeriod: 11;
-  depositPeriodFrequencyId: 2;
-  recurringFrequency: 6;
-  recurringFrequencyType: 2;
+export type UpdateDraftSavingsApiRequest = ApiRequest<{
+  productId: number;
+  savingsId: number;
+  depositAmount: number;
+  depositPeriod: number;
+  depositPeriodFrequencyId: number;
+  recurringFrequency?: number;
+  recurringFrequencyType?: number;
 }>;
 
 export type LiquidateSavingsAPiRequest = ApiRequest<{
   savingsId: string;
   note: string;
-  otp: number;
+  otp?: number;
+  onAccountClosureId?: number;
 }>;
 
 export type SendSavingsOtpAPiRequest = ApiRequest<{
@@ -82,6 +83,7 @@ export type GetSavingsResponse = ApiResponse<{
   interest_rate: number;
   type: string;
   available_balance: string;
+  principal: number;
   currency: string;
   total_deposits: string;
   total_interest_earned: string;

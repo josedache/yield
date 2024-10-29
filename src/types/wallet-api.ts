@@ -12,4 +12,5 @@ export type WalletApiResponse = ApiResponse<{
   overdraft_interest: number;
   status: string;
   bank: string;
+  name: string;
 }>;

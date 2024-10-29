@@ -32,19 +32,34 @@ import useClipboard from "hooks/useClipboard";
 import { LoadingButton } from "@mui/lab";
 
 export default function FixedCreatePlan(
-  props: DialogProps & { onClose: () => void; savingsId?: string }
+  props: DialogProps & {
+    onClose: () => void;
+    savingsId?: string;
+    isEdit?: boolean;
+    isPayment?: boolean;
+  }
 ) {
-  const { onClose, savingsId, ...rest } = props;
+  const { onClose, savingsId, isEdit, isPayment, ...rest } = props;
 
   const stepper = useStepper();
   const { enqueueSnackbar } = useSnackbar();
   const { writeText } = useClipboard();
 
   useEffect(() => {
-    if (savingsId) {
+    if (savingsId && isPayment) {
       stepper.go(2);
     }
   }, [savingsId]);
+
+  const getSavingsQuery = savingsApi.useGetSavingsAccountQuery(
+    {
+      params: { savingsId: savingsId },
+    },
+    { skip: !isEdit && !savingsId }
+  );
+
+  const [updateDraftSavingsMutation, updateDraftSavingsMutationResult] =
+    savingsApi.useUpdateDraftSavingsMutation();
 
   const getSavingsProductInformationQuery =
     savingsApi.useGetSavingsProductInformationQuery({
@@ -69,18 +84,22 @@ export default function FixedCreatePlan(
   const [savingsActivateAccountMutation, savingsActivateAccountMutationResult] =
     savingsApi.useSavingsActivateAccountMutation();
 
+  const [renameMutation, renameMutationResult] =
+    savingsApi.useSavingsRenameMutation();
+
   const formik = useFormik<FixedCreatePlanFormikType>({
     initialValues: {
       productId: FIXED_PRODUCT_ID,
-      depositPeriod: 1,
+      depositPeriod: getSavingsQuery?.data?.data?.duration || 1,
       ...(getSavingsProductInformationQuery?.data?.data?.max_period_type
         ? {
             depositPeriodFrequencyId:
               getSavingsProductInformationQuery?.data?.data?.max_period_type,
           }
         : {}),
-      name: "",
-      depositAmount: null,
+      name: getSavingsQuery?.data?.data?.plan_name ?? "",
+      depositAmount:
+        Number(getSavingsQuery?.data?.data?.principal || 0) || null,
       lockinPeriodFrequency: 0,
       lockinPeriodFrequencyType: 0,
       fundSource: "",
@@ -121,17 +140,36 @@ export default function FixedCreatePlan(
             stepper.next();
             break;
           case 1:
-            await savingsFixedDepositCreateMutation({
-              body: {
-                productId: values.productId,
-                lockinPeriodFrequency: values.lockinPeriodFrequency,
-                lockinPeriodFrequencyType: values.lockinPeriodFrequencyType,
-                depositAmount: Number(values.depositAmount),
-                depositPeriod: values.depositPeriod,
-                depositPeriodFrequencyId: values.depositPeriodFrequencyId,
-                name: values.name,
-              },
-            }).unwrap();
+            if (isEdit) {
+              await updateDraftSavingsMutation({
+                body: {
+                  savingsId: Number(savingsId),
+                  productId: values.productId,
+                  depositAmount: Number(values.depositAmount),
+                  depositPeriod: values.depositPeriod,
+                  depositPeriodFrequencyId: values.depositPeriodFrequencyId,
+                },
+              }).unwrap();
+              await renameMutation({
+                body: {
+                  savingsId: String(savingsId),
+                  name: values.name,
+                },
+              }).unwrap();
+            } else {
+              await savingsFixedDepositCreateMutation({
+                body: {
+                  productId: values.productId,
+                  lockinPeriodFrequency: values.lockinPeriodFrequency,
+                  lockinPeriodFrequencyType: values.lockinPeriodFrequencyType,
+                  depositAmount: Number(values.depositAmount),
+                  depositPeriod: values.depositPeriod,
+                  depositPeriodFrequencyId: values.depositPeriodFrequencyId,
+                  name: values.name,
+                },
+              }).unwrap();
+            }
+
             stepper.next();
             break;
           default:
@@ -187,7 +225,7 @@ export default function FixedCreatePlan(
 
   const tabs = [
     {
-      title: "Create Yield Plan",
+      title: `${isEdit ? "Edit" : "Create"} Yield Plan`,
       content: <FixedCreatePlanTab {...contentProps} />,
     },
     {
@@ -297,11 +335,19 @@ export default function FixedCreatePlan(
                   </IconButton>
                 </Typography>
               </div>
-              <Typography className="text-center ">{wallet?.name}</Typography>
+              <Typography className="text-center uppercase">
+                {wallet?.name}
+              </Typography>
               <LoadingButton
                 className="mt-6 max-auto"
                 variant="soft"
                 onClick={() => {
+                  enqueueSnackbar(
+                    "Upon Confirmation, your plan will be activated",
+                    {
+                      variant: "info",
+                    }
+                  );
                   onClose();
                 }}
               >
@@ -329,7 +375,8 @@ export default function FixedCreatePlan(
             Success!
           </Typography>
           <Typography className="text-center">
-            You’ve successfully created a Yield plan.
+            You’ve successfully {isEdit ? "edited" : "created"}{" "}
+            {isEdit ? getSavingsQuery?.data?.data?.plan_name : "a Yield"} plan.
           </Typography>
           <Button
             fullWidth
@@ -371,7 +418,9 @@ export default function FixedCreatePlan(
               savingsFixedDepositCalculationMutationResult.isLoading ||
               savingsFixedDepositCreateMutationResult?.isLoading ||
               savingsActivateAccountMutationResult.isLoading ||
-              walletQueryResult?.isLoading
+              walletQueryResult?.isLoading ||
+              updateDraftSavingsMutationResult?.isLoading ||
+              renameMutationResult?.isLoading
             }
             error={getSavingsProductInformationQuery.isError}
             onRetry={getSavingsProductInformationQuery.refetch}

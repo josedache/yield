@@ -30,7 +30,7 @@ import { useState } from "react";
 function Fixed() {
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
   const [isFixedCreatePlan, toggleFixedCreatePlan] = useToggle();
-  const [statusId, setStatusId] = useState<string>();
+  const [statusId, setStatusId] = useState<string>(0);
 
   const getSavingsAccountsQuery = savingsApi.useGetSavingsAccountsQuery({
     params: { type: "fixed_deposit", ...(statusId ? { statusId } : {}) },
@@ -181,7 +181,7 @@ function Fixed() {
                   <div>
                     <TanStandardTable
                       instance={tableInstance}
-                      loading={getSavingsAccountsQuery?.isFetching}
+                      loading={getSavingsAccountsQuery?.isLoading}
                       error={getSavingsAccountsQuery.isError}
                       onErrorRetry={getSavingsAccountsQuery.refetch}
                       onEmptyRetry={getSavingsAccountsQuery.refetch}

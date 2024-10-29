@@ -1,10 +1,10 @@
 import {
   Button,
+  ButtonBase,
   Divider,
   Drawer,
   DrawerProps,
   IconButton,
-  Link,
   Skeleton,
   Typography,
 } from "@mui/material";
@@ -29,6 +29,9 @@ import { formatNumberToCurrency } from "utils/number";
 import FixedLiquidate from "./FixedLiquidate";
 import FixedCreatePlan from "./FixedCreatePlan";
 import FixedDeleteDraft from "./FixedDeleteDraft";
+import FixedEditPlanName from "./FixedEditPlanName";
+import FixedRollover from "./FixedRollover";
+import { SAVINGS_ACCOUNT_STATUS_TYPE } from "constants/savings";
 
 export default function FixedPlanDetails(
   props: DrawerProps & { onClose: () => void; info: any }
@@ -42,6 +45,9 @@ export default function FixedPlanDetails(
   const [isFixedLiquidate, toggleFixedLiquidate] = useToggle();
   const [isCompletePayment, toggleCompletePayment] = useToggle();
   const [isDeleteSavings, toggleDeleteSavings] = useToggle();
+  const [isRenamePlan, toggleIsRenamePlan] = useToggle();
+  const [isRollOver, toggleIsRollOver] = useToggle();
+  const [isEditDraft, toggleEditDraft] = useToggle();
 
   async function handleDelete() {
     try {
@@ -57,11 +63,18 @@ export default function FixedPlanDetails(
     }
   }
 
-  const isActive = info?.account_status_code === 300;
-
   const getSavingsQuery = savingsApi.useGetSavingsAccountQuery({
     params: { savingsId: info.id },
   });
+
+  const canViewTransactions = [
+    SAVINGS_ACCOUNT_STATUS_TYPE.MATURED,
+    SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE,
+    SAVINGS_ACCOUNT_STATUS_TYPE.PRE_MATURE_CLOSURE,
+  ].includes(
+    getSavingsQuery?.data?.data?.account_status_code ||
+      info?.account_status_code
+  );
 
   const getSavingsTransactionQuery = savingsApi.useGetSavingsTransactionsQuery(
     useMemo(
@@ -70,7 +83,7 @@ export default function FixedPlanDetails(
       }),
       [info?.id]
     ),
-    { skip: !isActive }
+    { skip: !canViewTransactions }
   );
 
   const details = [
@@ -88,7 +101,9 @@ export default function FixedPlanDetails(
     },
     {
       title: "Duration",
-      value: `${getSavingsQuery?.data?.data?.duration} ${getSavingsQuery?.data?.data?.duration_type}`,
+      value: `${getSavingsQuery?.data?.data?.duration || ""} ${
+        getSavingsQuery?.data?.data?.duration_type || ""
+      }`,
     },
     {
       title: "Accrued Interest",
@@ -117,24 +132,27 @@ export default function FixedPlanDetails(
       icon: "ic:baseline-minus",
       color: "success",
       variant: "soft",
-      status: [300, 800],
+      status: [
+        SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE,
+        SAVINGS_ACCOUNT_STATUS_TYPE.MATURED,
+      ],
       disabled: getSavingsQuery?.isLoading,
       onClick: toggleFixedLiquidate,
     },
-    // {
-    //   name: "Edit Name",
-    //   icon: "fluent:edit-20-regular",
-    //   color: "success",
-    //   variant: "soft",
-    //   status: [300],
-    // },
-
+    {
+      name: "Edit Name",
+      icon: "fluent:edit-20-regular",
+      color: "success",
+      variant: "soft",
+      onClick: toggleIsRenamePlan,
+      status: [SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE],
+    },
     {
       name: "Complete Payment",
       icon: "ic:twotone-plus",
       color: "success",
       variant: "soft",
-      status: [100],
+      status: [SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL],
       onClick: toggleCompletePayment,
       disabled: getSavingsQuery?.isLoading,
     },
@@ -144,7 +162,8 @@ export default function FixedPlanDetails(
       color: "success",
       variant: "contained",
       className: "bg-[#7CA853] text-neutral-100",
-      status: [800],
+      status: [SAVINGS_ACCOUNT_STATUS_TYPE.MATURED],
+      onClick: toggleIsRollOver,
       disabled: getSavingsQuery?.isLoading,
     },
     {
@@ -152,35 +171,11 @@ export default function FixedPlanDetails(
       icon: "fluent:delete-16-regular",
       color: "error",
       variant: "soft",
-      status: [100],
+      status: [SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL],
       onClick: toggleDeleteSavings,
       disabled: getSavingsQuery?.isLoading,
     },
   ];
-
-  // const titleFormik = useFormik({
-  //   initialValues: {
-  //     name: "",
-  //   },
-  //   enableReinitialize: true,
-  //   validationSchema: yup.object({
-  //     // name: yup.string().label("Plan Name").required("Required"),
-  //   }),
-  //   onSubmit: async (values) => {
-  //     try {
-  //       console.log({ values });
-  //     } catch (error) {
-  //       enqueueSnackbar(
-  //         error?.data?.message ??
-  //           error?.data?.message?.[0] ??
-  //           "Failed to process funding",
-  //         {
-  //           variant: "error",
-  //         }
-  //       );
-  //     }
-  //   },
-  // });
 
   return (
     <Fragment>
@@ -200,7 +195,7 @@ export default function FixedPlanDetails(
           <div className="flex justify-between gap-2 items-center px-6">
             <div className="flex gap-1 items-center">
               <Typography className="capitalize">
-                {info?.plan_name || "..."}{" "}
+                {getSavingsQuery?.data?.data?.plan_name || "..."}{" "}
               </Typography>
 
               <FixedStatusChip
@@ -255,13 +250,13 @@ export default function FixedPlanDetails(
           </div>
 
           <LoadingContent
-            loading={getSavingsQuery.isLoading}
+            loading={getSavingsQuery.isLoading || getSavingsQuery?.isFetching}
             error={getSavingsQuery?.isError}
             onRetry={getSavingsQuery?.refetch}
             renderLoading={() => (
-              <div className="flex gap-4 mt-4 px-6">
-                <Skeleton variant="rounded" className="w-full h-[50px]" />
-                <Skeleton variant="rounded" className="w-full h-[50px]" />
+              <div className="flex gap-4 mt-4 px-6 w-full">
+                <Skeleton variant="rounded" className="w-full h-[40px]" />
+                <Skeleton variant="rounded" className="w-full h-[40px]" />
               </div>
             )}
           >
@@ -287,7 +282,20 @@ export default function FixedPlanDetails(
           </LoadingContent>
 
           <div className="mt-6">
-            <Typography className="font-semibold px-6">Details</Typography>
+            <div className="px-6 flex justify-between">
+              <Typography className="font-semibold">Details</Typography>
+              {[
+                SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL,
+              ].includes(getSavingsQuery?.data?.data?.account_status_code) ? (
+                <Button
+                  variant="text"
+                  className="font-semibold"
+                  onClick={toggleEditDraft}
+                >
+                  Edit Plan
+                </Button>
+              ) : null}
+            </div>
             <Divider className="mt-2" />
 
             <LoadingContent
@@ -322,11 +330,16 @@ export default function FixedPlanDetails(
             </LoadingContent>
           </div>
 
-          {isActive ? (
+          {canViewTransactions ? (
             <div className="mt-6">
               <div className="px-6 flex justify-between">
                 <Typography className="font-semibold">Transactions</Typography>
-                <Link className="font-semibold">View All</Link>
+                <ButtonBase
+                  disableRipple
+                  className="inline-block underline text-[#4920AA]"
+                >
+                  View All
+                </ButtonBase>
               </div>
 
               <Divider className="mt-2" />
@@ -458,8 +471,18 @@ export default function FixedPlanDetails(
       {isCompletePayment && (
         <FixedCreatePlan
           savingsId={info.id}
+          isPayment
           open={isCompletePayment}
           onClose={toggleCompletePayment}
+        />
+      )}
+
+      {isEditDraft && (
+        <FixedCreatePlan
+          isEdit
+          savingsId={info.id}
+          open={isEditDraft}
+          onClose={toggleEditDraft}
         />
       )}
 
@@ -470,6 +493,22 @@ export default function FixedPlanDetails(
           handleDelete={handleDelete}
           onClose={toggleDeleteSavings}
           open={isDeleteSavings}
+        />
+      )}
+
+      {isRenamePlan && (
+        <FixedEditPlanName
+          info={info}
+          open={isRenamePlan}
+          onClose={toggleIsRenamePlan}
+        />
+      )}
+
+      {isRollOver && (
+        <FixedRollover
+          info={info}
+          open={isRollOver}
+          onClose={toggleIsRollOver}
         />
       )}
     </Fragment>

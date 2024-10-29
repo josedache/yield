@@ -94,7 +94,7 @@ export default function FixedLiquidate(
               body: {
                 channel: "phone",
                 action: "liquidate",
-                amount: 4000,
+                amount: Number(info?.available_balance),
               },
             }).unwrap();
             setOptEmail(resp?.data as any);
@@ -111,9 +111,6 @@ export default function FixedLiquidate(
                 otp: Number(values?.otp),
               },
             }).unwrap();
-            enqueueSnackbar("Liquidated Successfully", {
-              variant: "success",
-            });
             stepper.next();
             break;
           case 4:
@@ -302,6 +299,7 @@ export default function FixedLiquidate(
             onChange={(token) => {
               formik.setFieldValue("otp", token);
             }}
+            placeholder=""
             numInputs={6}
             shouldAutoFocus
             slotProps={{
@@ -309,7 +307,7 @@ export default function FixedLiquidate(
                 style: {
                   opacity: formik.isSubmitting ? 0.5 : 1,
                   ...(!!formik.touched.otp && formik.errors.otp
-                    ? { outline: "1px solid var(--mui-palette-error-main)" }
+                    ? { border: "1px solid var(--mui-palette-error-main)" }
                     : {
                         // outline: "1px solid var(--mui-palette-secondary-light)",
                       }),
@@ -324,14 +322,13 @@ export default function FixedLiquidate(
             className="text-center mt-8"
           >
             Didn’t receive OTP code?{" "}
-            <Typography
-              component="span"
-              color="primary"
+            <ButtonBase
+              disableRipple
               onClick={handleResendOpt}
-              className="font-semibold"
+              className="font-semibold inline-block text-[#4920AA]"
             >
-              Resend
-            </Typography>
+              Resend code
+            </ButtonBase>
           </Typography>
         </div>
       ),

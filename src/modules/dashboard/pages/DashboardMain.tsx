@@ -22,6 +22,7 @@ import { savingsApi } from "apis/savings-api";
 import { useMemo } from "react";
 import { Icon as Iconify } from "@iconify/react";
 import WalletFund from "modules/wallet/features/WalletFund";
+import DashboardWithdrawalAccountCard from "../features/DashboardWithdrawalaccountCard";
 
 function DashboardMain() {
   const authUser = useAuthUser();
@@ -349,7 +350,9 @@ function DashboardMain() {
               )
             )}
           </div>
-          <div></div>
+          <div className="mt-6">
+            <DashboardWithdrawalAccountCard />
+          </div>
         </div>
       </div>
     </div>

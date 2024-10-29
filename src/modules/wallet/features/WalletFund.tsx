@@ -65,7 +65,7 @@ function WalletFund(props: WalletFundProps) {
 
   return (
     <>
-      <Dialog open={isOpen} fullWidth {...restProps}>
+      <Dialog open={isOpen} maxWidth="xs" fullWidth {...restProps}>
         <DialogTitleXCloseButton className="text-center" onClose={handleClose}>
           Transfer to CDL Account <br />
           <Typography

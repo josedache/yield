@@ -15,6 +15,7 @@ export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
       <TextField
         {...getFormikTextFieldProps(formik, "name")}
         fullWidth
+        placeholder="Enter Plan name"
         label="Plan Name"
       />
 
@@ -59,6 +60,7 @@ export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
         code="NGN"
         fullWidth
         label="Amount"
+        placeholder="0.00"
         {...getFormikTextFieldProps(formik, "depositAmount")}
         maskOptions={{ thousandsSeparator: "," }}
       />
