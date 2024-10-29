@@ -653,13 +653,3 @@ const STEPS_INDEX = [
   DashboardKycStep.ACCOUNT_DETAILS,
   DashboardKycStep.SUCCESS,
 ];
-
-// {
-//   "bvn": "22355371277",
-//   "nin": "74592067445",
-//   "mobileNo": "08188542677",
-//   "emailAddress": "aduramimo@gmail.com",
-//   "firstname": "OLUDARE",
-//   "lastname": "ADURAMIMO",
-//   "accountnumber": "",
-// }

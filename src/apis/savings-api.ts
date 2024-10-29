@@ -13,6 +13,7 @@ import {
   SavingsFixedDepositCreateApiRequest,
   SavingsFixedDepositCreateApiResponse,
   SavingsFixedDepositProductInformationApiResponse,
+  SavingsRecentActivitiesApiResponse,
   SavingsTransactionApiResponse,
   SavingsTransactionsApiResponse,
   SavingsTransferApiRequest,
@@ -209,6 +210,24 @@ export const savingsApi = coreApi.injectEndpoints({
         ...config,
       }),
       invalidatesTags: [tags.SAVINGS],
+    }),
+
+    getSavingsRecentActivities: builder.query<
+      SavingsRecentActivitiesApiResponse,
+      ApiRequest<
+        void,
+        void,
+        {
+          type: "recurring_deposit" | "fixed_deposit";
+        }
+      >
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/recent_activities",
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.SAVINGS],
     }),
   }),
 });

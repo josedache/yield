@@ -19,9 +19,18 @@ import useAuthUser from "hooks/useAuthUser";
 import { walletApi } from "apis/wallet-api";
 import LoadingContent from "components/LoadingContent";
 import { savingsApi } from "apis/savings-api";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { Icon as Iconify } from "@iconify/react";
 import WalletFund from "modules/wallet/features/WalletFund";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import {
+  TRANSACTION_TYPE_ID_TO_COLOR,
+  TRANSACTION_TYPE_ID_TO_ICON,
+  TRANSACTION_TYPE_ID_TO_SIGN,
+  TRANSACTION_TYPE_ID_TO_TITLE,
+} from "constants/transactions";
+import * as dfns from "date-fns";
+import { FlexUrlDialog } from "modules/flex/enums/FlexUrlDialog";
 
 function DashboardMain() {
   const authUser = useAuthUser();
@@ -29,6 +38,8 @@ function DashboardMain() {
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
   const [isFixedYieldVisible, toggleFixedYieldVisible] = useToggle();
   const [isFlexYieldVisible, toggleFlexYieldVisible] = useToggle();
+
+  const recentActivitiesParentRef = useRef(null);
 
   const walletQueryResult = walletApi.useGetWalletQuery(undefined);
 
@@ -60,6 +71,22 @@ function DashboardMain() {
 
   const fixedSavingsProduct = fixedSavingsProductQueryResult.data?.data;
 
+  const savingsRecentActivitiesQueryResult =
+    savingsApi.useGetSavingsRecentActivitiesQuery(
+      useMemo(() => ({ params: { type: "recurring_deposit" } }), [])
+    );
+
+  const savingsRecentActivities = savingsRecentActivitiesQueryResult.data?.data;
+
+  const virtualizer = useVirtualizer({
+    count: savingsRecentActivities?.length,
+    getScrollElement: () => recentActivitiesParentRef.current,
+    estimateSize: () => 56,
+    overscan: 5,
+  });
+
+  const virtualItems = virtualizer.getVirtualItems();
+
   const quickAccess = [
     {
       icon: "solar:lock-outline",
@@ -74,6 +101,8 @@ function DashboardMain() {
       description: "Save now and withdraw at any time.",
       border: "border-[#4920AA96]",
       textColor: "text-[#4920AA96]",
+      component: Link,
+      to: FLEX.concat("?dialog=", FlexUrlDialog.FUND),
     },
   ];
 
@@ -299,36 +328,135 @@ function DashboardMain() {
             )}
           </div>
 
-          <div className="mt-8">
-            <Typography variant="h5" gutterBottom>
-              Recent Activities
-            </Typography>
-            <Paper className="p-4 md:p-8">
-              <div className="flex flex-col justify-center items-center gap-y-8 my-8">
-                <DashboardEmptyActivitySvg />
-                <div>
-                  <Typography variant="h6" className="text-center" gutterBottom>
-                    No Activities
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    color="textSecondary"
-                    className="text-center"
-                  >
-                    Lorem ipsum dolor sit amet consectetur adipiscing elit.
-                  </Typography>
-                </div>
-              </div>
-            </Paper>
-          </div>
+          <Paper className="p-4 md:p-8 mt-8 space-y-4">
+            <Typography variant="h5">Recent Activities</Typography>
+            <LoadingContent
+              loading={savingsRecentActivitiesQueryResult.isLoading}
+              error={savingsRecentActivitiesQueryResult.isError}
+              onRetry={savingsRecentActivitiesQueryResult.refetch}
+            >
+              {() => (
+                <>
+                  {savingsRecentActivities?.length ? (
+                    <div
+                      className="overflow-y-auto h-96"
+                      style={{ contain: "strict" }}
+                      ref={recentActivitiesParentRef}
+                    >
+                      <div
+                        className="relative w-full"
+                        style={{
+                          height: virtualizer.getTotalSize(),
+                        }}
+                      >
+                        <div
+                          className="absolute left0 top-0 w-full"
+                          style={{
+                            transform: `translateY(${
+                              virtualItems[0]?.start ?? 0
+                            }px)`,
+                          }}
+                        >
+                          {virtualItems.map((virtualItem) => {
+                            const transaction =
+                              savingsRecentActivities?.[virtualItem.index];
+                            return (
+                              <div
+                                key={transaction?.transactionId}
+                                className="flex items-center gap-4 py-2"
+                                data-index={virtualItem.index}
+                                ref={virtualizer.measureElement}
+                              >
+                                <IconButton
+                                  variant="soft"
+                                  color={
+                                    TRANSACTION_TYPE_ID_TO_COLOR[
+                                      transaction?.transaction_type_code
+                                    ] as any
+                                  }
+                                >
+                                  <Iconify
+                                    icon={
+                                      TRANSACTION_TYPE_ID_TO_ICON[
+                                        transaction?.transaction_type_code
+                                      ] as any
+                                    }
+                                  />
+                                </IconButton>
+                                <div>
+                                  <Typography variant="body1" gutterBottom>
+                                    {TRANSACTION_TYPE_ID_TO_TITLE[
+                                      transaction?.transaction_type_code
+                                    ] || "----"}
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                  >
+                                    {dfns.format(
+                                      new Date(transaction?.transaction_date),
+                                      "dd MMM, yyyy"
+                                    )}
+                                  </Typography>
+                                </div>
+                                <div className="flex-1" />
+                                <Typography>
+                                  {
+                                    TRANSACTION_TYPE_ID_TO_SIGN[
+                                      transaction?.transaction_type_code
+                                    ] as any
+                                  }
+                                  <CurrencyTypography component="span">
+                                    {transaction?.amount}
+                                  </CurrencyTypography>
+                                </Typography>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col justify-center items-center gap-y-8 my-8">
+                      <DashboardEmptyActivitySvg />
+                      <div>
+                        <Typography
+                          variant="h6"
+                          className="text-center"
+                          gutterBottom
+                        >
+                          No Activities
+                        </Typography>
+                        <Typography
+                          variant="body1"
+                          color="textSecondary"
+                          className="text-center"
+                        >
+                          Lorem ipsum dolor sit amet consectetur adipiscing
+                          elit.
+                        </Typography>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </LoadingContent>
+          </Paper>
         </div>
 
         <div className="w-full md:w-[35%]">
           <Typography variant="h6">Dashboard</Typography>
           <div className="space-y-4 mt-5">
             {quickAccess.map(
-              ({ icon, textColor, border, label, description }) => (
-                <Paper className={(clsx(border), "w-full")}>
+              ({
+                icon,
+                textColor,
+                border,
+                label,
+                description,
+                ...restProps
+              }) => (
+                <Paper className={(clsx(border), "w-full")} {...restProps}>
                   <CardActionArea className="flex justify-start px-3 py-4  gap-2">
                     <div className="p-2">
                       <Icon
