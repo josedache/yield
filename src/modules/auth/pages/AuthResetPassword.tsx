@@ -14,6 +14,7 @@ import { getFormikTextFieldProps } from "utils/formik";
 import OtpInput from "components/OtpInput";
 import { userApi } from "apis/user-api";
 import PasswordTextField from "components/PasswordTextField";
+import NumberInput from "components/NumberInput";
 
 function AuthResetPassword() {
   const navigate = useNavigate();
@@ -141,6 +142,7 @@ function AuthResetPassword() {
             numInputs={6}
             shouldAutoFocus
             // inputType="password"
+            slot={{ input: NumberInput }}
             slotProps={{
               input: {
                 style: { opacity: formik.isSubmitting ? 0.5 : 1 },

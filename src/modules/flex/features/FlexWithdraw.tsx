@@ -30,6 +30,7 @@ import { walletApi } from "apis/wallet-api";
 import { FlexWithdrawChannel } from "../enums/FlexWithdrawChannel";
 import { FlexWithdrawStep } from "../enums/FlexWithdrawStep";
 import Countdown from "components/Countdown";
+import NumberInput from "components/NumberInput";
 
 function FlexWithdraw(props: FlexWithdrawProps) {
   const { children, onClose, ...restProps } = props;
@@ -325,6 +326,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
               numInputs={6}
               shouldAutoFocus
               // inputType="password"
+              slot={{ input: NumberInput }}
               slotProps={{
                 input: {
                   style: { opacity: formik.isSubmitting ? 0.5 : 1 },

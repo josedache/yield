@@ -23,6 +23,7 @@ import { Icon as Iconify } from "@iconify-icon/react";
 import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
 import CurrencyTypography from "components/CurrencyTypography";
 import OtpInput from "components/OtpInput";
+import NumberInput from "components/NumberInput";
 
 function FixedWithdraw(props: FixedWithdrawProps) {
   const { children, onClose, ...restProps } = props;
@@ -207,6 +208,7 @@ function FixedWithdraw(props: FixedWithdrawProps) {
               numInputs={6}
               shouldAutoFocus
               // inputType="password"
+              slot={{ input: NumberInput }}
               slotProps={{
                 input: {
                   style: { opacity: formik.isSubmitting ? 0.5 : 1 },

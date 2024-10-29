@@ -17,6 +17,7 @@ import useCountdown from "hooks/useCountdown";
 import { useEffect, useMemo } from "react";
 import * as dfns from "date-fns";
 import useDataRef from "hooks/useDataRef";
+import NumberInput from "components/NumberInput";
 
 function AuthSignupBvn(props: AuthSignupStepContentProps) {
   const { formik } = props;
@@ -107,6 +108,7 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
             numInputs={6}
             shouldAutoFocus
             // inputType="password"
+            slot={{ input: NumberInput }}
             slotProps={{
               input: {
                 style: { opacity: formik.isSubmitting ? 0.5 : 1 },

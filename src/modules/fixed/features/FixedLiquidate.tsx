@@ -31,6 +31,7 @@ import { getFormikTextFieldProps } from "utils/formik";
 import useAuthUser from "hooks/useAuthUser";
 import { transactionApi } from "apis/transaction-api";
 import { useMemo, useState } from "react";
+import NumberInput from "components/NumberInput";
 
 export default function FixedLiquidate(
   props: DialogProps & { onClose: () => void; info: any }
@@ -301,6 +302,7 @@ export default function FixedLiquidate(
             placeholder=""
             numInputs={6}
             shouldAutoFocus
+            slot={{ input: NumberInput }}
             slotProps={{
               input: {
                 style: {
