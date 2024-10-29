@@ -76,7 +76,7 @@ function FlexFund(props: FlexFundProps) {
 
   return (
     <>
-      <Dialog open={isOpen} fullWidth {...restProps}>
+      <Dialog open={isOpen} fullWidth maxWidth="xs" {...restProps}>
         <DialogTitleXCloseButton className="text-center" onClose={handleClose}>
           Transfer to CDL Account <br />
           <Typography

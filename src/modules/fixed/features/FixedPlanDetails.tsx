@@ -287,13 +287,13 @@ export default function FixedPlanDetails(
               {[
                 SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL,
               ].includes(getSavingsQuery?.data?.data?.account_status_code) ? (
-                <Button
-                  variant="text"
-                  className="font-semibold"
+                <ButtonBase
                   onClick={toggleEditDraft}
+                  disableRipple
+                  className="inline-block underline text-[#4920AA]"
                 >
                   Edit Plan
-                </Button>
+                </ButtonBase>
               ) : null}
             </div>
             <Divider className="mt-2" />
@@ -430,6 +430,7 @@ export default function FixedPlanDetails(
                                       transaction?.transaction_type_code
                                     ] as any
                                   }
+
                                   <CurrencyTypography component="span">
                                     {transaction?.amount}
                                   </CurrencyTypography>

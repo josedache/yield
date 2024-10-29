@@ -9,28 +9,39 @@ import {
   Skeleton,
 } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
+import { useSearchParams } from "react-router-dom";
+import { format } from "date-fns";
+import { ColumnDef } from "@tanstack/react-table";
+import { useState } from "react";
+
 import CurrencyTypography from "components/CurrencyTypography";
 import useToggle from "hooks/useToggle";
 import SavedCardSvg from "assets/svgs/saved-card.svg?react";
 import EmptyPlanSvg from "assets/svgs/empty-state.svg?react";
-
 import FixedCreatePlan from "../features/FixedCreatePlan";
 import TanStandardTable from "components/TanStandardTable";
 import useTable from "hooks/useTable";
-import { format } from "date-fns";
-import { ColumnDef } from "@tanstack/react-table";
 import FixedPlanListActionMenu from "../features/FixedPlanListActionMenu";
 import { savingsApi } from "apis/savings-api";
 import FixedStatusChip from "../features/FixedStatusChip";
 import LoadingContent from "components/LoadingContent";
 import DashboardWithdrawalAccountCard from "modules/dashboard/features/DashboardWithdrawalaccountCard";
 import { ALL_ACTIVE_SAVINGS_ACCOUNT_STATUS_TYPE } from "constants/savings";
-import { useState } from "react";
+import { FixedUrlDialog } from "../enums/FixedUrlDialog";
+import { urlSearchParamsExtractor } from "utils/url";
 
 function Fixed() {
+  const [searchParams] = useSearchParams();
+
+  const { dialog } = urlSearchParamsExtractor(searchParams, {
+    dialog: "" as FixedUrlDialog,
+  });
+
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
-  const [isFixedCreatePlan, toggleFixedCreatePlan] = useToggle();
-  const [statusId, setStatusId] = useState<string>(0);
+  const [isFixedCreatePlan, toggleFixedCreatePlan] = useToggle(
+    dialog === FixedUrlDialog.CREATE_PLAN
+  );
+  const [statusId, setStatusId] = useState<number>(0);
 
   const getSavingsAccountsQuery = savingsApi.useGetSavingsAccountsQuery({
     params: { type: "fixed_deposit", ...(statusId ? { statusId } : {}) },

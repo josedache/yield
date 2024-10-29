@@ -1,3 +1,5 @@
-export enum FlexWithdrawChannel {
-  CREDIT_DIRECT,
+export enum FlexWithdrawStep {
+  AMOUNT,
+  DESTINATION,
+  VERIFICATION
 }

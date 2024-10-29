@@ -42,7 +42,7 @@ export type LiquidateSavingsAPiRequest = ApiRequest<{
 
 export type SendSavingsOtpAPiRequest = ApiRequest<{
   channel: "email" | "phone";
-  action: "liquidate";
+  action: "liquidate" | "withdraw";
   amount: number;
 }>;
 
@@ -211,7 +211,7 @@ export type LiquidateSavingsApiResponse = ApiResponse<{
 
 export type SavingsTransferApiRequest = ApiRequest<{
   type: "withdraw" | "transfer";
-  otp: number;
+  otp: string;
   savingsId: number;
   transferAmount: number;
   transferDescription?: string;
@@ -221,3 +221,15 @@ export type SavingsTransferApiResponse = ApiResponse<{
   savingsId: number;
   resourceId: number;
 }>;
+
+export type SavingsRecentActivitiesApiResponse = ApiResponse<{
+  transactionId: number;
+  accountNo: string;
+  title: string;
+  type: string;
+  transaction_type: string;
+  transaction_type_code: 1;
+  amount: string;
+  transaction_date: string;
+  transaction_status: string;
+}[]>;

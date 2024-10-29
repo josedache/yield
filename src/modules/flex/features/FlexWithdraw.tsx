@@ -9,12 +9,14 @@ import {
   IconButton,
   Paper,
   Typography,
+  Link as MuiLink,
+  CircularProgress,
 } from "@mui/material";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import useToggle from "hooks/useToggle";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { getFormikTextFieldProps } from "utils/formik";
 import { useSnackbar } from "notistack";
 import CurrencyTextField from "components/CurrencyTextField";
@@ -26,6 +28,8 @@ import OtpInput from "components/OtpInput";
 import { savingsApi } from "apis/savings-api";
 import { walletApi } from "apis/wallet-api";
 import { FlexWithdrawChannel } from "../enums/FlexWithdrawChannel";
+import { FlexWithdrawStep } from "../enums/FlexWithdrawStep";
+import Countdown from "components/Countdown";
 
 function FlexWithdraw(props: FlexWithdrawProps) {
   const { children, onClose, ...restProps } = props;
@@ -34,48 +38,110 @@ function FlexWithdraw(props: FlexWithdrawProps) {
 
   const [isOpen, toggleOpen, setOpen] = useToggle();
 
-  const stepper = useStepper();
+  const [countdownDate, setCountdownDate] = useState(getCountdownDate);
+
+  const stepper = useStepper({
+    initialStep: getEnumStepIndex(FlexWithdrawStep.AMOUNT),
+  });
+
+  const enumStep = STEPS_INDEX[stepper.step];
+
+  const [sendSavingsOtpMutation, sendSavingsOtpMutationResult] =
+    savingsApi.useSendSavingsOtpMutation();
+
+  const savingsOtp = sendSavingsOtpMutationResult.data?.data;
+
+  const [transferSavingsMutation] = savingsApi.useTransferSavingsMutation();
 
   const walletQueryResult = walletApi.useGetWalletQuery(undefined);
 
   const wallet = walletQueryResult.data?.data;
 
-  const fixedSavingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
+  const flexSavingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
     useMemo(() => ({ params: { type: "recurring_deposit" } }), [])
   );
 
-  const fixedSavingsAccounts = fixedSavingsAccountsQueryResult.data?.data;
+  const flexSavingsAccounts = flexSavingsAccountsQueryResult.data?.data;
+
+  const savingsAccount = flexSavingsAccounts?.savingsAccounts?.[0];
 
   const availableBalance = Number(
-    fixedSavingsAccounts?.totalAvailableBalance ?? 0
+    flexSavingsAccounts?.totalAvailableBalance ?? 0
   );
+
   const minimumBalance = 50000;
 
   const formik = useFormik({
     initialValues: {
       amount: 0,
       otp: "",
-      channel: "",
+      channel: null as FlexWithdrawChannel,
     },
     enableReinitialize: true,
     validationSchema: yup.object({
-      amount: yup
-        .number()
-        .label("Amount")
-        .min(1)
-        .max(availableBalance)
-        .required(),
+      ...{
+        [FlexWithdrawStep.AMOUNT]: {
+          amount: yup
+            .number()
+            .label("Amount")
+            .min(1)
+            .max(availableBalance)
+            .required(),
+        },
+        [FlexWithdrawStep.DESTINATION]: {
+          channel: yup.string().label("Channel").required(),
+        },
+        [FlexWithdrawStep.VERIFICATION]: {
+          otp: yup.string().label("OTP").required(),
+        },
+      }[enumStep],
     }),
-    onSubmit: async () => {
+    onSubmit: async (values) => {
       try {
-        if (stepper.step == 1) {
-        }
+        switch (enumStep) {
+          case FlexWithdrawStep.DESTINATION: {
+            const data = await sendSavingsOtpMutation({
+              body: {
+                action: "withdraw",
+                amount: Number(values.amount),
+                channel: "phone",
+              },
+            }).unwrap();
+            setCountdownDate(getCountdownDate());
+            enqueueSnackbar(data?.message || "Otp Sent", {
+              variant: "success",
+            });
+            break;
+          }
+          case FlexWithdrawStep.VERIFICATION: {
+            if (values.channel === FlexWithdrawChannel.CREDIT_DIRECT) {
+              const data = await transferSavingsMutation({
+                body: {
+                  otp: values.otp,
+                  savingsId: savingsAccount?.id,
+                  transferAmount: Number(values.amount),
+                  type: "withdraw",
+                  // transferDescription: "",
+                },
+              }).unwrap();
 
+              enqueueSnackbar(data?.message || "Withdrawal Successful", {
+                variant: "success",
+              });
+            }
+            break;
+          }
+          default:
+            break;
+        }
         stepper.next();
       } catch (error) {
-        enqueueSnackbar(error?.data?.message || "Failed to process funding", {
-          variant: "error",
-        });
+        enqueueSnackbar(
+          error?.data?.message || "Failed to process withdrawal",
+          {
+            variant: "error",
+          }
+        );
       }
     },
   });
@@ -89,6 +155,29 @@ function FlexWithdraw(props: FlexWithdrawProps) {
     onClose?.(e, reason);
     setOpen(false);
   }
+
+  const handleResendOtp = async (values: { amount: number }) => {
+    try {
+      const data = await sendSavingsOtpMutation({
+        body: {
+          action: "withdraw",
+          amount: values.amount,
+          channel: "phone",
+        },
+      }).unwrap();
+      setCountdownDate(getCountdownDate());
+      enqueueSnackbar(data?.message || "Otp Sent", {
+        variant: "error",
+      });
+    } catch (error) {
+      enqueueSnackbar(
+        error?.data?.errors?.[0]?.defaultUserMessage || `OTP failed to send!`,
+        {
+          variant: "error",
+        }
+      );
+    }
+  };
 
   const stepConfigs = [
     {
@@ -177,12 +266,14 @@ function FlexWithdraw(props: FlexWithdrawProps) {
                 icon: <img src={CdlLogoPngUrl} width={32} height={32} />,
                 label: "Credit Direct",
                 value: wallet?.account_number,
+                disabled: formik.isSubmitting,
+                loading: formik.isSubmitting,
                 onClick: async (e) => {
                   await formik.setFieldValue(
                     "channel",
                     FlexWithdrawChannel.CREDIT_DIRECT
                   );
-                  formik.handleSubmit(e);
+                  await formik.handleSubmit(e);
                 },
               },
               // {
@@ -190,7 +281,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
               //   label: "Yield Wallet",
               //   onClick: handleWallet,
               // },
-            ].map(({ label, value, icon, ...restProps }) => {
+            ].map(({ label, value, icon, loading, ...restProps }) => {
               return (
                 <ButtonBase
                   key={label}
@@ -203,10 +294,14 @@ function FlexWithdraw(props: FlexWithdrawProps) {
                   </div>
                   <Typography className="flex-1">{label}</Typography>
                   <Typography className="font-semibold">{value}</Typography>
-                  <Iconify
-                    icon="weui:arrow-filled"
-                    className="text-lg text-text-secondary"
-                  />
+                  {loading ? (
+                    <CircularProgress size={12} />
+                  ) : (
+                    <Iconify
+                      icon="weui:arrow-filled"
+                      className="text-lg text-text-secondary"
+                    />
+                  )}
                 </ButtonBase>
               );
             })}
@@ -217,7 +312,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
     {
       title: "Verify OTP",
       description:
-        "Please, enter the six (6) digit code sent to 081******74 to complete this transaction.",
+        `Please, enter the six (6) digit code sent to ${savingsOtp} to complete this transaction.`,
       content: (
         <div className="space-y-8">
           <div className="space-y-4">
@@ -237,6 +332,57 @@ function FlexWithdraw(props: FlexWithdrawProps) {
                 },
               }}
             />
+            <Countdown date={countdownDate}>
+              {(countdown) => {
+                const isCodeSent =
+                  countdown.days ||
+                  countdown.minutes ||
+                  countdown.seconds ||
+                  countdown.seconds;
+
+                return (
+                  <>
+                    {isCodeSent ? (
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        className="text-center"
+                      >
+                        Resend OTP in{" "}
+                        <Typography
+                          component="span"
+                          color="primary"
+                          className="font-semibold"
+                        >
+                          {countdown.minutes}:
+                          {countdown.seconds < 10
+                            ? `0${countdown.seconds}`
+                            : countdown.seconds}
+                        </Typography>
+                      </Typography>
+                    ) : (
+                      <div className="flex items-center justify-center">
+                        <Typography className="text-center">
+                          Didn’t receive code?{" "}
+                          <ButtonBase
+                            disableRipple
+                            disabled={sendSavingsOtpMutationResult.isLoading}
+                            component={MuiLink}
+                            onClick={handleResendOtp as any}
+                            className="underline text-text-primary font-bold"
+                          >
+                            Send it again.
+                          </ButtonBase>
+                        </Typography>
+                        {/* {requestOtpMutationResult.isLoading && (
+                <CircularProgress size={12} thickness={8} className="ml-1" />
+              )} */}
+                      </div>
+                    )}
+                  </>
+                );
+              }}
+            </Countdown>
             <Typography
               variant="body2"
               color="textSecondary"
@@ -341,6 +487,23 @@ function FlexWithdraw(props: FlexWithdrawProps) {
 }
 
 export default FlexWithdraw;
+
+function getCountdownDate() {
+  const date = new Date();
+  date.setTime(date.getTime() + 1000 * 60 * 5);
+  return date;
+}
+
+function getEnumStepIndex(enumStep: FlexWithdrawStep) {
+  const index = STEPS_INDEX.indexOf(enumStep);
+  return index > -1 ? index : undefined;
+}
+
+const STEPS_INDEX = [
+  FlexWithdrawStep.AMOUNT,
+  FlexWithdrawStep.DESTINATION,
+  FlexWithdrawStep.VERIFICATION,
+];
 
 export type FlexWithdrawProps = {
   id?: string;
