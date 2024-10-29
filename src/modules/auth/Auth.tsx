@@ -6,7 +6,7 @@ import { Icon, IconButton, Typography } from "@mui/material";
 function Auth() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-4 h-full">
-      <div className="hidden md:flex flex-col p-6 h-full text-primary-contrastText bg-cover bg-[url('assets/svgs/yield-auth-background.svg')] bg-no-repeat object-fill">
+      <div className="hidden md:flex flex-col p-6 h-full text-primary-contrastText bg-cover bg-[url('assets/imgs/yield-auth-background.png')] bg-no-repeat object-fill">
         <Logo className="mb-8" />
         <div className="flex-1" />
         <div className="space-y-8 max-w-md">

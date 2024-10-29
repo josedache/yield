@@ -7,6 +7,7 @@ import {
   TextField,
   MenuItem,
   Skeleton,
+  CircularProgress,
 } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
 import { useSearchParams } from "react-router-dom";
@@ -150,42 +151,34 @@ function Fixed() {
             )}
           >
             <div>
-              {!getSavingsAccountsQuery?.data?.data?.savingsAccounts
-                ?.length && (
-                <Typography variant="h6" className="font-medium" gutterBottom>
-                  My Plans
-                </Typography>
-              )}
-
               <Paper variant="outlined" className="p-0 overflow-hidden">
-                {getSavingsAccountsQuery?.data?.data?.savingsAccounts
-                  ?.length ? (
-                  <div className="flex items-center justify-between p-4">
-                    <Typography
-                      variant="h6"
-                      className="font-medium"
-                      gutterBottom
-                    >
-                      My Plans
-                    </Typography>
-                    <TextField
-                      select
-                      value={statusId}
-                      onChange={(e) => {
-                        setStatusId(e.target.value);
-                      }}
-                      placeholder="Filter By"
-                      size="small"
-                      className="min-w-24"
-                    >
-                      {ALL_ACTIVE_SAVINGS_ACCOUNT_STATUS_TYPE.map(
-                        ({ id, name }) => (
-                          <MenuItem value={id}>{name}</MenuItem>
-                        )
-                      )}
-                    </TextField>
-                  </div>
-                ) : null}
+                <div className="flex items-center justify-between p-4">
+                  <Typography variant="h6" className="font-medium" gutterBottom>
+                    My Plans
+                  </Typography>
+                  <TextField
+                    select
+                    disabled={getSavingsAccountsQuery?.isFetching}
+                    value={statusId}
+                    onChange={(e) => {
+                      setStatusId(e.target.value as any);
+                    }}
+                    // slotProps={{
+                    //   input: {
+                    //     startAdornment: <CircularProgress size={10} />,
+                    //   },
+                    // }}
+                    placeholder="Filter By"
+                    size="small"
+                    className="min-w-24"
+                  >
+                    {ALL_ACTIVE_SAVINGS_ACCOUNT_STATUS_TYPE.map(
+                      ({ id, name }) => (
+                        <MenuItem value={id}>{name}</MenuItem>
+                      )
+                    )}
+                  </TextField>
+                </div>
 
                 {getSavingsAccountsQuery?.data?.data?.savingsAccounts
                   ?.length ? (
