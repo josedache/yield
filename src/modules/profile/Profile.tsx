@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Button,
   IconButton,
   Paper,
   TextField,
@@ -9,11 +8,49 @@ import {
 import useAuthUser from "hooks/useAuthUser";
 import useClipboard from "hooks/useClipboard";
 import { Icon as Iconify } from "@iconify/react";
+import { getAssetInfo } from "utils/file";
+import { userApi } from "apis/user-api";
+import { useSnackbar } from "notistack";
+import Dropzone from "react-dropzone";
+import { LoadingButton } from "@mui/lab";
 
 function Profile() {
   const authUser = useAuthUser();
 
   const clipboard = useClipboard();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [uploadUserFileMutation, uploadUserFileMutationResult] =
+    userApi.useUploadUserFileMutation();
+
+  async function handleSelfieUpdate(file: File) {
+    try {
+      const assetInfo = getAssetInfo(file);
+
+      const data = await uploadUserFileMutation({
+        body: {
+          file: file,
+          tier_level: authUser.kycLevel,
+          title: file.name,
+          type: "selfie",
+          fileExtension: assetInfo.type,
+          mimeType: assetInfo.mimeType,
+        },
+      }).unwrap();
+      enqueueSnackbar(data?.message || "Selfied updated successfully!", {
+        variant: "success",
+      });
+    } catch (error) {
+      const message = Array.isArray(error?.data?.message)
+        ? error?.data?.message?.[0]
+        : error?.data?.message;
+
+      enqueueSnackbar(message || "Failed to update selfie", {
+        variant: "error",
+      });
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -101,8 +138,45 @@ function Profile() {
                 Your profile photo personalizes your <br /> yield account
               </Typography>
               <div className="grid grid-cols-2 gap-2">
-                <Button variant="outlined">Remove</Button>
-                <Button variant="contained">Update</Button>
+                <LoadingButton
+                  variant="outlined"
+                  // disabled={uploadUserFileMutationResult.isLoading}
+                  disabled
+                  loadingPosition="end"
+                  endIcon={<></>}
+                >
+                  Remove
+                </LoadingButton>
+                <Dropzone
+                  multiple={false}
+                  maxSize={1024 * 1024 * 2}
+                  accept={{ "image/*": [] }}
+                  onDropAccepted={(files) => {
+                    const file = files[0];
+                    handleSelfieUpdate(file);
+                  }}
+                  onDropRejected={(fileRejection) => {
+                    enqueueSnackbar(
+                      fileRejection[0].errors?.[0].message || "File Rejected",
+                      { variant: "error" }
+                    );
+                  }}
+                >
+                  {({ getRootProps, getInputProps }) => (
+                    <LoadingButton
+                      {...getRootProps({
+                        variant: "contained",
+                        disabled: uploadUserFileMutationResult.isLoading,
+                        loading: uploadUserFileMutationResult.isLoading,
+                        loadingPosition: "end",
+                        endIcon: <></>,
+                      })}
+                    >
+                      <input {...getInputProps()} />
+                      Update
+                    </LoadingButton>
+                  )}
+                </Dropzone>
               </div>
             </div>
           </Paper>

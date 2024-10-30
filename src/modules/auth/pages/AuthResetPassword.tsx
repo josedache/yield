@@ -45,7 +45,7 @@ function AuthResetPassword() {
     validationSchema: yup.object().shape({
       ...{
         [AuthResetPasswordStep.REQUEST]: {
-          identifier: yup.string().label("Email/Phone Number").required(),
+          identifier: yup.string().label("Phone Number").length(11).required(),
         },
         [AuthResetPasswordStep.VERIFY]: {
           otp: yup.string().label("OTP").required(),
@@ -115,15 +115,16 @@ function AuthResetPassword() {
   const contents = [
     {
       title: "Reset Password",
-      description: "",
+      description: "Please, enter your phone number to reset your password.",
       body: (
         <>
           <NumberTextField
             freeSolo
+            maskOptions={{ max: 11 }}
             fullWidth
             margin="normal"
             label="Phone Number"
-            placeholder="Enter Email/Phone Number"
+            placeholder="Enter Phone Number"
             {...getFormikTextFieldProps(formik, "identifier")}
           />
         </>

@@ -13,11 +13,16 @@ import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import OtpInput from "components/OtpInput";
 import { LoadingButton } from "@mui/lab";
 import NumberTextField from "components/NumberTextField";
-import useCountdown from "hooks/useCountdown";
-import { useEffect, useMemo } from "react";
-import * as dfns from "date-fns";
+import { useEffect } from "react";
 import useDataRef from "hooks/useDataRef";
 import NumberInput from "components/NumberInput";
+import Countdown from "components/Countdown";
+import {
+  CDL_IAGREE_INLINE_BASE_URL,
+  CDL_IAGREE_INLINE_MODE,
+} from "constants/env";
+import { useSnackbar } from "notistack";
+import useToggle from "hooks/useToggle";
 
 function AuthSignupBvn(props: AuthSignupStepContentProps) {
   const { formik } = props;
@@ -56,20 +61,21 @@ function AuthSignupBvn(props: AuthSignupStepContentProps) {
 export default AuthSignupBvn;
 
 function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
-  const { formik, enumStep, stepper, maskedPhone } = props;
+  const {
+    formik,
+    enumStep,
+    stepper,
+    maskedPhone,
+    sendOtp,
+    countdownDate,
+    signupYieldUserMutationResult,
+  } = props;
 
-  const open = enumStep === AuthSignupStep.BVN_VERIFICATION;
+  const { enqueueSnackbar } = useSnackbar();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isIgree, _, setIgree] = useToggle();
 
-  const countdown = useCountdown(
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useMemo(() => dfns.addMinutes(new Date(), 5), [open])
-  );
-
-  const isCodeSent =
-    countdown.days ||
-    countdown.minutes ||
-    countdown.seconds ||
-    countdown.seconds;
+  const open = enumStep === AuthSignupStep.BVN_VERIFICATION && !isIgree;
 
   const dataRef = useDataRef({ formik });
 
@@ -78,6 +84,34 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
       dataRef.current.formik.setFieldValue("otp", "");
     }
   }, [dataRef, open]);
+
+  function handleIgree() {
+    const bvnVerificationInline = (window as any).BVNVerificationInline({
+      bvn: formik.values.bvn,
+      mode: CDL_IAGREE_INLINE_MODE,
+      baseURL: CDL_IAGREE_INLINE_BASE_URL,
+      onSuccess: async (data: any) => {
+        try {
+          console.log(data);
+        } catch (error) {
+          enqueueSnackbar(error?.message, {
+            variant: "error",
+          });
+        }
+        setIgree(false);
+      },
+      onError: (error) => {
+        console.log("Error", error);
+      },
+      onClose: () => {
+        setIgree(false);
+        console.log("Closed");
+      },
+    });
+
+    bvnVerificationInline.openIframe();
+    setIgree(true);
+  }
 
   return (
     <Dialog
@@ -116,45 +150,63 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
               },
             }}
           />
-          {isCodeSent ? (
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              className="text-center"
-            >
-              Resend OTP in{" "}
-              <Typography
-                component="span"
-                color="primary"
-                className="font-semibold"
-              >
-                {countdown.minutes}:
-                {countdown.seconds < 10
-                  ? `0${countdown.seconds}`
-                  : countdown.seconds}
-              </Typography>
-            </Typography>
-          ) : (
-            <div className="flex items-center justify-center">
-              <Typography className="text-center">
-                Didn’t receive code?{" "}
-                <ButtonBase
-                  disableRipple
-                  // disabled={requestOtpMutationResult.isLoading}
-                  // component={MuiLink}
-                  // onClick={resendOtp}
-                  className="underline text-text-primary font-bold"
-                >
-                  Send it again.
-                </ButtonBase>
-              </Typography>
-              {/* {requestOtpMutationResult.isLoading && (
+          <Countdown date={countdownDate}>
+            {(countdown) => {
+              const isCodeSent =
+                countdown.days ||
+                countdown.minutes ||
+                countdown.seconds ||
+                countdown.seconds;
+
+              return (
+                <>
+                  {isCodeSent ? (
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      className="text-center"
+                    >
+                      Resend OTP in{" "}
+                      <Typography
+                        component="span"
+                        color="primary"
+                        className="font-semibold"
+                      >
+                        {countdown.minutes}:
+                        {countdown.seconds < 10
+                          ? `0${countdown.seconds}`
+                          : countdown.seconds}
+                      </Typography>
+                    </Typography>
+                  ) : (
+                    <div className="flex items-center justify-center">
+                      <Typography className="text-center">
+                        Didn’t receive code?{" "}
+                        <ButtonBase
+                          disableRipple
+                          disabled={signupYieldUserMutationResult?.isLoading}
+                          component={MuiLink}
+                          onClick={sendOtp}
+                          className="underline text-text-primary font-bold"
+                        >
+                          Send it again.
+                        </ButtonBase>
+                      </Typography>
+                      {/* {requestOtpMutationResult.isLoading && (
                 <CircularProgress size={12} thickness={8} className="ml-1" />
               )} */}
-            </div>
-          )}
+                    </div>
+                  )}
+                </>
+              );
+            }}
+          </Countdown>
         </div>
-        <Typography color="primary" className="text-center font-semibold">
+        <Typography
+          color="primary"
+          className="text-center font-semibold cursor-pointer"
+          onClick={handleIgree}
+        >
           I don’t have access to this phone number.
         </Typography>
         <LoadingButton

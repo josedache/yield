@@ -22,7 +22,10 @@ export interface AuthSignupStepContentDataRef {
   stepper: ReturnType<typeof useStepper>;
   enumStep: AuthSignupStep;
   getEnumStepIndex: (enumStep: AuthSignupStep) => number;
-  maskedPhone?: string
+  maskedPhone?: string;
+  sendOtp: any;
+  countdownDate: Date;
+  signupYieldUserMutationResult: any;
 }
 
 export type AuthSignupStepContentProps = AuthSignupStepContentDataRef;

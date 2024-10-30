@@ -13,6 +13,7 @@ import { LoadingButton } from "@mui/lab";
 import { SIGNIN } from "constants/urls";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { userApi } from "apis/user-api";
+import { useState } from "react";
 
 function AuthSignup() {
   const { enqueueSnackbar } = useSnackbar();
@@ -35,6 +36,8 @@ function AuthSignup() {
   const stepper = useStepper({
     initialStep: getEnumStepIndex(AuthSignupStep.BVN),
   });
+
+  const [countdownDate, setCountdownDate] = useState(getCountdownDate);
 
   const enumStep = STEPS_INDEX[stepper.step];
 
@@ -172,12 +175,34 @@ function AuthSignup() {
     },
   });
 
+  const sendOtp = async () => {
+    try {
+      const data = await signupYieldUserMutation({
+        body: { bvn: formik.values.bvn },
+      }).unwrap();
+      setCountdownDate(getCountdownDate());
+      enqueueSnackbar(data?.message || "Otp Sent", {
+        variant: "error",
+      });
+    } catch (error) {
+      enqueueSnackbar(
+        error?.data?.errors?.[0]?.defaultUserMessage || `OTP failed to send!`,
+        {
+          variant: "error",
+        }
+      );
+    }
+  };
+
   const contentProps = {
     formik,
     stepper,
     enumStep,
     getEnumStepIndex,
     maskedPhone: signupInfo?.user?.phone,
+    countdownDate,
+    sendOtp,
+    signupYieldUserMutationResult,
   };
 
   const contents = [
@@ -273,6 +298,12 @@ function AuthSignup() {
 export default AuthSignup;
 
 export const Component = AuthSignup;
+
+function getCountdownDate() {
+  const date = new Date();
+  date.setTime(date.getTime() + 1000 * 60 * 5);
+  return date;
+}
 
 function getEnumStepIndex(enumStep: AuthSignupStep) {
   const index = STEPS_INDEX.indexOf(enumStep);

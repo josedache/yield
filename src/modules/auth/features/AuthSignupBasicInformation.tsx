@@ -71,7 +71,22 @@ function AuthSignupBasicInformation(props: AuthSignupStepContentProps) {
         <FormControlLabel
           label={
             <Typography>
-              I agree to Yield’s Terms & Conditions and Privacy Policy
+              I agree to Yield’s{" "}
+              <a
+                className="text-[#4920AA]"
+                href="https://www.creditdirect.ng/loan-agreement-terms-conditions/"
+                target="_blank"
+              >
+                Terms & Conditions
+              </a>{" "}
+              and{" "}
+              <a
+                className="text-[#4920AA]"
+                href="https://www.creditdirect.ng/privacy-policy/"
+                target="_blank"
+              >
+                Privacy Policy
+              </a>
             </Typography>
           }
           control={<Checkbox />}

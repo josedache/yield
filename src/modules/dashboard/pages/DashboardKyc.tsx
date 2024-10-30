@@ -149,7 +149,11 @@ function DashboardKyc() {
           }),
         },
         [DashboardKycStep.ACCOUNT_DETAILS]: {
-          accountnumber: yup.string().label("Account Number").required(),
+          accountnumber: yup
+            .string()
+            .label("Account Number")
+            .length(10)
+            .required(),
           accountname: yup.string().label("Account Name").required(),
           bankId: yup.string().label("Bank").required(),
         },
@@ -249,7 +253,7 @@ function DashboardKyc() {
       useMemo(
         () => ({
           params: {
-            bankCode: normalizedBanks?.[formik.values.bankId]?.bank_sort_code,
+            bankCode: normalizedBanks?.[formik.values.bankId]?.code,
             accountNumber: formik.values.accountnumber,
           },
         }),
@@ -532,6 +536,7 @@ function DashboardKyc() {
                   <div className="space-y-2">
                     <NumberTextField
                       freeSolo
+                      maskOptions={{ max: 10 }}
                       fullWidth
                       label="Account Number"
                       placeholder="Enter Account Number"
@@ -540,7 +545,8 @@ function DashboardKyc() {
                     <>
                       {transactionOutwardNameEnquiryQueryResult.isFetching ? (
                         <Typography variant="body2">
-                          Resolving Account <CircularProgress size={10} />
+                          Fetching Account details{" "}
+                          <CircularProgress size={10} />
                         </Typography>
                       ) : transactionOutwardNameEnquiryQueryResult.isSuccess ? (
                         <div className="flex items-center gap-2 text-success-main">
