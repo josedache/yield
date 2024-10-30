@@ -90,9 +90,9 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
       bvn: formik.values.bvn,
       mode: CDL_IAGREE_INLINE_MODE,
       baseURL: CDL_IAGREE_INLINE_BASE_URL,
-      onSuccess: async (data: any) => {
+      onSuccess: async () => {
         try {
-          console.log(data);
+          // console.log(data);
         } catch (error) {
           enqueueSnackbar(error?.message, {
             variant: "error",
@@ -100,12 +100,12 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
         }
         setIgree(false);
       },
-      onError: (error) => {
-        console.log("Error", error);
+      onError: () => {
+        // console.log("Error", error);
       },
       onClose: () => {
         setIgree(false);
-        console.log("Closed");
+        // console.log("Closed");
       },
     });
 
