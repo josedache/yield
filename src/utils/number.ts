@@ -1,3 +1,6 @@
+import currencyJs from "currency.js";
+import Currency from "enums/Currency";
+
 export function formatNumber(n = "") {
   return n
     .toString()
@@ -5,24 +8,9 @@ export function formatNumber(n = "") {
     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-export function formatNumberToCurrency(number = "", decimalPlace = false) {
+export function formatNumberToCurrency(number = "", currency = Currency.NGN) {
   let value = number.toString();
-  const decimalPosition = value.indexOf(".");
-  if (decimalPosition >= 0) {
-    const leftSide = formatNumber(value.substring(0, decimalPosition));
-    let rightSide = formatNumber(value.substring(decimalPosition));
-    if (decimalPlace) {
-      rightSide += "00";
-    }
-
-    rightSide = rightSide.substring(0, 2);
-    value = leftSide + "." + rightSide;
-  } else {
-    value = formatNumber(value);
-    if (decimalPlace) {
-      value += ".00";
-    }
-  }
+  value = currencyJs(value, { symbol: currency.symbol }).format();
   return value;
 }
 

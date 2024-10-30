@@ -7,6 +7,7 @@ import {
   Icon,
   IconButton,
   Paper,
+  Skeleton,
   Typography,
 } from "@mui/material";
 import { useFormik } from "formik";
@@ -250,7 +251,7 @@ export default function FixedCreatePlan(
             {
               icon: <Iconify icon="ph:wallet-light" className="text-4xl" />,
               label: `Fund via Yield Wallet`,
-              more: `Wallet balance: ₦${formatNumberToCurrency(
+              more: `Wallet balance: ${formatNumberToCurrency(
                 String(wallet?.balance || 0)
               )}`,
               onClick: () => {
@@ -413,32 +414,118 @@ export default function FixedCreatePlan(
         ) : null}
 
         <DialogContent>
-          <LoadingContent
-            loading={
-              getSavingsProductInformationQuery.isLoading ||
-              savingsFixedDepositCalculationMutationResult.isLoading ||
-              savingsFixedDepositCreateMutationResult?.isLoading ||
-              savingsActivateAccountMutationResult.isLoading ||
-              walletQueryResult?.isLoading ||
-              updateDraftSavingsMutationResult?.isLoading ||
-              renameMutationResult?.isLoading
-            }
-            error={getSavingsProductInformationQuery.isError}
-            onRetry={getSavingsProductInformationQuery.refetch}
-          >
-            <form onSubmit={formik.handleSubmit}>
+          <form onSubmit={formik.handleSubmit}>
+            <LoadingContent
+              renderLoading={() =>
+                [
+                  <div className="w-full">
+                    <div>
+                      <Skeleton
+                        variant="rounded"
+                        className="w-[50px] text-xs"
+                      />
+                      <Skeleton
+                        variant="rounded"
+                        className="w-full mt-1 h-[45px]"
+                      />
+                    </div>
+
+                    <div className="mt-4">
+                      <Skeleton
+                        variant="rounded"
+                        className="w-[60px] text-xs"
+                      />
+                      <Skeleton
+                        variant="rounded"
+                        className="w-[200px] text-xs mt-1"
+                      />
+                      <div className="mt-1 flex items-center">
+                        <Skeleton
+                          variant="circular"
+                          className="w-[20px] h-[20px]"
+                        />
+                        <Skeleton
+                          variant="rounded"
+                          className="w-full  h-[4px]"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <Skeleton
+                        variant="rounded"
+                        className="w-[50px] text-xs"
+                      />
+                      <Skeleton
+                        variant="rounded"
+                        className="w-full mt-1 h-[45px]"
+                      />
+                      <Skeleton
+                        variant="rounded"
+                        className="w-[200px] text-xs mt-1"
+                      />
+                    </div>
+                  </div>,
+                  <div className="px-6 mt-4 grid grid-cols-1 gap-6  mb-8 w-full">
+                    {[1, 2, 3, 4, 5, 6].map((index) => (
+                      <div key={index} className="flex justify-between">
+                        <Skeleton variant="rounded" width={150} height={15} />
+                        <Skeleton variant="rounded" width={150} height={15} />
+                      </div>
+                    ))}
+                    <div className="flex gap-1 flex-col justify-center items-center">
+                      <Skeleton variant="rounded" className="w-full h-[12px]" />
+                      <Skeleton
+                        variant="rounded"
+                        className="w-[100px] h-[12px]"
+                      />
+                    </div>
+                  </div>,
+                  <div className="w-full">
+                    <Skeleton
+                      variant="rounded"
+                      className="w-[200px] mx-auto h-[15px]"
+                    />
+
+                    <Skeleton
+                      variant="rounded"
+                      className="w-full h-[50px] mt-6"
+                    />
+                    <Skeleton
+                      variant="rounded"
+                      className="w-full h-[50px] mt-4"
+                    />
+                  </div>,
+                ][stepper.step]
+              }
+              loading={
+                getSavingsProductInformationQuery.isLoading ||
+                walletQueryResult?.isLoading
+              }
+              error={getSavingsProductInformationQuery.isError}
+              onRetry={getSavingsProductInformationQuery.refetch}
+            >
               {tabs[stepper.step]?.content}
-              {stepper.step <= 1 ? (
-                <Button
-                  type="submit"
-                  className={clsx(["mt-6", "mt-3"][stepper.step])}
-                  fullWidth
-                >
-                  {["Continue", "Proceed to Pay"][stepper.step]}
-                </Button>
-              ) : null}
-            </form>
-          </LoadingContent>
+            </LoadingContent>
+            {stepper.step <= 1 ? (
+              <LoadingButton
+                loading={
+                  getSavingsProductInformationQuery.isLoading ||
+                  savingsFixedDepositCalculationMutationResult.isLoading ||
+                  savingsFixedDepositCreateMutationResult?.isLoading ||
+                  savingsActivateAccountMutationResult.isLoading ||
+                  walletQueryResult?.isLoading ||
+                  updateDraftSavingsMutationResult?.isLoading ||
+                  renameMutationResult?.isLoading
+                }
+                type="submit"
+                className={clsx(["mt-6", "mt-3"][stepper.step])}
+                fullWidth
+              >
+                {["Continue", "Proceed to Pay"][stepper.step]}
+              </LoadingButton>
+            ) : null}
+          </form>
         </DialogContent>
       </Dialog>
     </>
