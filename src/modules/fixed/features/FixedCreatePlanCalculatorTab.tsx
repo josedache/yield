@@ -11,7 +11,7 @@ export default function FixedCreatePlanCalculatorTab(
     { title: "Plan Name", value: formik.values.name },
     {
       title: "Amount",
-      value: `₦${formatNumberToCurrency(
+      value: `${formatNumberToCurrency(
         `${savingsDepositCalculator?.data?.depositAmount}` || ""
       )}`,
     },
@@ -27,13 +27,13 @@ export default function FixedCreatePlanCalculatorTab(
       title: "Interest Expected",
       value: `${
         savingsDepositCalculator.data?.nominalAnnualInterestRate
-      }% (₦${formatNumberToCurrency(
+      }% (${formatNumberToCurrency(
         String(savingsDepositCalculator.data?.expectedInterestAmount || "")
       )})`,
     },
     {
       title: "Total Payout",
-      value: `₦${formatNumberToCurrency(
+      value: `${formatNumberToCurrency(
         `${savingsDepositCalculator?.data?.maturityAmount}` || ""
       )}`,
     },

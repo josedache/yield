@@ -107,7 +107,7 @@ export default function FixedPlanDetails(
     },
     {
       title: "Accrued Interest",
-      value: `+₦${
+      value: `+${
         formatNumberToCurrency(
           getSavingsQuery?.data?.data?.total_interest_earned
         ) || "0"
@@ -115,7 +115,7 @@ export default function FixedPlanDetails(
     },
     {
       title: "Estimated Interest",
-      value: `₦${
+      value: `${
         formatNumberToCurrency(
           `${
             getSavingsQuery?.data?.data?.maturity_amount -
@@ -241,7 +241,7 @@ export default function FixedPlanDetails(
             {getSavingsQuery?.data?.data?.total_interest_earned &&
             Number(getSavingsQuery?.data?.data?.total_interest_earned) > 0 ? (
               <Typography variant="body2" color="primary" className="mt-1">
-                +₦
+                +
                 {formatNumberToCurrency(
                   getSavingsQuery?.data?.data?.total_interest_earned
                 )}
