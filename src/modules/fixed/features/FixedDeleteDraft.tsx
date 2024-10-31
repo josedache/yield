@@ -32,7 +32,7 @@ export default function FixedDeleteDraft(
           </LoadingButton>
           <LoadingButton
             fullWidth
-            loading={isLoading}
+            disabled={isLoading}
             variant="outlined"
             onClick={onClose}
           >
