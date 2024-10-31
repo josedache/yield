@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { logout } from "./store-actions";
 import { userApi } from "apis/user-api";
 import { User } from "src/types/user";
+import { isBase64DataURL } from "utils/file";
 
 type InitialState = {
   authUser: User;
@@ -69,7 +70,9 @@ export const slice = createSlice({
       .addMatcher(
         userApi.endpoints.getUserSelfieFile.matchFulfilled,
         (state, { payload }) => {
-          state.authUser.avatar = payload.data;
+          state.authUser.avatar = isBase64DataURL(payload.data)
+            ? payload.data
+            : `data:image/png;base64,${payload.data}`;
         }
       ),
 });

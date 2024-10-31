@@ -77,7 +77,19 @@ function AuthSignup() {
           alternate_number: yup.string().label("alternate_number").optional(),
         },
         [AuthSignupStep.CREATE_PASSWORD]: {
-          password: yup.string().label("Password").trim().max(40).required(),
+          password: yup
+            .string()
+            .label("Password")
+            .trim()
+            .trim()
+            .min(8, "Your password must be at least 8 characters long")
+            .max(25)
+            .matches(/^(?=.{8,})/, "Must Contain 8 Characters")
+            .matches(/^(?=.*[a-z])/, "Must Contain One Lowercase")
+            .matches(/^(?=.*[A-Z])/, "Must Contain One Uppercase")
+            .matches(/^(?=.*\d)/, "Must contain a number")
+            .matches(/^(?=.*[@$!%*?&#%])/, "Must contain a special character")
+            .required(),
           confirmPassword: yup
             .string()
             .label("Confirm Password")
@@ -178,11 +190,11 @@ function AuthSignup() {
 
   const sendOtp = async () => {
     try {
-      const data = await signupYieldUserMutation({
+      await signupYieldUserMutation({
         body: { bvn: formik.values.bvn },
       }).unwrap();
       setCountdownDate(getCountdownDate());
-      enqueueSnackbar(data?.message || "Otp Sent", {
+      enqueueSnackbar("OTP sent successfully!", {
         variant: "error",
       });
     } catch (error) {

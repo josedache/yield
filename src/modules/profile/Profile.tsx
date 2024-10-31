@@ -163,8 +163,8 @@ function Profile() {
               <Typography color="textSecondary" className="text-center">
                 Your profile photo personalizes your <br /> yield account
               </Typography>
-              <div className="grid grid-cols-2 gap-2">
-                <LoadingButton
+              <div className="grid grid-cols-1 gap-2">
+                {/* <LoadingButton
                   variant="outlined"
                   // disabled={uploadUserFileMutationResult.isLoading}
                   disabled
@@ -172,7 +172,7 @@ function Profile() {
                   endIcon={<></>}
                 >
                   Remove
-                </LoadingButton>
+                </LoadingButton> */}
                 <Dropzone
                   multiple={false}
                   maxSize={1024 * 1024 * 2}
@@ -199,7 +199,7 @@ function Profile() {
                       })}
                     >
                       <input {...getInputProps()} />
-                      Update
+                      {authUser?.avatar ? "Update" : "Upload"}
                     </LoadingButton>
                   )}
                 </Dropzone>

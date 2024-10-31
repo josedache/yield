@@ -13,6 +13,7 @@ import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import { AuthSignupStep } from "../enums/AuthSignupStep";
 import { Link, useNavigate } from "react-router-dom";
 import { SIGNIN } from "constants/urls";
+import clsx from "clsx";
 
 function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
   const { formik, enumStep } = props;
@@ -26,17 +27,40 @@ function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
           fullWidth
           margin="normal"
           label="New Password"
-          placeholder="**********"
+          placeholder="Enter Password"
           {...getFormikTextFieldProps(formik, "password")}
         />
         <div className="space-y-1">
           {[
-            { label: "Must be at least 8 characters long" },
-            { label: "Must contain an uppercase and a lowercase letter (A,z)" },
-            { label: "Must contain a number (0,1,2,3,4,5,6,7,8,9)" },
-            { label: "Must contain a special characater (!,%,@,#, etc.)" },
-          ].map(({ label }) => (
-            <div className="flex items-center gap-2 text-primary-main">
+            {
+              label: "Must be at least 8 characters long",
+              test: (value: string) => value.length >= 8,
+            },
+            {
+              label: "Must contain a number (0,1,2,3,4,5,6,7,8,9)",
+              test: (value: string) => /\d/.test(value),
+            },
+            {
+              label: "Must contain a lowercase letter (a-z)",
+              test: (value: string) => /[a-z]/.test(value),
+            },
+            {
+              label: "Must contain an uppercase letter (A-Z)",
+              test: (value: string) => /[A-Z]/.test(value),
+            },
+            {
+              label: "Must contain a special character (!,%,@,#, etc.)",
+              test: (value: string) => /[!@#$%^&*]/.test(value),
+            },
+          ].map(({ label, test }) => (
+            <div
+              className={clsx(
+                "flex items-center gap-2",
+                test(formik.values.password)
+                  ? "text-primary-main"
+                  : "text-text-secondary"
+              )}
+            >
               <Icon>check_circle</Icon>
               <Typography>{label}</Typography>
             </div>
@@ -46,7 +70,7 @@ function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
           fullWidth
           margin="normal"
           label="Confirm Password"
-          placeholder="Pas$word99"
+          placeholder="Re-enter Password"
           {...getFormikTextFieldProps(formik, "confirmPassword")}
         />
       </div>
