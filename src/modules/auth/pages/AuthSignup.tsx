@@ -1,4 +1,4 @@
-import { ButtonBase, Paper, Typography } from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
@@ -11,14 +11,21 @@ import AuthSignupBasicInformation from "../features/AuthSignupBasicInformation";
 import AuthSignupCreatePassword from "../features/AuthSignupCreatePassword";
 import { LoadingButton } from "@mui/lab";
 import { SIGNIN } from "constants/urls";
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { userApi } from "apis/user-api";
 import { useState } from "react";
+import {
+  CDL_IAGREE_INLINE_BASE_URL,
+  CDL_IAGREE_INLINE_MODE,
+} from "constants/env";
+import useToggle from "hooks/useToggle";
 
 function AuthSignup() {
   const { enqueueSnackbar } = useSnackbar();
 
   const navigate = useNavigate();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isIgree, _, setIgree] = useToggle();
 
   const [signupYieldUserMutation, signupYieldUserMutationResult] =
     userApi.useSignupYieldUserMutation();
@@ -30,8 +37,16 @@ function AuthSignup() {
 
   const signupVerifyInfo = verifyUserOtpMutationResult.data?.data;
 
+  const [signupYieldSecondStageUserMutation] =
+    userApi.useSignupYieldSecondStageUserMutation();
+
   const [createYieldUserPasswordMutation] =
     userApi.useCreateYieldUserPasswordMutation();
+
+  const [iAgreeUserMutation, iAgreeUserMutationResult] =
+    userApi.useIAgreeUserMutation();
+
+  const igreeUserInfo = iAgreeUserMutationResult.data?.data;
 
   const stepper = useStepper({
     initialStep: getEnumStepIndex(AuthSignupStep.BVN),
@@ -43,12 +58,12 @@ function AuthSignup() {
 
   const formik = useFormik<AuthSignupFormikValues>({
     initialValues: {
-      firstName: signupVerifyInfo?.firstname ?? "",
-      lastName: signupVerifyInfo?.lastname ?? "",
-      phone: signupVerifyInfo?.phone ?? "",
-      email: signupVerifyInfo?.email ?? "",
-      bvn: signupVerifyInfo?.bvn ?? "",
-      nin: signupVerifyInfo?.nin ?? "",
+      firstName: signupVerifyInfo?.firstname ?? igreeUserInfo?.firstname ?? "",
+      lastName: signupVerifyInfo?.lastname ?? igreeUserInfo?.lastname ?? "",
+      phone: signupVerifyInfo?.phone ?? igreeUserInfo?.phone ?? "",
+      email: signupVerifyInfo?.email ?? igreeUserInfo?.email ?? "",
+      bvn: signupVerifyInfo?.bvn ?? igreeUserInfo?.bvn ?? "",
+      nin: signupVerifyInfo?.nin ?? igreeUserInfo?.nin ?? "",
       referal_code: "",
       alternate_number: signupVerifyInfo?.alternate_number ?? "",
       otp: "",
@@ -112,13 +127,13 @@ function AuthSignup() {
             break;
           }
           case AuthSignupStep.BVN_VERIFICATION: {
-            const data = await verifyUserOtpMutation({
+            await verifyUserOtpMutation({
               body: {
                 otp: values.otp,
                 channel: "phone",
               },
             }).unwrap();
-            enqueueSnackbar(data?.message || "OTP verified successfully!", {
+            enqueueSnackbar("OTP verified successfully!", {
               variant: "success",
             });
             break;
@@ -130,7 +145,7 @@ function AuthSignup() {
               });
               return;
             }
-            const data = await signupYieldUserMutation({
+            await signupYieldSecondStageUserMutation({
               body: {
                 firstName: values.firstName,
                 lastName: values.lastName,
@@ -142,12 +157,12 @@ function AuthSignup() {
                 alternate_number: values.alternate_number,
               },
             }).unwrap();
-            enqueueSnackbar(
-              data?.message || "Information saved successfully!",
-              {
-                variant: "success",
-              }
-            );
+            // enqueueSnackbar(
+            //   data?.message || "Information saved successfully!",
+            //   {
+            //     variant: "success",
+            //   }
+            // );
             break;
           }
           case AuthSignupStep.CREATE_PASSWORD: {
@@ -207,6 +222,39 @@ function AuthSignup() {
     }
   };
 
+  function triggerIgree() {
+    const bvnVerificationInline = (window as any).BVNVerificationInline({
+      bvn: formik.values.bvn,
+      mode: CDL_IAGREE_INLINE_MODE,
+      baseURL: CDL_IAGREE_INLINE_BASE_URL,
+      onSuccess: async (data: any) => {
+        try {
+          console.log(data);
+          const igreeData = await iAgreeUserMutation({
+            body: {
+              reference: data?.reference,
+              bvn: data?.bvn ?? formik.values.bvn,
+            },
+          }).unwrap();
+        } catch (error) {
+          enqueueSnackbar(error?.message || "Failed to process IAgree", {
+            variant: "error",
+          });
+        }
+        setIgree(false);
+      },
+      onError: (error) => {
+        console.log("Error", error);
+      },
+      onClose: () => {
+        setIgree(false);
+      },
+    });
+
+    bvnVerificationInline.openIframe();
+    setIgree(true);
+  }
+
   const contentProps = {
     formik,
     stepper,
@@ -216,16 +264,19 @@ function AuthSignup() {
     countdownDate,
     sendOtp,
     signupYieldUserMutationResult,
+    isIgree,
+    setIgree,
+    triggerIgree,
   };
 
   const contents = [
     {
-      title: "Signup",
+      title: "Sign up",
       description: "Create an account on Yield using your BVN.",
       body: <AuthSignupBvn {...contentProps} />,
     },
     {
-      title: "Signup",
+      title: "Sign up",
       description: "Create an account on Yield using your BVN.",
       body: <AuthSignupBvn {...contentProps} />,
     },
@@ -260,12 +311,12 @@ function AuthSignup() {
     >
       <Paper className="w-full max-w-lg min-h-0 max-h-full overflow-auto">
         <div className="sticky top-0 z-10 bg-inherit p-8 pb-4">
-          {enumStep === AuthSignupStep.CREATE_PASSWORD ? (
+          {/* {enumStep === AuthSignupStep.CREATE_PASSWORD ? (
             <ButtonBase className="flex items-center gap-2 mb-4">
               <Icon icon="gravity-ui:arrow-left" fontSize={20} />
               <Typography>Back</Typography>
             </ButtonBase>
-          ) : null}
+          ) : null} */}
           <Typography variant="h4" className="font-bold mb-4">
             {content?.title}
           </Typography>

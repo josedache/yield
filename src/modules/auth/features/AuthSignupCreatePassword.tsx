@@ -97,7 +97,7 @@ function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
             complete your onboarding.
           </DialogContentText>
           <Button fullWidth component={Link} to={SIGNIN}>
-            Signin
+            Sign in
           </Button>
         </DialogContent>
       </Dialog>

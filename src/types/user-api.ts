@@ -151,3 +151,33 @@ export type UserCreatePasswordApiResponse = ApiResponse<any>;
 export type UserFileUploadPasswordApiRequest = ApiRequest<any>;
 
 export type UserFileUploadPasswordApiResponse = ApiResponse<any>;
+
+export type UserIAgreeApiRequest = ApiRequest<{
+  reference: string;
+  bvn: string;
+}>;
+
+export type UserIAgreeApiResponse = ApiResponse<{
+  id: number;
+  client_id: string;
+  tier_level: string;
+  bvn: string;
+  nin: string;
+  referal_code: string;
+  alternate_number: string;
+  is_active: boolean;
+  is_2fa: boolean;
+  is_suspended: boolean;
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+  hashed_pin: string;
+  is_phone_verified: boolean;
+  is_email_verified: boolean;
+  is_bvn_verified: boolean;
+  onboarding_stage: string;
+  is_nin_verified: boolean;
+  created_at: string;
+  updated_at: string;
+}>;

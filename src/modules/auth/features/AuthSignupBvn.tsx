@@ -17,12 +17,6 @@ import { useEffect } from "react";
 import useDataRef from "hooks/useDataRef";
 import NumberInput from "components/NumberInput";
 import Countdown from "components/Countdown";
-import {
-  CDL_IAGREE_INLINE_BASE_URL,
-  CDL_IAGREE_INLINE_MODE,
-} from "constants/env";
-import { useSnackbar } from "notistack";
-import useToggle from "hooks/useToggle";
 
 function AuthSignupBvn(props: AuthSignupStepContentProps) {
   const { formik } = props;
@@ -69,11 +63,9 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
     sendOtp,
     countdownDate,
     signupYieldUserMutationResult,
+    isIgree,
+    triggerIgree,
   } = props;
-
-  const { enqueueSnackbar } = useSnackbar();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isIgree, _, setIgree] = useToggle();
 
   const open = enumStep === AuthSignupStep.BVN_VERIFICATION && !isIgree;
 
@@ -84,34 +76,6 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
       dataRef.current.formik.setFieldValue("otp", "");
     }
   }, [dataRef, open]);
-
-  function handleIgree() {
-    const bvnVerificationInline = (window as any).BVNVerificationInline({
-      bvn: formik.values.bvn,
-      mode: CDL_IAGREE_INLINE_MODE,
-      baseURL: CDL_IAGREE_INLINE_BASE_URL,
-      onSuccess: async () => {
-        try {
-          // console.log(data);
-        } catch (error) {
-          enqueueSnackbar(error?.message, {
-            variant: "error",
-          });
-        }
-        setIgree(false);
-      },
-      onError: () => {
-        // console.log("Error", error);
-      },
-      onClose: () => {
-        setIgree(false);
-        // console.log("Closed");
-      },
-    });
-
-    bvnVerificationInline.openIframe();
-    setIgree(true);
-  }
 
   return (
     <Dialog
@@ -205,7 +169,7 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
         <Typography
           color="primary"
           className="text-center font-semibold cursor-pointer"
-          onClick={handleIgree}
+          onClick={triggerIgree}
         >
           I don’t have access to this phone number.
         </Typography>

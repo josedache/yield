@@ -26,6 +26,9 @@ export interface AuthSignupStepContentDataRef {
   sendOtp: any;
   countdownDate: Date;
   signupYieldUserMutationResult: any;
+  isIgree: any;
+  setIgree: any;
+  triggerIgree: any;
 }
 
 export type AuthSignupStepContentProps = AuthSignupStepContentDataRef;

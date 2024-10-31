@@ -7,6 +7,8 @@ import {
   UserCreatePasswordApiResponse,
   UserFileUploadPasswordApiRequest,
   UserFileUploadPasswordApiResponse,
+  UserIAgreeApiRequest,
+  UserIAgreeApiResponse,
   UserLoginApiRequest,
   UserLoginApiResponse,
   UserLogoutApiRequest,
@@ -104,6 +106,18 @@ export const userApi = coreApi.injectEndpoints({
       invalidatesTags: [tags.USER],
     }),
 
+    signupYieldSecondStageUser: builder.mutation<
+      UserSignupYieldApiResponse,
+      UserSignupYieldApiRequest
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/yield_second_stage",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.USER],
+    }),
+
     signupYieldUser: builder.mutation<
       UserSignupYieldApiResponse,
       UserSignupYieldApiRequest
@@ -163,6 +177,15 @@ export const userApi = coreApi.injectEndpoints({
         ...config,
       }),
       providesTags: [tags.USER],
+    }),
+
+    iAgreeUser: builder.mutation<UserIAgreeApiResponse, UserIAgreeApiRequest>({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/i_agree",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.USER],
     }),
   }),
 });
