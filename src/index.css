@@ -32,3 +32,23 @@
     overflow: auto;
   }
 }
+
+/* Customize scrollbar globally for all browsers */
+* {
+  scrollbar-width: 1px; /* Firefox */
+  scrollbar-color: #b5b5b5ae rgba(0, 0, 0, 0); /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  width: 0.1px; /* Chrome, Safari, and Opera */
+  height: 10px; /* Chrome, Safari, and Opera */
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #dddddd; /* Chrome, Safari, and Opera */
+  border-radius: 5px; /* Chrome, Safari, and Opera */
+}
+
+*::-webkit-scrollbar-track {
+  background: #dddddd; /* Chrome, Safari, and Opera */
+}

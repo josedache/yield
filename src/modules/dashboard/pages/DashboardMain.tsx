@@ -174,7 +174,9 @@ function DashboardMain() {
                   Wallet
                 </Typography>
                 <LoadingContent
-                  loading={walletQueryResult.isLoading}
+                  loading={
+                    walletQueryResult.isLoading || walletQueryResult.isFetching
+                  }
                   error={walletQueryResult.isError}
                   onRetry={walletQueryResult.refetch}
                   className="w-full max-w-48"

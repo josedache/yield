@@ -108,7 +108,8 @@ export const savingsApi = coreApi.injectEndpoints({
         method: "POST",
         ...config,
       }),
-      invalidatesTags: (_result, error) => (error ? [] : [tags.SAVINGS]),
+      invalidatesTags: (_result, error) =>
+        error ? [] : [tags.SAVINGS, tags.WALLET],
     }),
 
     sendSavingsOtp: builder.mutation<
@@ -131,7 +132,8 @@ export const savingsApi = coreApi.injectEndpoints({
         method: "POST",
         ...config,
       }),
-      invalidatesTags: (_result, error) => (error ? [] : [tags.SAVINGS]),
+      invalidatesTags: (_result, error) =>
+        error ? [] : [tags.SAVINGS, tags.WALLET],
     }),
 
     getSavingsProductInformation: builder.query<
