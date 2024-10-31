@@ -67,12 +67,12 @@ function DashboardMain() {
 
   const fixedSavingsAccounts = fixedSavingsAccountsQueryResult.data?.data;
 
-  const fixedSavingsProductQueryResult =
-    savingsApi.useGetSavingsProductInformationQuery(
-      useMemo(() => ({ params: { productId: 1 } }), [])
-    );
+  // const fixedSavingsProductQueryResult =
+  //   savingsApi.useGetSavingsProductInformationQuery(
+  //     useMemo(() => ({ params: { productId: 1 } }), [])
+  //   );
 
-  const fixedSavingsProduct = fixedSavingsProductQueryResult.data?.data;
+  // const fixedSavingsProduct = fixedSavingsProductQueryResult.data?.data;
 
   const savingsRecentActivitiesQueryResult =
     savingsApi.useGetSavingsRecentActivitiesQuery(
@@ -242,9 +242,10 @@ function DashboardMain() {
                 iconClassName: "bg-[#5EB1BF] text-white",
                 label: "Fixed Yield",
                 value: fixedSavingsAccounts?.totalAvailableBalance ?? 0,
-                interestRate: `${
-                  fixedSavingsProduct?.interest_rate ?? 0
-                }% P.A.`,
+                // interestRate: `${
+                //   fixedSavingsProduct?.interest_rate ?? 0
+                // }% P.A.`,
+                interestRate: `15-20% P.A.`,
                 isValueVisible: isFixedYieldVisible,
                 onValueVisibilityClick: toggleFixedYieldVisible,
                 to: FIXED,
@@ -332,8 +333,8 @@ function DashboardMain() {
             )}
           </div>
 
-          <Paper className="p-4 md:p-8 mt-8 space-y-4">
-            <Typography variant="h5">Recent Activities</Typography>
+          <Paper className="py-4 md:py-8 mt-8 space-y-4">
+            <Typography variant="h5" className="px-4 md:px-8">Recent Activities</Typography>
             <LoadingContent
               loading={savingsRecentActivitiesQueryResult.isLoading}
               error={savingsRecentActivitiesQueryResult.isError}
@@ -343,7 +344,7 @@ function DashboardMain() {
                 <>
                   {savingsRecentActivities?.length ? (
                     <div
-                      className="overflow-y-auto h-96"
+                      className="overflow-y-auto h-96 px-4 md:px-8"
                       style={{ contain: "strict" }}
                       ref={recentActivitiesParentRef}
                     >

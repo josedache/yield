@@ -2,6 +2,7 @@ import {
   Avatar,
   IconButton,
   Paper,
+  Skeleton,
   TextField,
   Typography,
 } from "@mui/material";
@@ -13,6 +14,8 @@ import { userApi } from "apis/user-api";
 import { useSnackbar } from "notistack";
 import Dropzone from "react-dropzone";
 import { LoadingButton } from "@mui/lab";
+import { transactionApi } from "apis/transaction-api";
+import { useMemo } from "react";
 
 function Profile() {
   const authUser = useAuthUser();
@@ -23,6 +26,22 @@ function Profile() {
 
   const [uploadUserFileMutation, uploadUserFileMutationResult] =
     userApi.useUploadUserFileMutation();
+
+  const transactionOutwardBankListQueryResult =
+    transactionApi.useGetTransactionOutwardBankListQuery(undefined, {
+      skip: !authUser.bank_details.bankId,
+    });
+
+  const banks = transactionOutwardBankListQueryResult.data?.data;
+
+  const normalizedBanks = useMemo(
+    () =>
+      banks?.reduce((acc, curr) => {
+        acc[curr.id] = curr;
+        return acc;
+      }, {} as Record<string, (typeof banks)[0]>),
+    [banks]
+  );
 
   async function handleSelfieUpdate(file: File) {
     try {
@@ -101,7 +120,11 @@ function Profile() {
                   </Typography>
 
                   <Typography color="textSecondary">
-                    Credit Direct Limited
+                    {transactionOutwardBankListQueryResult?.isLoading ? (
+                      <Skeleton />
+                    ) : (
+                      normalizedBanks?.[authUser.bank_details.bankId]?.name
+                    )}
                   </Typography>
 
                   <div className="flex items-center gap-1">
@@ -133,7 +156,10 @@ function Profile() {
               </Typography>
             </div>
             <div className="p-6 flex flex-col items-center gap-6">
-              <Avatar className="w-24 h-24" />
+              <Avatar src={authUser?.avatar} className="w-24 h-24">
+                {authUser?.firstname?.[0]}
+                {authUser?.lastname?.[0]}
+              </Avatar>
               <Typography color="textSecondary" className="text-center">
                 Your profile photo personalizes your <br /> yield account
               </Typography>

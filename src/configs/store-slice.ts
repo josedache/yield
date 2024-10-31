@@ -65,6 +65,12 @@ export const slice = createSlice({
         (state, { payload }) => {
           state.authUser = Object.assign(state.authUser, payload.data);
         }
+      )
+      .addMatcher(
+        userApi.endpoints.getUserSelfieFile.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser.avatar = payload.data;
+        }
       ),
 });
 

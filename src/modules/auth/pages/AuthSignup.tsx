@@ -90,10 +90,11 @@ function AuthSignup() {
       try {
         switch (enumStep) {
           case AuthSignupStep.BVN: {
-            const data = await signupYieldUserMutation({
+            await signupYieldUserMutation({
               body: { bvn: values.bvn },
             }).unwrap();
-            enqueueSnackbar(data?.message || "OTP sent", {
+            setCountdownDate(getCountdownDate());
+            enqueueSnackbar("OTP sent successfully!", {
               variant: "success",
             });
             break;
@@ -301,7 +302,7 @@ export const Component = AuthSignup;
 
 function getCountdownDate() {
   const date = new Date();
-  date.setTime(date.getTime() + 1000 * 60 * 5);
+  date.setTime(date.getTime() + 1000 * 60 * 10);
   return date;
 }
 

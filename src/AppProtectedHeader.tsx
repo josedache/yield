@@ -62,7 +62,7 @@ function AppProtectedHeader(props: AppBarProps) {
               </IconButton>
             </div>
 
-            <Avatar>
+            <Avatar src={authUser?.avatar}>
               {authUser?.firstname?.[0]}
               {authUser?.lastname?.[0]}
             </Avatar>

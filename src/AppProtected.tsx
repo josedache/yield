@@ -10,12 +10,27 @@ import LoadingContent from "components/LoadingContent";
 
 function AppProtected() {
   const userClientKycQueryResult = userApi.useGetUserClientKycQuery(undefined);
+  const userSelfieFileQueryResult =
+    userApi.useGetUserSelfieFileQuery(undefined);
 
   return (
     <LoadingContent
-      loading={userClientKycQueryResult.isLoading}
-      error={userClientKycQueryResult.isError}
-      onRetry={userClientKycQueryResult.refetch}
+      loading={
+        userClientKycQueryResult.isLoading ||
+        userSelfieFileQueryResult.isLoading
+      }
+      error={
+        userClientKycQueryResult.isError || userClientKycQueryResult.isError
+      }
+      onRetry={() => {
+        if (userClientKycQueryResult.isError) {
+          userClientKycQueryResult.refetch();
+        }
+
+        if (userClientKycQueryResult.isError) {
+          userClientKycQueryResult.refetch();
+        }
+      }}
     >
       {() => (
         <>
