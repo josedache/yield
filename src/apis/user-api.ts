@@ -155,5 +155,14 @@ export const userApi = coreApi.injectEndpoints({
       }),
       invalidatesTags: [tags.USER],
     }),
+
+    getUserSelfieFile: builder.query<ApiResponse<string>, ApiRequest>({
+      query: (config) => ({
+        url: BASE_URL + "/file/selfie",
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.USER],
+    }),
   }),
 });

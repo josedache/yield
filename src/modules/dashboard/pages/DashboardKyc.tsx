@@ -12,16 +12,13 @@ import {
   DialogContent,
   DialogContentText,
   Icon,
-  IconButton,
-  LinearProgress,
   MenuItem,
-  Paper,
   TextField,
   Typography,
 } from "@mui/material";
 import { getFormikTextFieldProps } from "utils/formik";
 import NumberTextField from "components/NumberTextField";
-import Dropzone from "react-dropzone";
+// import Dropzone from "react-dropzone";
 import { Icon as Iconify } from "@iconify/react";
 import clsx from "clsx";
 import { Link } from "react-router-dom";
@@ -136,20 +133,24 @@ function DashboardKyc() {
         },
         [DashboardKycStep.IDENTIFICATION]: {
           document: yup.object({
-            file: yup
-              .mixed()
-              .label("Document")
-              .test(
-                "file",
-                "Document is not a file",
-                (value) => value instanceof File
-              )
-              .required(),
+            // file: yup
+            //   .mixed()
+            //   .label("Document")
+            //   .test(
+            //     "file",
+            //     "Document is not a file",
+            //     (value) => value instanceof File
+            //   )
+            //   .required(),
             id_number: yup.string().label("NIN").length(11).required(),
           }),
         },
         [DashboardKycStep.ACCOUNT_DETAILS]: {
-          accountnumber: yup.string().label("Account Number").required(),
+          accountnumber: yup
+            .string()
+            .label("Account Number")
+            .length(10)
+            .required(),
           accountname: yup.string().label("Account Name").required(),
           bankId: yup.string().label("Bank").required(),
         },
@@ -249,7 +250,7 @@ function DashboardKyc() {
       useMemo(
         () => ({
           params: {
-            bankCode: normalizedBanks?.[formik.values.bankId]?.bank_sort_code,
+            bankCode: normalizedBanks?.[formik.values.bankId]?.code,
             accountNumber: formik.values.accountnumber,
           },
         }),
@@ -404,7 +405,7 @@ function DashboardKyc() {
                     placeholder="Enter ID Number"
                     {...getFormikTextFieldProps(formik, "document.id_number")}
                   />
-                  <Dropzone
+                  {/* <Dropzone
                     multiple={false}
                     maxSize={1024 * 1024 * 2}
                     accept={{
@@ -503,7 +504,7 @@ function DashboardKyc() {
                         )}
                       </div>
                     )}
-                  </Dropzone>
+                  </Dropzone> */}
                   <div />
                   <div className="flex items-end mt-4">
                     <div className="flex-1">{actionButtons}</div>
@@ -532,6 +533,7 @@ function DashboardKyc() {
                   <div className="space-y-2">
                     <NumberTextField
                       freeSolo
+                      maskOptions={{ max: 10 }}
                       fullWidth
                       label="Account Number"
                       placeholder="Enter Account Number"
@@ -540,7 +542,8 @@ function DashboardKyc() {
                     <>
                       {transactionOutwardNameEnquiryQueryResult.isFetching ? (
                         <Typography variant="body2">
-                          Resolving Account <CircularProgress size={10} />
+                          Fetching Account details{" "}
+                          <CircularProgress size={10} />
                         </Typography>
                       ) : transactionOutwardNameEnquiryQueryResult.isSuccess ? (
                         <div className="flex items-center gap-2 text-success-main">

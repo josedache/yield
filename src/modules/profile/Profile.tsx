@@ -1,19 +1,75 @@
 import {
   Avatar,
-  Button,
   IconButton,
   Paper,
+  Skeleton,
   TextField,
   Typography,
 } from "@mui/material";
 import useAuthUser from "hooks/useAuthUser";
 import useClipboard from "hooks/useClipboard";
 import { Icon as Iconify } from "@iconify/react";
+import { getAssetInfo } from "utils/file";
+import { userApi } from "apis/user-api";
+import { useSnackbar } from "notistack";
+import Dropzone from "react-dropzone";
+import { LoadingButton } from "@mui/lab";
+import { transactionApi } from "apis/transaction-api";
+import { useMemo } from "react";
 
 function Profile() {
   const authUser = useAuthUser();
 
   const clipboard = useClipboard();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [uploadUserFileMutation, uploadUserFileMutationResult] =
+    userApi.useUploadUserFileMutation();
+
+  const transactionOutwardBankListQueryResult =
+    transactionApi.useGetTransactionOutwardBankListQuery(undefined, {
+      skip: !authUser.bank_details.bankId,
+    });
+
+  const banks = transactionOutwardBankListQueryResult.data?.data;
+
+  const normalizedBanks = useMemo(
+    () =>
+      banks?.reduce((acc, curr) => {
+        acc[curr.id] = curr;
+        return acc;
+      }, {} as Record<string, (typeof banks)[0]>),
+    [banks]
+  );
+
+  async function handleSelfieUpdate(file: File) {
+    try {
+      const assetInfo = getAssetInfo(file);
+
+      const data = await uploadUserFileMutation({
+        body: {
+          file: file,
+          tier_level: authUser.kycLevel,
+          title: file.name,
+          type: "selfie",
+          fileExtension: assetInfo.type,
+          mimeType: assetInfo.mimeType,
+        },
+      }).unwrap();
+      enqueueSnackbar(data?.message || "Selfied updated successfully!", {
+        variant: "success",
+      });
+    } catch (error) {
+      const message = Array.isArray(error?.data?.message)
+        ? error?.data?.message?.[0]
+        : error?.data?.message;
+
+      enqueueSnackbar(message || "Failed to update selfie", {
+        variant: "error",
+      });
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -64,7 +120,11 @@ function Profile() {
                   </Typography>
 
                   <Typography color="textSecondary">
-                    Credit Direct Limited
+                    {transactionOutwardBankListQueryResult?.isLoading ? (
+                      <Skeleton />
+                    ) : (
+                      normalizedBanks?.[authUser.bank_details.bankId]?.name
+                    )}
                   </Typography>
 
                   <div className="flex items-center gap-1">
@@ -96,13 +156,53 @@ function Profile() {
               </Typography>
             </div>
             <div className="p-6 flex flex-col items-center gap-6">
-              <Avatar className="w-24 h-24" />
+              <Avatar src={authUser?.avatar} className="w-24 h-24">
+                {authUser?.firstname?.[0]}
+                {authUser?.lastname?.[0]}
+              </Avatar>
               <Typography color="textSecondary" className="text-center">
                 Your profile photo personalizes your <br /> yield account
               </Typography>
-              <div className="grid grid-cols-2 gap-2">
-                <Button variant="outlined">Remove</Button>
-                <Button variant="contained">Update</Button>
+              <div className="grid grid-cols-1 gap-2">
+                {/* <LoadingButton
+                  variant="outlined"
+                  // disabled={uploadUserFileMutationResult.isLoading}
+                  disabled
+                  loadingPosition="end"
+                  endIcon={<></>}
+                >
+                  Remove
+                </LoadingButton> */}
+                <Dropzone
+                  multiple={false}
+                  maxSize={1024 * 1024 * 2}
+                  accept={{ "image/*": [] }}
+                  onDropAccepted={(files) => {
+                    const file = files[0];
+                    handleSelfieUpdate(file);
+                  }}
+                  onDropRejected={(fileRejection) => {
+                    enqueueSnackbar(
+                      fileRejection[0].errors?.[0].message || "File Rejected",
+                      { variant: "error" }
+                    );
+                  }}
+                >
+                  {({ getRootProps, getInputProps }) => (
+                    <LoadingButton
+                      {...getRootProps({
+                        variant: "contained",
+                        disabled: uploadUserFileMutationResult.isLoading,
+                        loading: uploadUserFileMutationResult.isLoading,
+                        loadingPosition: "end",
+                        endIcon: <></>,
+                      })}
+                    >
+                      <input {...getInputProps()} />
+                      {authUser?.avatar ? "Update" : "Upload"}
+                    </LoadingButton>
+                  )}
+                </Dropzone>
               </div>
             </div>
           </Paper>

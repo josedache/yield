@@ -1,5 +1,6 @@
 export type User = {
   isAuthenticated: boolean;
+  avatar: string;
   token: string;
   userId: number;
   is_new_device: boolean;

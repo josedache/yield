@@ -398,23 +398,34 @@ function Flex() {
                         their funds more flexibly.
                       </Typography>
                       <Typography color="textSecondary" className="mt-3">
-                        The feature will allow you autosave, and enjoy the
-                        benefits of no-penalty withdrawals.
+                        The feature will allow you{" "}
+                        <span className="text-[#5EB1BF] font-semibold">
+                          autosave
+                        </span>
+                        , and enjoy the benefits of no-penalty withdrawals.
                       </Typography>
 
                       <Typography color="textSecondary" className="mt-3">
-                        You can also create labels within their target yield to
-                        organize your funds according to specific needs.
+                        You can also create{" "}
+                        <span className="text-[#7CA853] font-semibold">
+                          labels
+                        </span>{" "}
+                        within their target yield to organize your funds
+                        according to specific needs.
                       </Typography>
                     </div>
 
                     <div>
                       <Typography variant="h6" className="font-medium mt-8">
-                        What is a Flex Yield?
+                        Earn Interest
                       </Typography>
                       <Typography color="textSecondary" className="mt-4">
-                        With an interest rate of 14%, you can save for as long
-                        as you like and withdraw your money at any time.
+                        With an interest rate of{" "}
+                        <span className="text-[#4920AA] font-semibold">
+                          14%
+                        </span>
+                        , you can save for as long as you like and withdraw your
+                        money at any time.
                       </Typography>
                     </div>
                   </Paper>

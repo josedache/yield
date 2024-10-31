@@ -13,6 +13,7 @@ import { LoadingButton } from "@mui/lab";
 import { SIGNIN } from "constants/urls";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { userApi } from "apis/user-api";
+import { useState } from "react";
 
 function AuthSignup() {
   const { enqueueSnackbar } = useSnackbar();
@@ -35,6 +36,8 @@ function AuthSignup() {
   const stepper = useStepper({
     initialStep: getEnumStepIndex(AuthSignupStep.BVN),
   });
+
+  const [countdownDate, setCountdownDate] = useState(getCountdownDate);
 
   const enumStep = STEPS_INDEX[stepper.step];
 
@@ -74,7 +77,19 @@ function AuthSignup() {
           alternate_number: yup.string().label("alternate_number").optional(),
         },
         [AuthSignupStep.CREATE_PASSWORD]: {
-          password: yup.string().label("Password").trim().max(40).required(),
+          password: yup
+            .string()
+            .label("Password")
+            .trim()
+            .trim()
+            .min(8, "Your password must be at least 8 characters long")
+            .max(25)
+            .matches(/^(?=.{8,})/, "Must Contain 8 Characters")
+            .matches(/^(?=.*[a-z])/, "Must Contain One Lowercase")
+            .matches(/^(?=.*[A-Z])/, "Must Contain One Uppercase")
+            .matches(/^(?=.*\d)/, "Must contain a number")
+            .matches(/^(?=.*[@$!%*?&#%])/, "Must contain a special character")
+            .required(),
           confirmPassword: yup
             .string()
             .label("Confirm Password")
@@ -87,10 +102,11 @@ function AuthSignup() {
       try {
         switch (enumStep) {
           case AuthSignupStep.BVN: {
-            const data = await signupYieldUserMutation({
+            await signupYieldUserMutation({
               body: { bvn: values.bvn },
             }).unwrap();
-            enqueueSnackbar(data?.message || "OTP sent", {
+            setCountdownDate(getCountdownDate());
+            enqueueSnackbar("OTP sent successfully!", {
               variant: "success",
             });
             break;
@@ -172,12 +188,34 @@ function AuthSignup() {
     },
   });
 
+  const sendOtp = async () => {
+    try {
+      await signupYieldUserMutation({
+        body: { bvn: formik.values.bvn },
+      }).unwrap();
+      setCountdownDate(getCountdownDate());
+      enqueueSnackbar("OTP sent successfully!", {
+        variant: "error",
+      });
+    } catch (error) {
+      enqueueSnackbar(
+        error?.data?.errors?.[0]?.defaultUserMessage || `OTP failed to send!`,
+        {
+          variant: "error",
+        }
+      );
+    }
+  };
+
   const contentProps = {
     formik,
     stepper,
     enumStep,
     getEnumStepIndex,
     maskedPhone: signupInfo?.user?.phone,
+    countdownDate,
+    sendOtp,
+    signupYieldUserMutationResult,
   };
 
   const contents = [
@@ -273,6 +311,12 @@ function AuthSignup() {
 export default AuthSignup;
 
 export const Component = AuthSignup;
+
+function getCountdownDate() {
+  const date = new Date();
+  date.setTime(date.getTime() + 1000 * 60 * 10);
+  return date;
+}
 
 function getEnumStepIndex(enumStep: AuthSignupStep) {
   const index = STEPS_INDEX.indexOf(enumStep);

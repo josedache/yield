@@ -15,6 +15,7 @@ import OtpInput from "components/OtpInput";
 import { userApi } from "apis/user-api";
 import PasswordTextField from "components/PasswordTextField";
 import NumberInput from "components/NumberInput";
+import clsx from "clsx";
 
 function AuthResetPassword() {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ function AuthResetPassword() {
   const [resetPasswordMutation] = userApi.useResetPasswordMutation();
 
   const stepper = useStepper({
-    initialStep: getEnumStepIndex(AuthResetPasswordStep.REQUEST),
+    initialStep: getEnumStepIndex(AuthResetPasswordStep.CHANGE),
   });
 
   const enumStep = STEPS_INDEX[stepper.step];
@@ -45,13 +46,24 @@ function AuthResetPassword() {
     validationSchema: yup.object().shape({
       ...{
         [AuthResetPasswordStep.REQUEST]: {
-          identifier: yup.string().label("Email/Phone Number").required(),
+          identifier: yup.string().label("Phone Number").length(11).required(),
         },
         [AuthResetPasswordStep.VERIFY]: {
           otp: yup.string().label("OTP").required(),
         },
         [AuthResetPasswordStep.CHANGE]: {
-          password: yup.string().label("Password").trim().max(40).required(),
+          password: yup
+            .string()
+            .label("Password")
+            .trim()
+            .min(8, "Your password must be at least 8 characters long")
+            .max(25)
+            .matches(/^(?=.{8,})/, "Must Contain 8 Characters")
+            .matches(/^(?=.*[a-z])/, "Must Contain One Lowercase")
+            .matches(/^(?=.*[A-Z])/, "Must Contain One Uppercase")
+            .matches(/^(?=.*\d)/, "Must contain a number")
+            .matches(/^(?=.*[@$!%*?&#%])/, "Must contain a special character")
+            .required(),
           confirmPassword: yup
             .string()
             .label("Confirm Password")
@@ -115,15 +127,16 @@ function AuthResetPassword() {
   const contents = [
     {
       title: "Reset Password",
-      description: "",
+      description: "Please, enter your phone number to reset your password.",
       body: (
         <>
           <NumberTextField
             freeSolo
+            maskOptions={{ max: 11 }}
             fullWidth
             margin="normal"
             label="Phone Number"
-            placeholder="Enter Email/Phone Number"
+            placeholder="Enter Phone Number"
             {...getFormikTextFieldProps(formik, "identifier")}
           />
         </>
@@ -163,19 +176,40 @@ function AuthResetPassword() {
             fullWidth
             margin="normal"
             label="New Password"
-            placeholder="**********"
+            placeholder="Enter Password"
             {...getFormikTextFieldProps(formik, "password")}
           />
           <div className="space-y-1">
             {[
-              { label: "Must be at least 8 characters long" },
               {
-                label: "Must contain an uppercase and a lowercase letter (A,z)",
+                label: "Must be at least 8 characters long",
+                test: (value: string) => value.length >= 8,
               },
-              { label: "Must contain a number (0,1,2,3,4,5,6,7,8,9)" },
-              { label: "Must contain a special characater (!,%,@,#, etc.)" },
-            ].map(({ label }) => (
-              <div className="flex items-center gap-2 text-primary-main">
+              {
+                label: "Must contain a number (0,1,2,3,4,5,6,7,8,9)",
+                test: (value: string) => /\d/.test(value),
+              },
+              {
+                label: "Must contain a lowercase letter (a-z)",
+                test: (value: string) => /[a-z]/.test(value),
+              },
+              {
+                label: "Must contain an uppercase letter (A-Z)",
+                test: (value: string) => /[A-Z]/.test(value),
+              },
+              {
+                label: "Must contain a special character (!,%,@,#, etc.)",
+                test: (value: string) => /[!@#$%^&*]/.test(value),
+              },
+            ].map(({ label, test }) => (
+              <div
+                className={clsx(
+                  "flex items-center gap-2",
+                  test(formik.values.password)
+                    ? "text-primary-main"
+                    : "text-text-secondary"
+                )}
+              >
                 <Icon>check_circle</Icon>
                 <Typography>{label}</Typography>
               </div>
@@ -185,7 +219,7 @@ function AuthResetPassword() {
             fullWidth
             margin="normal"
             label="Confirm Password"
-            placeholder="Pas$word99"
+            placeholder="Re-enter Password"
             {...getFormikTextFieldProps(formik, "confirmPassword")}
           />
         </div>
