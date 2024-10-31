@@ -229,8 +229,8 @@ function AuthSignup() {
       baseURL: CDL_IAGREE_INLINE_BASE_URL,
       onSuccess: async (data: any) => {
         try {
-          console.log(data);
-          const igreeData = await iAgreeUserMutation({
+          // console.log(data);
+          await iAgreeUserMutation({
             body: {
               reference: data?.reference,
               bvn: data?.bvn ?? formik.values.bvn,
@@ -243,8 +243,8 @@ function AuthSignup() {
         }
         setIgree(false);
       },
-      onError: (error) => {
-        console.log("Error", error);
+      onError: () => {
+        // console.log("Error", error);
       },
       onClose: () => {
         setIgree(false);
