@@ -1,6 +1,7 @@
 import { ApiResponse } from "./api";
 
 export type WalletApiResponse = ApiResponse<{
+  id: string;
   account_number: string;
   product_name: string;
   balance: number;

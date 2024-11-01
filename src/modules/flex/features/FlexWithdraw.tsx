@@ -147,8 +147,10 @@ function FlexWithdraw(props: FlexWithdrawProps) {
     },
   });
 
-  const minimumBalanceCheck =
-    availableBalance - Number(formik.values.amount) < minimumBalance;
+  const isWithdrawEnabled = (() => {
+    const newBalance = availableBalance - Number(formik.values.amount);
+    return newBalance > 0 ? newBalance < minimumBalance : false;
+  })();
 
   function handleClose(e?: any, reason?: any) {
     formik.resetForm();
@@ -210,7 +212,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
               You have 3 free withdrawals left this month
             </Typography>
           </Paper> */}
-          {minimumBalanceCheck ? (
+          {isWithdrawEnabled ? (
             <div className="flex items-start gap-2 text-text-secondary font-medium">
               <Iconify
                 icon="si:warning-fill"
@@ -232,9 +234,9 @@ function FlexWithdraw(props: FlexWithdrawProps) {
             <LoadingButton
               size="large"
               fullWidth
-              disabled={minimumBalanceCheck}
+              disabled={isWithdrawEnabled}
               onClick={async (e) => {
-                if (minimumBalanceCheck) {
+                if (isWithdrawEnabled) {
                   return;
                   // await formik.setFieldValue("amount", availableBalance);
                 }
@@ -242,7 +244,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
               }}
             >
               Continue
-              {/* {minimumBalanceCheck ? "Yes, Withdraw" : "Continue"} */}
+              {/* {isWithdrawEnabled ? "Yes, Withdraw" : "Continue"} */}
             </LoadingButton>
           </div>
         </div>
@@ -311,9 +313,8 @@ function FlexWithdraw(props: FlexWithdrawProps) {
       ),
     },
     {
-      title: "Verify OTP",
-      description:
-        `Please, enter the six (6) digit code sent to ${savingsOtp} to complete this transaction.`,
+      title: "Verify Transaction",
+      description: `Please, enter the six (6) digit code sent to ${savingsOtp} to complete this transaction.`,
       content: (
         <div className="space-y-8">
           <div className="space-y-4">
@@ -373,7 +374,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
                             onClick={handleResendOtp as any}
                             className="underline text-text-primary font-bold"
                           >
-                            Send it again.
+                            Resend Code.
                           </ButtonBase>
                         </Typography>
                         {/* {requestOtpMutationResult.isLoading && (
@@ -385,20 +386,6 @@ function FlexWithdraw(props: FlexWithdrawProps) {
                 );
               }}
             </Countdown>
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              className="text-center"
-            >
-              Didn’t receive OTP code?{" "}
-              <Typography
-                component="span"
-                color="primary"
-                className="font-semibold"
-              >
-                Resend
-              </Typography>
-            </Typography>
           </div>
           <LoadingButton
             fullWidth
@@ -451,7 +438,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
 
   return (
     <>
-      <Dialog open={isOpen} fullWidth {...restProps}>
+      <Dialog open={isOpen} maxWidth="xs" fullWidth {...restProps}>
         {!isBlankStep ? (
           <DialogTitleXCloseButton onClose={handleClose}>
             {stepper.step ? (

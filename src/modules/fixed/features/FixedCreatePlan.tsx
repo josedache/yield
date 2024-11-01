@@ -93,8 +93,8 @@ export default function FixedCreatePlan(
     savingsFixedDepositCreateMutationResult,
   ] = savingsApi.useSavingsFixedDepositCreatePlanMutation();
 
-  const resolvedSavingsId =
-    savingsId || savingsFixedDepositCreateMutationResult?.data?.data?.savingsId;
+  // const resolvedSavingsId =
+  //   savingsId || savingsFixedDepositCreateMutationResult?.data?.data?.savingsId;
 
   const [savingsActivateAccountMutation, savingsActivateAccountMutationResult] =
     savingsApi.useSavingsActivateAccountMutation();
@@ -221,7 +221,7 @@ export default function FixedCreatePlan(
           body: {
             provider: PaymentGatewayInlineProvider.PAYSTACK,
             amount: String(formik.values.depositAmount),
-            transactionId: String(resolvedSavingsId),
+            transactionId: String(wallet.id),
             transactionType: "wallet",
             yieldType: "fixed",
           },
