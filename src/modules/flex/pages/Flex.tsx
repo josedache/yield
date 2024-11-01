@@ -4,12 +4,12 @@ import {
   Paper,
   Typography,
   Link as MuiLink,
+  ButtonBase,
 } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
 import CurrencyTypography from "components/CurrencyTypography";
 import useToggle from "hooks/useToggle";
 import SavedCardSvg from "assets/svgs/saved-card.svg?react";
-import BookmarkSvg from "assets/svgs/bookmark.svg?react";
 import WalletTransactionFlowSvg from "assets/svgs/wallet--transaction-flow.svg?react";
 import * as dfns from "date-fns";
 import FlexFund from "../features/FlexFund";
@@ -157,9 +157,9 @@ function Flex() {
 
         <LoadingContent loading={isLoading} error={isError} onRetry={onRefetch}>
           {() => (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="space-y-8">
-                <Paper className="p-4">
+            <div className="flex flex-col md:flex-row gap-6">
+              <div className="space-y-8 w-full md:w-[60%]">
+                <Paper className="p-6">
                   <div className="flex items-center justify-between gap-2">
                     <div className="space-y-2">
                       <Typography
@@ -180,7 +180,7 @@ function Flex() {
                         <IconButton onClick={toggleWalletBalanceVisible}>
                           <Iconify
                             icon={
-                              isWalletBalanceVisible
+                              !isWalletBalanceVisible
                                 ? "cuida:visibility-off-outline"
                                 : "cuida:visibility-on-outline"
                             }
@@ -204,7 +204,7 @@ function Flex() {
                         </div>
                       ) : (
                         <Typography variant="body2" color="textSecondary">
-                          Interest is 14% per annum.
+                          Interest is <b>14%</b> per annum.
                         </Typography>
                       )}
                     </div>
@@ -240,7 +240,10 @@ function Flex() {
                   </div>
                 </Paper>
 
-                <Paper variant="outlined" className="p-4 pb-8 space-y-4">
+                <Paper
+                  variant="outlined"
+                  className="p-4 pb-8 space-y-4 h-[calc(100vh-370px)]"
+                >
                   <div className="flex items-center justify-between">
                     <Typography
                       variant="h6"
@@ -354,7 +357,7 @@ function Flex() {
                             </div>
                           </div>
                         ) : (
-                          <div className="flex flex-col items-center gap-8 text-center">
+                          <div className="flex h-full flex-col items-center justify-center gap-8 text-center">
                             <WalletTransactionFlowSvg />
                             <div className="space-y-1">
                               <Typography
@@ -374,7 +377,7 @@ function Flex() {
                   </LoadingContent>
                 </Paper>
               </div>
-              <div className="space-y-8">
+              <div className="space-y-8 w-full md:w-[40%]">
                 {isFAQ ? (
                   <Paper variant="outlined" className="px-6 pt-5 pb-14">
                     <div>
@@ -493,28 +496,33 @@ function Flex() {
                       </div>
                     ) : (
                       <div className="flex flex-col items-center gap-8 text-center">
-                        <SavedCardSvg />
-                        <div className="space-y-1">
+                        <SavedCardSvg className="mt-8" />
+                        <div className="space-y-1 mt-8">
                           <Typography variant="h6" className="font-semibold">
                             Saved Card
                           </Typography>
                           <Typography variant="body1" color="textSecondary">
                             Save your card to help you fund your yield easily.
                           </Typography>
-                          <MuiLink>Link a Card</MuiLink>
+                          <ButtonBase
+                            disableRipple
+                            className="inline-block underline text-[#4920AA]"
+                          >
+                            Link a Card
+                          </ButtonBase>
                         </div>
                       </div>
                     )}
                   </div>
                 </Paper>
-                <Paper variant="outlined" className="p-4 pb-8 space-y-8">
+                {/* <Paper variant="outlined" className="p-4 pb-8 space-y-8">
                   <Typography variant="h6" className="font-medium">
                     Targets
                   </Typography>
 
                   <div>
                     <div className="flex flex-col items-center gap-8 text-center">
-                      <BookmarkSvg />
+                      <BookmarkSvg className="mt-8" />
                       <div className="space-y-1">
                         <Typography variant="h6" className="font-semibold">
                           Coming Soon
@@ -526,7 +534,7 @@ function Flex() {
                       </div>
                     </div>
                   </div>
-                </Paper>
+                </Paper> */}
               </div>
             </div>
           )}

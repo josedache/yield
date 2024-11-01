@@ -13,7 +13,7 @@ function OtpInput(props: OtpInputProps) {
 
   return (
     <ReactOtpInput
-      renderSeparator={<span className="mx-2"></span>}
+      renderSeparator={<span className="mx-1"></span>}
       renderInput={(props) => (
         <Input
           {...props}

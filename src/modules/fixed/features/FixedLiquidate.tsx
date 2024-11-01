@@ -173,7 +173,7 @@ export default function FixedLiquidate(
           <div className="flex gap-1 items-start mt-6">
             <Iconify
               icon="ep:warning-filled"
-              className="text-red-300 text-2xl"
+              className="text-error-500 text-3xl h-5 p-0 leading-none"
             />
             <Typography
               variant="body2"
@@ -216,7 +216,7 @@ export default function FixedLiquidate(
         "You’ve decided to prematurely liquidate your yied. Please select an option below to receive your funds.",
       content: (
         <div>
-          <Typography className="mt-8 text-center text-neutral-500">
+          <Typography className="mt-1 text-center text-neutral-500">
             Amount to Withdraw
           </Typography>
           <CurrencyTypography
@@ -225,7 +225,7 @@ export default function FixedLiquidate(
           >
             {info?.available_balance}
           </CurrencyTypography>
-          <div className="space-y-4">
+          <div className="space-y-3 mt-8">
             {[
               {
                 icon: (
@@ -260,7 +260,7 @@ export default function FixedLiquidate(
                   key={label}
                   component={Paper}
                   className={clsx(
-                    "rounded w-full mt-8",
+                    "rounded w-full",
                     restProps?.disabled ? "text-neutral-400" : ""
                   )}
                   {...restProps}
@@ -276,10 +276,6 @@ export default function FixedLiquidate(
                     </div>
 
                     {more ? <Typography>{more}</Typography> : null}
-                    <Iconify
-                      icon="weui:arrow-filled"
-                      className="text-lg text-text-secondary"
-                    />
                   </CardActionArea>
                 </ButtonBase>
               );
@@ -336,7 +332,7 @@ export default function FixedLiquidate(
     },
     {
       content: (
-        <div className="space-y-8 max-w-md mx-auto">
+        <div className="space-y-8 max-w-md mx-auto flex justify-center flex-col items-center">
           <div className="flex justify-center text-6xl">
             <Iconify
               icon="ep:warning-filled"
@@ -346,11 +342,16 @@ export default function FixedLiquidate(
           <Typography variant="h4" className="text-center mb-4 font-bold">
             Processing{" "}
           </Typography>
-          <Typography className="text-center text-neutral-500">
+          <Typography className="text-center text-neutral-500 max-w-[336px]">
             Your liquidation request has been sent for processing and will be
             paid out shortly.{" "}
           </Typography>
-          <Button size="large" fullWidth onClick={handleClose}>
+          <Button
+            className="max-w-[255px]"
+            size="large"
+            fullWidth
+            onClick={handleClose}
+          >
             Okay
           </Button>
         </div>
@@ -365,8 +366,20 @@ export default function FixedLiquidate(
   }
 
   return (
-    <Dialog fullWidth maxWidth="xs" {...rest}>
-      <DialogTitleXCloseButton onClose={onClose}>
+    <Dialog
+      PaperProps={{
+        sx: {
+          width: "100%",
+          maxWidth: stepper.step === 4 ? "400px" : "440px",
+        },
+      }}
+      fullWidth
+      {...rest}
+    >
+      <DialogTitleXCloseButton
+        className="mt-4"
+        onClose={stepper.step === 4 ? "" : onClose}
+      >
         <Typography variant="h6" className="text-center font-semibold">
           {tabs[stepper.step].title}
         </Typography>
@@ -375,7 +388,7 @@ export default function FixedLiquidate(
         </Typography>
       </DialogTitleXCloseButton>
 
-      {stepper.step === 1 ? (
+      {stepper.step === 2 ? (
         <BackIconButton
           onClick={() => {
             stepper.previous();
@@ -384,7 +397,7 @@ export default function FixedLiquidate(
           variant="contained"
         />
       ) : null}
-      <DialogContent>
+      <DialogContent className="px-8 pb-10">
         <form onSubmit={formik.handleSubmit}>
           {tabs[stepper.step].content}
           {stepper.step <= 3 ? (

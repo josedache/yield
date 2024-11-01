@@ -83,11 +83,12 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
       onSubmit={formik.handleSubmit as any}
       fullWidth
       open={open}
+      maxWidth="xs"
     >
       <DialogTitleXCloseButton
         onClose={() => stepper.previous()}
       ></DialogTitleXCloseButton>
-      <DialogContent className="space-y-8 max-w-md mx-auto">
+      <DialogContent className="px-8 pb-10">
         <div>
           <Typography variant="h5" className="text-center mb-4">
             Verify BVN
@@ -97,7 +98,7 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
             {maskedPhone} to verify your BVN.
           </Typography>
         </div>
-        <div className="space-y-2">
+        <div className="mt-6 flex justify-center flex-col gap-2 items-center">
           <OtpInput
             value={formik.values.otp}
             onChange={(otp) => {
@@ -148,12 +149,13 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
                         Didn’t receive code?{" "}
                         <ButtonBase
                           disableRipple
+                          color="primary"
                           disabled={signupYieldUserMutationResult?.isLoading}
                           component={MuiLink}
                           onClick={sendOtp}
-                          className="underline text-text-primary font-bold"
+                          className="underline font-bold"
                         >
-                          Send it again.
+                          Resend.
                         </ButtonBase>
                       </Typography>
                       {/* {requestOtpMutationResult.isLoading && (
@@ -168,13 +170,14 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
         </div>
         <Typography
           color="primary"
-          className="text-center font-semibold cursor-pointer"
+          className="text-center font-semibold cursor-pointer mt-2"
           onClick={triggerIgree}
         >
           I don’t have access to this phone number.
         </Typography>
         <LoadingButton
           type="submit"
+          className="mt-6"
           fullWidth
           size="large"
           loading={formik.isSubmitting}

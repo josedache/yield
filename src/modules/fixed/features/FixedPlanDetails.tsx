@@ -130,7 +130,7 @@ export default function FixedPlanDetails(
     {
       name: "Liquidate Yield",
       icon: "ic:baseline-minus",
-      color: "success",
+      color: "primary",
       variant: "soft",
       status: [
         SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE,
@@ -142,7 +142,7 @@ export default function FixedPlanDetails(
     {
       name: "Edit Name",
       icon: "fluent:edit-20-regular",
-      color: "success",
+      color: "primary",
       variant: "soft",
       onClick: toggleIsRenamePlan,
       status: [SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE],
@@ -150,7 +150,7 @@ export default function FixedPlanDetails(
     {
       name: "Complete Payment",
       icon: "ic:twotone-plus",
-      color: "success",
+      color: "primary",
       variant: "soft",
       status: [SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL],
       onClick: toggleCompletePayment,
@@ -159,7 +159,7 @@ export default function FixedPlanDetails(
     {
       name: "Rollover yield",
       icon: "solar:refresh-outline",
-      color: "success",
+      color: "primary",
       variant: "contained",
       className: "bg-[#7CA853] text-neutral-100",
       status: [SAVINGS_ACCOUNT_STATUS_TYPE.MATURED],
@@ -182,9 +182,9 @@ export default function FixedPlanDetails(
       <Drawer
         sx={{
           "& .MuiDrawer-paper": {
-            borderRadius: "1.5rem 0 0 1.5rem",
+            borderRadius: "12px 0 0 12px",
             width: "100%",
-            maxWidth: 500,
+            maxWidth: 445,
           },
         }}
         onClose={onClose}
@@ -230,7 +230,7 @@ export default function FixedPlanDetails(
               <IconButton onClick={toggleWalletBalanceVisible}>
                 <Iconify
                   icon={
-                    isWalletBalanceVisible
+                    !isWalletBalanceVisible
                       ? "cuida:visibility-off-outline"
                       : "cuida:visibility-on-outline"
                   }
@@ -240,7 +240,7 @@ export default function FixedPlanDetails(
 
             {getSavingsQuery?.data?.data?.total_interest_earned &&
             Number(getSavingsQuery?.data?.data?.total_interest_earned) > 0 ? (
-              <Typography variant="body2" color="primary" className="mt-1">
+              <Typography variant="body2" color="success" className="mt-1">
                 +
                 {formatNumberToCurrency(
                   getSavingsQuery?.data?.data?.total_interest_earned
@@ -272,6 +272,7 @@ export default function FixedPlanDetails(
                     startIcon={
                       <Iconify icon={icon} width="1rem" height="1rem" />
                     }
+                    color="primary"
                     fullWidth
                     {...rest}
                   >

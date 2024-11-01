@@ -60,17 +60,16 @@ export default function FixedEditPlanName(
   return (
     <Dialog fullWidth maxWidth="xs" {...rest}>
       <DialogTitleXCloseButton onClose={onClose}>
-        <Typography className="font-semibold text-center">
+        <Typography variant="h6" className="font-semibold text-center">
           Edit Yield Plan
         </Typography>
       </DialogTitleXCloseButton>
-      <DialogContent>
+      <DialogContent className="px-8 pb-10">
         <form onSubmit={formik.handleSubmit}>
           <TextField
             fullWidth
             label="Plan Name"
             {...getFormikTextFieldProps(formik, "name")}
-            className="mt-6"
           />
           <div className="mt-6">
             <LoadingButton

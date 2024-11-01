@@ -334,13 +334,13 @@ export default function FixedCreatePlan(
                 key={label}
                 component={Paper}
                 className={clsx(
-                  "flex items-center justify-between gap-4 p-2 rounded ",
+                  "flex items-center justify-between gap-4 p-3 rounded ",
                   restProps?.disabled ? "text-neutral-400" : ""
                 )}
                 {...restProps}
               >
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center justify-center w-8 h-8">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 text-neutral-400 h-8">
                     {icon}
                   </div>
                   <div>
@@ -455,7 +455,7 @@ export default function FixedCreatePlan(
   return (
     <>
       <Dialog fullWidth maxWidth="xs" onClose={onClose} {...rest}>
-        <DialogTitleXCloseButton onClose={onClose} className="text-center">
+        <DialogTitleXCloseButton onClose={onClose} className="text-center mt-3">
           {tabs[stepper.step]?.title}
           <Typography variant="body2" className="text-neutral-500">
             {tabs[stepper.step]?.description}
@@ -467,12 +467,12 @@ export default function FixedCreatePlan(
             onClick={() => {
               stepper.previous();
             }}
-            className="absolute top-2 left-2 bg-neutral-100 text-neutral-700"
+            className="absolute top-3 left-6 bg-neutral-100 text-neutral-700"
             variant="contained"
           />
         ) : null}
 
-        <DialogContent>
+        <DialogContent className="px-8 pb-10">
           <form onSubmit={formik.handleSubmit}>
             <LoadingContent
               renderLoading={() =>

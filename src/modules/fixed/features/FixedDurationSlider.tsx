@@ -1,7 +1,8 @@
 import { Slider, styled } from "@mui/material";
 
 const FixedDurationSlider = styled(Slider)({
-  color: "#D8E5CB",
+  color: "#7DA851",
+  paddingLeft: 8,
   height: 8,
   "& .MuiSlider-track": {
     border: "none",
