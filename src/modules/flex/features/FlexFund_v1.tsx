@@ -56,7 +56,7 @@ function FlexFund(props: FlexFundProps) {
 
   const formik = useFormik({
     initialValues: {
-      amount: 0,
+      amount: null,
     },
     enableReinitialize: true,
     validationSchema: yup.object({
@@ -128,7 +128,7 @@ function FlexFund(props: FlexFundProps) {
             <LoadingButton
               size="large"
               fullWidth
-              disabled={!formik.isValid}
+              disabled={!formik.isValid || formik.dirty}
               onClick={formik.handleSubmit as any}
             >
               Continue

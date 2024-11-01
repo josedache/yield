@@ -87,12 +87,24 @@ function Profile() {
               </Typography>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-              <TextField label="First Name" value={authUser.firstname} />
-              <TextField label="Last Name" value={authUser.lastname} />
-              <TextField label="BVN" value={authUser.bvn} />
-              <TextField label="NIN" value={authUser.nin} />
-              <TextField label="Phone Number" value={authUser.mobileNo} />
-              <TextField label="Email Address" value={authUser.email} />
+              <TextField
+                disabled
+                label="First Name"
+                value={authUser.firstname}
+              />
+              <TextField disabled label="Last Name" value={authUser.lastname} />
+              <TextField disabled label="BVN" value={authUser.bvn} />
+              <TextField disabled label="NIN" value={authUser.nin} />
+              <TextField
+                disabled
+                label="Phone Number"
+                value={authUser.mobileNo}
+              />
+              <TextField
+                disabled
+                label="Email Address"
+                value={authUser.email}
+              />
             </div>
           </Paper>
           <Paper variant="outlined">

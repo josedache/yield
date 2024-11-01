@@ -179,6 +179,7 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
           type="submit"
           className="mt-6"
           fullWidth
+          disabled={!formik.isValid || !formik.values.otp}
           size="large"
           loading={formik.isSubmitting}
           loadingPosition="end"

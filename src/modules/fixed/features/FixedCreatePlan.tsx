@@ -94,7 +94,7 @@ export default function FixedCreatePlan(
   ] = savingsApi.useSavingsFixedDepositCreatePlanMutation();
 
   const resolvedSavingsId =
-    savingsId || savingsFixedDepositCreateMutationResult.data.data.savingsId;
+    savingsId || savingsFixedDepositCreateMutationResult?.data?.data?.savingsId;
 
   const [savingsActivateAccountMutation, savingsActivateAccountMutationResult] =
     savingsApi.useSavingsActivateAccountMutation();

@@ -176,7 +176,11 @@ function FlexFund(props: FlexFundProps) {
             >
               Continue
             </LoadingButton>
-            <Typography className="text-center" color="textSecondary">
+            <Typography
+              variant="caption"
+              className="text-center block"
+              color="textSecondary"
+            >
               Estimated returns at <b>14%</b> per annum.
             </Typography>
           </div>
@@ -186,7 +190,7 @@ function FlexFund(props: FlexFundProps) {
     {
       description: "Please select a source to add money to your yield.",
       content: (
-        <div className="space-y-4">
+        <div className="space-y-4 pt-4">
           {[
             // {
             //   icon: <Iconify icon="ph:wallet-light" className="text-4xl" />,
@@ -295,7 +299,7 @@ function FlexFund(props: FlexFundProps) {
     },
     {
       content: (
-        <div className="space-y-8 max-w-md mx-auto">
+        <div className="space-y-8 max-w-md mx-auto flex py-6 justify-center flex-col items-center">
           <div className="flex justify-center text-6xl">
             <Icon
               fontSize="inherit"
@@ -312,7 +316,7 @@ function FlexFund(props: FlexFundProps) {
             You’ve successfully created a Yield profile. You can now sign in to
             complete your onboarding.
           </Typography>
-          <Button fullWidth onClick={handleClose}>
+          <Button className="max-w-[255px]" fullWidth onClick={handleClose}>
             Okay
           </Button>
         </div>
@@ -328,13 +332,13 @@ function FlexFund(props: FlexFundProps) {
 
   return (
     <>
-      <Dialog open={isOpen} fullWidth {...restProps}>
+      <Dialog maxWidth="xs" open={isOpen} fullWidth {...restProps}>
         {!isBlankStep ? (
           <DialogTitleXCloseButton onClose={handleClose}>
             {stepper.step ? (
               <IconButton
                 variant="soft"
-                className="absolute left-4 top-3"
+                className="absolute bg-neutral-100 left-4 top-3"
                 aria-label="back"
                 onClick={() => stepper.previous()}
               >
@@ -343,7 +347,7 @@ function FlexFund(props: FlexFundProps) {
             ) : null}
           </DialogTitleXCloseButton>
         ) : null}
-        <DialogContent className="space-y-4 py-4">
+        <DialogContent className="space-y-4 pt-1 pb-6">
           {!isBlankStep ? (
             <div className="text-center">
               <Typography variant="h6">
@@ -354,7 +358,7 @@ function FlexFund(props: FlexFundProps) {
               </Typography>
             </div>
           ) : null}
-          <div className="p-4">{stepConfig?.content}</div>
+          <div>{stepConfig?.content}</div>
         </DialogContent>
       </Dialog>
 

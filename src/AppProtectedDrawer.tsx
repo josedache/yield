@@ -111,7 +111,11 @@ function AppProtectedDrawer() {
           {NAV_LINKS.map(({ links }, index) => {
             return (
               <>
-                {index ? <Divider className="bg-white" /> : null}
+                {index ? (
+                  <div className="py-10">
+                    <Divider className="bg-white " />
+                  </div>
+                ) : null}
                 {links.map((item, index) => {
                   return <AppProtectedDrawerItem key={index} item={item} />;
                 })}
@@ -151,13 +155,20 @@ function AppProtectedDrawer() {
               },
             ].map(({ icon, label, href, hrefText }) => {
               return (
-                <Paper key={label} className="flex items-center gap-4 p-4">
+                <Paper
+                  key={label}
+                  className="flex items-center gap-4 p-4 border-none"
+                >
                   <Iconify className="text-lg" icon={icon} />
                   <div>
                     <Typography variant="body2" color="textSecondary">
                       {label}
                     </Typography>
-                    <MuiLink color="info" href={href}>
+                    <MuiLink
+                      className="text-[#4920AA]"
+                      color="info"
+                      href={href}
+                    >
                       {hrefText}
                     </MuiLink>
                   </div>

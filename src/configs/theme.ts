@@ -131,6 +131,7 @@ export const theme = responsiveFontSizes(
       button: {
         textTransform: "none",
         fontWeight: 500,
+        fontSize: "0.785rem",
       },
       h5: {
         fontWeight: 600,
@@ -283,6 +284,20 @@ export const theme = responsiveFontSizes(
         styleOverrides: {
           root: ({ theme, ownerState }) => {
             return {
+              ...(ownerState.variant === "contained"
+                ? {
+                    "&.Mui-disabled": {
+                      backgroundColor: alpha(
+                        theme.palette[ownerState.color]?.main,
+                        0.4
+                      ),
+                      color: alpha(
+                        theme.palette[ownerState.color]?.contrastText,
+                        0.9
+                      ),
+                    },
+                  }
+                : {}),
               ...(!isNaN(Number(ownerState.shape))
                 ? { borderRadius: Number(ownerState.shape) }
                 : {}),
