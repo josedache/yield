@@ -9,16 +9,13 @@ import {
   Icon,
   Typography,
 } from "@mui/material";
-import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import { AuthSignupStep } from "../enums/AuthSignupStep";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { SIGNIN } from "constants/urls";
 import clsx from "clsx";
 
 function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
   const { formik, enumStep } = props;
-
-  const navigate = useNavigate();
 
   return (
     <>
@@ -75,11 +72,12 @@ function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
         />
       </div>
 
-      <Dialog fullWidth open={enumStep === AuthSignupStep.SUCCESS}>
-        <DialogTitleXCloseButton
-          onClose={() => navigate(SIGNIN)}
-        ></DialogTitleXCloseButton>
-        <DialogContent className="space-y-8 max-w-md mx-auto">
+      <Dialog
+        fullWidth
+        maxWidth="xs"
+        open={enumStep === AuthSignupStep.SUCCESS}
+      >
+        <DialogContent className="space-y-8 max-w-md pb-10 pt-10 mx-auto flex justify-center flex-col items-center">
           <div className="flex justify-center text-6xl">
             <Icon
               fontSize="inherit"
@@ -96,8 +94,13 @@ function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
             You’ve successfully created a Yield profile. You can now sign in to
             complete your onboarding.
           </DialogContentText>
-          <Button fullWidth component={Link} to={SIGNIN}>
-            Sign in
+          <Button
+            className="max-w-[255px]"
+            fullWidth
+            component={Link}
+            to={SIGNIN}
+          >
+            Sign In
           </Button>
         </DialogContent>
       </Dialog>

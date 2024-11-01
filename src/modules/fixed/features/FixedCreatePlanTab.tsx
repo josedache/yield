@@ -65,7 +65,7 @@ export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
         maskOptions={{ thousandsSeparator: "," }}
       />
       <FormHelperText>
-        Min. amount to deposit:
+        Min. amount to deposit:<span className="px-1"></span>
         {formatNumberToCurrency(
           `${savingsFixedProductInformation.data.min_deposit_amt}`
         )}

@@ -237,7 +237,7 @@ function AuthResetPassword() {
       onSubmit={formik.handleSubmit as any}
       className="h-full flex flex-col justify-center items-center"
     >
-      <Paper className="w-full max-w-lg min-h-0 max-h-full overflow-auto">
+      <Paper className="w-full max-w-[455px] min-h-0 max-h-full overflow-auto">
         <div className="sticky top-0 z-10 bg-inherit p-8 pb-4">
           {!isFirstStep ? (
             <ButtonBase
@@ -263,6 +263,16 @@ function AuthResetPassword() {
             type="submit"
             fullWidth
             size="large"
+            disabled={
+              !formik.isValid ||
+              [
+                formik.values.identifier.length < 11,
+                formik.values.otp.length < 6,
+                formik.values.confirmPassword !== formik.values.password ||
+                  !formik.values.password ||
+                  !formik.values.confirmPassword,
+              ][stepper.step]
+            }
             loading={formik.isSubmitting}
             loadingPosition="end"
             endIcon={<></>}

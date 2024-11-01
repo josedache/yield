@@ -336,6 +336,7 @@ function AuthSignup() {
             fullWidth
             size="large"
             loading={formik.isSubmitting || iAgreeUserMutationResult.isLoading}
+            disabled={!formik.isValid || !formik.dirty}
             loadingPosition="end"
             endIcon={<></>}
           >

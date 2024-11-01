@@ -231,11 +231,9 @@ function DashboardMain() {
                   )}
                 </WalletFund>
 
-                {wallet?.balance ? (
-                  <Button fullWidth variant="outlined">
-                    Transfer
-                  </Button>
-                ) : null}
+                <Button disabled fullWidth variant="outlined">
+                  Transfer
+                </Button>
               </div>
             </Paper>
 

@@ -288,7 +288,7 @@ function DashboardKyc() {
   // }
 
   const actionButtons = (
-    <div className="grid grid-cols-1 gap-2">
+    <div className="flex justify-end gap-2">
       {/* <Button
         variant="outlined"
         size="large"
@@ -302,7 +302,9 @@ function DashboardKyc() {
         {stepper.step ? "Previous" : "Edit"}
       </Button> */}
       <LoadingButton
-        size="large"
+        fullWidth
+        className="max-w-[132px]"
+        disabled={!formik.isValid || !formik.dirty}
         loading={formik.isSubmitting}
         loadingPosition="start"
         startIcon={<></>}
@@ -605,22 +607,27 @@ function DashboardKyc() {
                     <Typography
                       variant="h6"
                       className={clsx(
-                        completed ? "font-semibold" : "font-normal"
+                        completed ? "text-neutral-500" : "",
+                        stepper.step === index ? "font-semibold" : "font-normal"
                       )}
                     >
                       {title}
                     </Typography>
                   </div>
                 </AccordionSummary>
-                <AccordionDetails>{content}</AccordionDetails>
+                <AccordionDetails className="pb-5">{content}</AccordionDetails>
               </Accordion>
             );
           })}
         </div>
       </div>
 
-      <Dialog fullWidth open={enumStep === DashboardKycStep.SUCCESS}>
-        <DialogContent className="space-y-8 max-w-md mx-auto">
+      <Dialog
+        PaperProps={{ sx: { maxWidth: 400 } }}
+        fullWidth
+        open={enumStep === DashboardKycStep.SUCCESS}
+      >
+        <DialogContent className="space-y-8 max-w-md mx-auto py-10 flex justify-center flex-col items-center">
           <div className="flex justify-center text-6xl">
             <Icon
               fontSize="inherit"
@@ -637,7 +644,13 @@ function DashboardKyc() {
             You’ve successfully completed your onboarding. Let’s start growing
             your wealth!
           </DialogContentText>
-          <Button size="large" fullWidth component={Link} to={DASHBOARD}>
+          <Button
+            className="max-w-[255px]"
+            size="large"
+            fullWidth
+            component={Link}
+            to={DASHBOARD}
+          >
             Go to Dashboard
           </Button>
         </DialogContent>

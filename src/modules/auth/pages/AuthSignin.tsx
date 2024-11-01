@@ -81,6 +81,7 @@ function AuthSignin() {
           <LoadingButton
             type="submit"
             fullWidth
+            disabled={!formik.isValid || !formik.dirty}
             size="large"
             loading={formik.isSubmitting}
             loadingPosition="end"

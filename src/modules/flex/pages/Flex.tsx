@@ -233,7 +233,13 @@ function Flex() {
                     ) : (
                       <FlexFund>
                         {({ toggleOpen }) => (
-                          <Button onClick={toggleOpen}>Fund Wallet</Button>
+                          <Button
+                            fullWidth
+                            className="max-w-[135px]"
+                            onClick={toggleOpen}
+                          >
+                            Add Money
+                          </Button>
                         )}
                       </FlexFund>
                     )}

@@ -86,7 +86,7 @@ export default function FixedRollover(
         "You’ve decided to rollover your yield. Please, select a re-investment option below.",
       content: (
         <div>
-          <div className="space-y-4">
+          <div className="space-y-4 mt-5">
             {[
               {
                 icon: (
@@ -120,7 +120,7 @@ export default function FixedRollover(
                   key={label}
                   component={Paper}
                   className={clsx(
-                    "rounded w-full mt-8",
+                    "rounded w-full ",
                     restProps?.disabled ? "text-neutral-400" : ""
                   )}
                   {...restProps}
@@ -134,11 +134,6 @@ export default function FixedRollover(
                         <Typography className="flex-1">{label}</Typography>
                       </div>
                     </div>
-
-                    <Iconify
-                      icon="weui:arrow-filled"
-                      className="text-lg text-text-secondary"
-                    />
                   </CardActionArea>
                 </ButtonBase>
               );
@@ -153,9 +148,7 @@ export default function FixedRollover(
         "To rollover only your capital, we’ll automatically reinvest your initial investment.",
       content: (
         <div>
-          <Typography className="mt-6 text-center">
-            Amount to Rollover
-          </Typography>
+          <Typography className="text-center">Amount to Rollover</Typography>
           <CurrencyTypography variant="h4" className="text-center font-medium ">
             {info?.principal}
           </CurrencyTypography>
@@ -183,9 +176,7 @@ export default function FixedRollover(
         "To rollover your capital plus interest, we’ll automatically reinvest the total amount in this yield.",
       content: (
         <div>
-          <Typography className="mt-6 text-center">
-            Amount to Rollover
-          </Typography>
+          <Typography className="text-center">Amount to Rollover</Typography>
           <CurrencyTypography variant="h4" className="text-center font-medium ">
             {info?.maturity_amount}
           </CurrencyTypography>

@@ -30,8 +30,8 @@ function PasswordTextField(props: TextFieldProps) {
                   fontSize={25}
                   icon={
                     isVisible
-                      ? "material-symbols-light:visibility-lock-sharp"
-                      : "material-symbols-light:visibility"
+                      ? "cuida:visibility-off-outline"
+                      : "cuida:visibility-on-outline"
                   }
                   className={clsx(error ? "text-danger" : "text-primary")}
                 />
