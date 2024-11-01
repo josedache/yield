@@ -26,7 +26,7 @@ import { DASHBOARD } from "constants/urls";
 import useAuthUser from "hooks/useAuthUser";
 import { DashboardKycStep } from "../enums/DashboardKycStep";
 import { userApi } from "apis/user-api";
-import { getAssetInfo } from "utils/file";
+// import { getAssetInfo } from "utils/file";
 import { LoadingButton } from "@mui/lab";
 import { transactionApi } from "apis/transaction-api";
 import { useMemo } from "react";
@@ -40,7 +40,7 @@ function DashboardKyc() {
 
   const [verifyUserClientKycMutation] =
     userApi.useVerifyUserClientKycMutation();
-  const [uploadUserFileMutation] = userApi.useUploadUserFileMutation();
+  // const [uploadUserFileMutation] = userApi.useUploadUserFileMutation();
 
   const transactionOutwardBankListQueryResult =
     transactionApi.useGetTransactionOutwardBankListQuery(undefined);
@@ -187,20 +187,25 @@ function DashboardKyc() {
             break;
           }
           case DashboardKycStep.IDENTIFICATION: {
-            const assetInfo = getAssetInfo(values.document.file);
+            // const assetInfo = getAssetInfo(values.document.file);
 
-            const data = await uploadUserFileMutation({
-              body: {
-                file: values.document.file,
-                tier_level: authUser.kycLevel,
-                title: values.document.file.name,
-                type: values.document.type,
-                fileExtension: assetInfo.type,
-                mimeType: assetInfo.mimeType,
-                details: {
-                  id_number: values.document.id_number,
-                },
-              },
+            // const data = await uploadUserFileMutation({
+            //   body: {
+            //     file: values.document.file,
+            //     tier_level: authUser.kycLevel,
+            //     title: values.document.file.name,
+            //     type: values.document.type,
+            //     fileExtension: assetInfo.type,
+            //     mimeType: assetInfo.mimeType,
+            //     details: {
+            //       id_number: values.document.id_number,
+            //     },
+            //   },
+            // }).unwrap();
+            const data = await verifyUserClientKycMutation({
+              body: removeEmptyProperties({
+                nin: values.document.id_number,
+              }),
             }).unwrap();
             enqueueSnackbar(
               data?.message || "Document uploaded successfully!",

@@ -231,7 +231,7 @@ function AuthSignup() {
       baseURL: CDL_IAGREE_INLINE_BASE_URL,
       onSuccess: async (data: any) => {
         try {
-          console.log(data);
+          // console.log(data);
           await iAgreeUserMutation({
             body: {
               reference: data?.reference,
