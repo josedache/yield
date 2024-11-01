@@ -410,7 +410,7 @@ function Flex() {
                         <span className="text-[#7CA853] font-semibold">
                           labels
                         </span>{" "}
-                        within their target yield to organize your funds
+                        within your target yield to organize your funds
                         according to specific needs.
                       </Typography>
                     </div>

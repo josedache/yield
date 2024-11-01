@@ -41,6 +41,18 @@ export const slice = createSlice({
         }
       )
       .addMatcher(
+        userApi.endpoints.signupYieldSecondStageUser.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = { token: payload.data.token } as User;
+        }
+      )
+      .addMatcher(
+        userApi.endpoints.iAgreeUser.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = { token: payload.data.token } as User;
+        }
+      )
+      .addMatcher(
         userApi.endpoints.loginUser.matchFulfilled,
         (state, { payload }) => {
           state.authUser = { ...payload.data, isAuthenticated: true } as User;

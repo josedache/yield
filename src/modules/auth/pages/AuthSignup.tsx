@@ -58,12 +58,14 @@ function AuthSignup() {
 
   const formik = useFormik<AuthSignupFormikValues>({
     initialValues: {
-      firstName: signupVerifyInfo?.firstname ?? igreeUserInfo?.firstname ?? "",
-      lastName: signupVerifyInfo?.lastname ?? igreeUserInfo?.lastname ?? "",
-      phone: signupVerifyInfo?.phone ?? igreeUserInfo?.phone ?? "",
-      email: signupVerifyInfo?.email ?? igreeUserInfo?.email ?? "",
-      bvn: signupVerifyInfo?.bvn ?? igreeUserInfo?.bvn ?? "",
-      nin: signupVerifyInfo?.nin ?? igreeUserInfo?.nin ?? "",
+      firstName:
+        signupVerifyInfo?.firstname ?? igreeUserInfo?.user?.firstname ?? "",
+      lastName:
+        signupVerifyInfo?.lastname ?? igreeUserInfo?.user?.lastname ?? "",
+      phone: signupVerifyInfo?.phone ?? igreeUserInfo?.user?.phone ?? "",
+      email: signupVerifyInfo?.email ?? igreeUserInfo?.user?.email ?? "",
+      bvn: signupVerifyInfo?.bvn ?? igreeUserInfo?.user?.bvn ?? "",
+      nin: signupVerifyInfo?.nin ?? igreeUserInfo?.user?.nin ?? "",
       referal_code: "",
       alternate_number: signupVerifyInfo?.alternate_number ?? "",
       otp: "",
@@ -229,13 +231,14 @@ function AuthSignup() {
       baseURL: CDL_IAGREE_INLINE_BASE_URL,
       onSuccess: async (data: any) => {
         try {
-          // console.log(data);
+          console.log(data);
           await iAgreeUserMutation({
             body: {
               reference: data?.reference,
               bvn: data?.bvn ?? formik.values.bvn,
             },
           }).unwrap();
+          stepper.next();
         } catch (error) {
           enqueueSnackbar(error?.message || "Failed to process IAgree", {
             variant: "error",

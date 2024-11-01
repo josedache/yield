@@ -33,5 +33,28 @@ export const transactionApi = coreApi.injectEndpoints({
         ...config,
       }),
     }),
+
+    generateTransactionOutwardPaymentReference: builder.mutation<
+      ApiResponse<
+        ApiResponse<{
+          id: number;
+          reference: string;
+          status: string;
+        }>
+      >,
+      ApiRequest<{
+        amount: string | number;
+        provider: "PAYSTACK";
+        yieldType: "fixed" | "flex";
+        transactionType: "wallet";
+        transactionId: string | number;
+      }>
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/outward/payment-reference",
+        method: "POST",
+        ...config,
+      }),
+    }),
   }),
 });

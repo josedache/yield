@@ -30,7 +30,7 @@ function AuthResetPassword() {
   const [resetPasswordMutation] = userApi.useResetPasswordMutation();
 
   const stepper = useStepper({
-    initialStep: getEnumStepIndex(AuthResetPasswordStep.CHANGE),
+    initialStep: getEnumStepIndex(AuthResetPasswordStep.REQUEST),
   });
 
   const enumStep = STEPS_INDEX[stepper.step];

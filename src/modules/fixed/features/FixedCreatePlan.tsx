@@ -16,7 +16,12 @@ import { useSnackbar } from "notistack";
 import { Icon as Iconify } from "@iconify-icon/react";
 import clsx from "clsx";
 import { useEffect } from "react";
-
+import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
+import PaymentGatewayInline from "libs/payment-gateway-inline/inline";
+import {
+  PaymentGatewayInlineChannel,
+  PaymentGatewayInlineProvider,
+} from "libs/payment-gateway-inline";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import useStepper from "hooks/useStepper";
 import BackIconButton from "components/BackIconButton";
@@ -31,6 +36,9 @@ import { walletApi } from "apis/wallet-api";
 import { formatNumberToCurrency } from "utils/number";
 import useClipboard from "hooks/useClipboard";
 import { LoadingButton } from "@mui/lab";
+import { PAYSTACK_PUBLIC_KEY } from "constants/env";
+import useAuthUser from "hooks/useAuthUser";
+import { transactionApi } from "apis/transaction-api";
 
 export default function FixedCreatePlan(
   props: DialogProps & {
@@ -45,6 +53,8 @@ export default function FixedCreatePlan(
   const stepper = useStepper();
   const { enqueueSnackbar } = useSnackbar();
   const { writeText } = useClipboard();
+
+  const authUser = useAuthUser();
 
   useEffect(() => {
     if (savingsId && isPayment) {
@@ -83,11 +93,19 @@ export default function FixedCreatePlan(
     savingsFixedDepositCreateMutationResult,
   ] = savingsApi.useSavingsFixedDepositCreatePlanMutation();
 
+  const resolvedSavingsId =
+    savingsId || savingsFixedDepositCreateMutationResult.data.data.savingsId;
+
   const [savingsActivateAccountMutation, savingsActivateAccountMutationResult] =
     savingsApi.useSavingsActivateAccountMutation();
 
   const [renameMutation, renameMutationResult] =
     savingsApi.useSavingsRenameMutation();
+
+  const [
+    generateTransactionOutwardPaymentReferenceMutation,
+    generateTransactionOutwardPaymentReferenceMutationResult,
+  ] = transactionApi.useGenerateTransactionOutwardPaymentReferenceMutation();
 
   const formik = useFormik<FixedCreatePlanFormikType>({
     initialValues: {
@@ -196,6 +214,46 @@ export default function FixedCreatePlan(
     savingsDepositCalculator: savingsFixedDepositCalculationMutationResult.data,
   };
 
+  async function handlePaystack() {
+    try {
+      const transactionRef =
+        await generateTransactionOutwardPaymentReferenceMutation({
+          body: {
+            provider: PaymentGatewayInlineProvider.PAYSTACK,
+            amount: String(formik.values.depositAmount),
+            transactionId: String(resolvedSavingsId),
+            transactionType: "wallet",
+            yieldType: "fixed",
+          },
+        }).unwrap();
+
+      PaymentGatewayInline({
+        provider: PaymentGatewayInlineProvider.PAYSTACK,
+        key: PAYSTACK_PUBLIC_KEY,
+        reference: transactionRef.data?.data?.reference,
+        name: authUser?.displayName,
+        email: authUser?.email,
+        amount: formik.values.depositAmount,
+        channels: [PaymentGatewayInlineChannel.CARD],
+        currency: "NGN",
+        metadata: {},
+        async onSuccess() {
+          stepper.go(4);
+        },
+        onClose() {},
+      });
+    } catch (error) {
+      enqueueSnackbar(
+        error?.data?.message ??
+          error?.data?.message?.[0] ??
+          "Failed to generate reference",
+        {
+          variant: "error",
+        }
+      );
+    }
+  }
+
   const handleFundYield = async (fundSource) => {
     try {
       await savingsActivateAccountMutation({
@@ -263,12 +321,13 @@ export default function FixedCreatePlan(
                 (wallet?.balance &&
                   formik.values.depositAmount > wallet?.balance),
             },
-            // {
-            //   icon: <img src={PaystackIconPngUrl} width={32} height={32} />,
-            //   label: "Fund via Paystack",
-            //   onClick: handlePaystack,
-            //   disabled: savingsActivateAccountMutationResult.isLoading,
-            // },
+            {
+              icon: <img src={PaystackIconPngUrl} width={32} height={32} />,
+              label: "Fund via Paystack",
+              onClick: handlePaystack,
+              disabled:
+                generateTransactionOutwardPaymentReferenceMutationResult.isLoading,
+            },
           ].map(({ label, more, icon, ...restProps }) => {
             return (
               <ButtonBase
