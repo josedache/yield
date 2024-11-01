@@ -3,10 +3,10 @@ import {
   IconButton,
   Paper,
   Typography,
-  Link as MuiLink,
   TextField,
   MenuItem,
   Skeleton,
+  ButtonBase,
 } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
 import { useSearchParams } from "react-router-dom";
@@ -90,7 +90,7 @@ function Fixed() {
                   <IconButton onClick={toggleWalletBalanceVisible}>
                     <Iconify
                       icon={
-                        isWalletBalanceVisible
+                        !isWalletBalanceVisible
                           ? "cuida:visibility-off-outline"
                           : "cuida:visibility-on-outline"
                       }
@@ -103,7 +103,7 @@ function Fixed() {
                   color="textSecondary"
                   className="mt-2 md:mt-4"
                 >
-                  Interest Rate is 15 - 20% per annum.{" "}
+                  Interest Rate is <b>15</b> - <b>20%</b> per annum.{" "}
                 </Typography>
               </div>
               <Button
@@ -268,15 +268,20 @@ function Fixed() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-8 text-center">
-                  <SavedCardSvg />
-                  <div className="space-y-1">
+                  <SavedCardSvg className="mt-8" />
+                  <div className="space-y-1 mt-8">
                     <Typography variant="h6" className="font-semibold">
                       Saved Card
                     </Typography>
                     <Typography variant="body1" color="textSecondary">
                       Save your card to help you fund your yield easily.
                     </Typography>
-                    <MuiLink>Link a Card</MuiLink>
+                    <ButtonBase
+                      disableRipple
+                      className="inline-block underline text-[#4920AA]"
+                    >
+                      Link a Card
+                    </ButtonBase>
                   </div>
                 </div>
               )}

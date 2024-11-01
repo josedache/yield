@@ -26,6 +26,9 @@ const commonPaletteOptions: PaletteOptions = {
     darker: "#042A2B",
     contrastText: "#FFFFFF",
   },
+  // secondary: {
+
+  // },
   neutral: {
     "50": "#F9FAFB",
     "100": "#F3F4F6",
@@ -283,6 +286,20 @@ export const theme = responsiveFontSizes(
               ...(!isNaN(Number(ownerState.shape))
                 ? { borderRadius: Number(ownerState.shape) }
                 : {}),
+              ...(ownerState.variant === "soft" &&
+              ownerState.color === "primary"
+                ? {
+                    color: theme.palette[ownerState.color]?.main,
+                    backgroundColor: "#F2F6EE",
+                    "&:hover": {
+                      backgroundColor: alpha(
+                        theme.palette[ownerState.color]?.main ||
+                          theme.palette.grey[500],
+                        0.3
+                      ),
+                    },
+                  }
+                : {}),
               ...(ownerState.variant === "soft"
                 ? {
                     color:
@@ -291,7 +308,7 @@ export const theme = responsiveFontSizes(
                     backgroundColor: alpha(
                       theme.palette[ownerState.color]?.main ||
                         theme.palette.grey[500],
-                      0.2
+                      0.1
                     ),
                     "&:hover": {
                       backgroundColor: alpha(
@@ -321,6 +338,8 @@ export const theme = responsiveFontSizes(
                         theme.palette.grey[500],
                       0.2
                     ),
+                    padding: "1px px",
+                    height: 24,
                     "&:hover": {
                       backgroundColor: alpha(
                         theme.palette[ownerState.color]?.main ||

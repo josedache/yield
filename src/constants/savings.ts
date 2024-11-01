@@ -31,9 +31,9 @@ export const SAVINGS_ACCOUNT_STATUS_TYPE = {
 export const ALL_ACTIVE_SAVINGS_ACCOUNT_STATUS_TYPE = [
   { id: 0, name: "All" },
   { id: 100, name: "Draft" },
-  { id: 200, name: "Approved" },
+  // { id: 200, name: "Approved" },
   { id: 300, name: "Active" },
-  { id: 500, name: "Rejected" },
+  // { id: 500, name: "Rejected" },
   { id: 600, name: "Closed" },
   { id: 800, name: "Matured" },
 ];

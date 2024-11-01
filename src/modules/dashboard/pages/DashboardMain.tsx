@@ -8,6 +8,7 @@ import {
   Skeleton,
   Typography,
   Link as MuiLink,
+  Card,
 } from "@mui/material";
 import clsx from "clsx";
 import CurrencyTypography from "components/CurrencyTypography";
@@ -211,7 +212,7 @@ function DashboardMain() {
                       <IconButton onClick={toggleWalletBalanceVisible}>
                         <Icon
                           icon={
-                            isWalletBalanceVisible
+                            !isWalletBalanceVisible
                               ? "cuida:visibility-off-outline"
                               : "cuida:visibility-on-outline"
                           }
@@ -277,66 +278,70 @@ function DashboardMain() {
                 id
               ) => {
                 return (
-                  <Paper
+                  <Card
                     component={Link}
                     to={to}
                     className={clsx(
                       id === 0 ? "border-[#5EB1BF80]" : "border-[#4920AA4D]",
-                      "p-4 md:p-6 w-full"
+                      "w-full"
                     )}
                   >
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={clsx(
-                          "rounded-lg w-10 h-10 flex items-center justify-center",
-                          iconClassName
-                        )}
-                      >
-                        <Icon fontSize={22} icon={icon} />
+                    <CardActionArea className="p-4 md:p-6 ">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={clsx(
+                            "rounded-lg w-10 h-10 flex items-center justify-center",
+                            iconClassName
+                          )}
+                        >
+                          <Icon fontSize={22} icon={icon} />
+                        </div>
+                        <Typography>{label}</Typography>
                       </div>
-                      <Typography>{label}</Typography>
-                    </div>
 
-                    <div className="flex items-center my-8">
-                      <CurrencyTypography
-                        variant="h5"
-                        className="font-bold"
-                        blur={isValueVisible}
-                      >
-                        {value}
-                      </CurrencyTypography>
-                      <IconButton
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          onValueVisibilityClick();
-                        }}
-                      >
-                        <Icon
-                          icon={
-                            isValueVisible
-                              ? "cuida:visibility-off-outline"
-                              : "cuida:visibility-on-outline"
-                          }
-                        />
-                      </IconButton>
-                    </div>
-                    <Divider />
-                    <div className="mt-2 flex justify-between gap-2 items-center">
-                      <Typography className="flex items-center gap-2">
-                        Interest Rate
-                      </Typography>
+                      <div className="flex items-center my-8">
+                        <CurrencyTypography
+                          variant="h5"
+                          className="font-bold"
+                          blur={isValueVisible}
+                        >
+                          {value}
+                        </CurrencyTypography>
+                        <IconButton
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onValueVisibilityClick();
+                          }}
+                        >
+                          <Icon
+                            icon={
+                              !isValueVisible
+                                ? "cuida:visibility-off-outline"
+                                : "cuida:visibility-on-outline"
+                            }
+                          />
+                        </IconButton>
+                      </div>
+                      <Divider />
+                      <div className="mt-2 flex justify-between gap-2 items-center">
+                        <Typography className="flex items-center gap-2">
+                          Interest Rate
+                        </Typography>
 
-                      <Typography color="primary">{interestRate}</Typography>
-                    </div>
-                  </Paper>
+                        <Typography color="success">{interestRate}</Typography>
+                      </div>
+                    </CardActionArea>
+                  </Card>
                 );
               }
             )}
           </div>
 
           <Paper className="py-4 md:py-8 mt-8 space-y-4">
-            <Typography variant="h5" className="px-4 md:px-8">Recent Activities</Typography>
+            <Typography variant="h5" className="px-4 md:px-8">
+              Recent Activities
+            </Typography>
             <LoadingContent
               loading={savingsRecentActivitiesQueryResult.isLoading}
               error={savingsRecentActivitiesQueryResult.isError}

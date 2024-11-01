@@ -203,7 +203,7 @@ function AppProtectedDrawerItem(props: any) {
       <ListItemButton
         className={clsx(
           "rounded-lg flex gap-2 py-3 mb-2",
-          !!match && "bg-primary-main text-primary-contrastText"
+          !!match && "bg-[#285036] text-primary-contrastText"
         )}
         {...(isGroup
           ? { onClick: toggleSubMenu }
@@ -230,7 +230,12 @@ function AppProtectedDrawerItem(props: any) {
                   match?.pathnameBase === to &&
                   !toMatchExclude?.includes(match?.pathname)
                 }
-                className="pl-12 rounded-lg py-3 mb-2"
+                className={clsx(
+                  "pl-12 rounded-lg py-3 mb-2",
+                  match?.pathnameBase === to &&
+                    !toMatchExclude?.includes(match?.pathname) &&
+                    "bg-[#285036] text-primary-contrastText"
+                )}
                 component={Link}
                 to={to}
                 {...rest}

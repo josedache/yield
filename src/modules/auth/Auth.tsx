@@ -28,7 +28,7 @@ function Auth() {
           </IconButton>
         </div>
       </div>
-      <div className="h-full overflow-hidden">
+      <div className="h-full py-[56px]">
         <Outlet />
       </div>
     </div>

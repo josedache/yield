@@ -12,12 +12,20 @@ export default function FixedDeleteDraft(
 ) {
   const { onClose, isLoading, handleDelete, ...rest } = props;
   return (
-    <Dialog fullWidth maxWidth="xs" {...rest}>
+    <Dialog
+      PaperProps={{
+        sx: {
+          maxWidth: 400,
+        },
+      }}
+      fullWidth
+      {...rest}
+    >
       <DialogContent>
-        <div className="flex justify-center items-center flex-col gap-6">
+        <div className="flex justify-center items-center flex-col gap-6 pt-5">
           <Iconify
-            icon="fluent:delete-32-filled"
-            className="text-error-400 text-4xl"
+            icon="iconamoon:trash-fill"
+            className="text-error-400 text-[48px]"
           />
           <Typography variant="h5" className="font-semibold">
             Delete Draft?
@@ -26,12 +34,13 @@ export default function FixedDeleteDraft(
             Are you sure you want to delete this plan?
           </Typography>
         </div>
-        <div className="mt-6 flex gap-6">
+        <div className="mt-6 flex gap-6 pb-5">
           <LoadingButton fullWidth loading={isLoading} onClick={handleDelete}>
             Yes
           </LoadingButton>
           <LoadingButton
             fullWidth
+            className="bg-[#F2F6EE]"
             disabled={isLoading}
             variant="outlined"
             onClick={onClose}

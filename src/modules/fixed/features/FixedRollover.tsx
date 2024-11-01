@@ -234,9 +234,17 @@ export default function FixedRollover(
   ];
 
   return (
-    <Dialog fullWidth maxWidth="xs" {...rest}>
+    <Dialog
+      PaperProps={{
+        sx: {
+          maxWidth: 440,
+        },
+      }}
+      fullWidth
+      {...rest}
+    >
       <DialogTitleXCloseButton onClose={onClose}>
-        <Typography variant="h6" className="text-center font-semibold">
+        <Typography variant="h6" className="text-center font-semibold pt-5">
           {tabs[stepper.step].title}
         </Typography>
         <Typography variant="body2" className="text-center text-neutral-500">
@@ -253,7 +261,7 @@ export default function FixedRollover(
           variant="contained"
         />
       ) : null}
-      <DialogContent>
+      <DialogContent className="px-8 pb-10">
         <form onSubmit={formik.handleSubmit}>
           {tabs[stepper.step].content}
           {stepper.step === 1 || stepper.step === 2 ? (

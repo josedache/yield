@@ -56,7 +56,7 @@ export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
       </div>
 
       <CurrencyTextField
-        className="mt-3"
+        className="mt-4"
         code="NGN"
         fullWidth
         label="Amount"

@@ -1,4 +1,4 @@
-import { DialogTitle, IconButton, Icon } from "@mui/material";
+import { DialogTitle, IconButton } from "@mui/material";
 import clsx from "clsx";
 import { Icon as Iconify } from "@iconify/react";
 
@@ -19,9 +19,7 @@ function DialogTitleXCloseButton(props: any) {
           aria-label="close"
           onClick={onClose}
         >
-          <Icon>
-            <Iconify icon="material-symbols:close" />
-          </Icon>
+          <Iconify className="text-[24px]" icon="material-symbols:close" />
         </IconButton>
       ) : null}
     </DialogTitle>
