@@ -26,6 +26,7 @@ export interface AuthSignupStepContentDataRef {
   sendOtp: any;
   countdownDate: Date;
   signupYieldUserMutationResult: any;
+  iAgreeUserMutationResult: any;
   isIgree: any;
   setIgree: any;
   triggerIgree: any;

@@ -231,7 +231,6 @@ function AuthSignup() {
       baseURL: CDL_IAGREE_INLINE_BASE_URL,
       onSuccess: async (data: any) => {
         try {
-          // console.log(data);
           await iAgreeUserMutation({
             body: {
               reference: data?.reference,
@@ -267,6 +266,7 @@ function AuthSignup() {
     countdownDate,
     sendOtp,
     signupYieldUserMutationResult,
+    iAgreeUserMutationResult,
     isIgree,
     setIgree,
     triggerIgree,
@@ -335,7 +335,7 @@ function AuthSignup() {
             type="submit"
             fullWidth
             size="large"
-            loading={formik.isSubmitting}
+            loading={formik.isSubmitting || iAgreeUserMutationResult.isLoading}
             loadingPosition="end"
             endIcon={<></>}
           >

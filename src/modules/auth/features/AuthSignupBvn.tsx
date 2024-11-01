@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogContent,
   ButtonBase,
+  CircularProgress,
 } from "@mui/material";
 import { AuthSignupStepContentProps } from "../types/AuthSignup";
 import { getFormikTextFieldProps } from "utils/formik";
@@ -65,6 +66,7 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
     signupYieldUserMutationResult,
     isIgree,
     triggerIgree,
+    iAgreeUserMutationResult,
   } = props;
 
   const open = enumStep === AuthSignupStep.BVN_VERIFICATION && !isIgree;
@@ -89,103 +91,118 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
         onClose={() => stepper.previous()}
       ></DialogTitleXCloseButton>
       <DialogContent className="px-8 pb-10">
-        <div>
-          <Typography variant="h5" className="text-center mb-4">
-            Verify BVN
-          </Typography>
-          <Typography color="textSecondary" className="text-center">
-            Please, enter the six(6) digit verification code sent to{" "}
-            {maskedPhone} to verify your BVN.
-          </Typography>
-        </div>
-        <div className="mt-6 flex justify-center flex-col gap-2 items-center">
-          <OtpInput
-            value={formik.values.otp}
-            onChange={(otp) => {
-              formik.setFieldValue("otp", otp);
-            }}
-            numInputs={6}
-            shouldAutoFocus
-            // inputType="password"
-            slot={{ input: NumberInput }}
-            slotProps={{
-              input: {
-                style: { opacity: formik.isSubmitting ? 0.5 : 1 },
-                disabled: formik.isSubmitting,
-              },
-            }}
-          />
-          <Countdown date={countdownDate}>
-            {(countdown) => {
-              const isCodeSent =
-                countdown.days ||
-                countdown.minutes ||
-                countdown.seconds ||
-                countdown.seconds;
+        {iAgreeUserMutationResult.isLoading ? (
+          <>
+            <div className="flex flex-col items-center">
+              <Typography variant="h5" className="text-center mb-4">
+                Validating your KYC details.
+              </Typography>
+              <CircularProgress />
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <Typography variant="h5" className="text-center mb-4">
+                Verify BVN
+              </Typography>
+              <Typography color="textSecondary" className="text-center">
+                Please, enter the six(6) digit verification code sent to{" "}
+                {maskedPhone} to verify your BVN.
+              </Typography>
+            </div>
+            <div className="mt-6 flex justify-center flex-col gap-2 items-center">
+              <OtpInput
+                value={formik.values.otp}
+                onChange={(otp) => {
+                  formik.setFieldValue("otp", otp);
+                }}
+                numInputs={6}
+                shouldAutoFocus
+                // inputType="password"
+                slot={{ input: NumberInput }}
+                slotProps={{
+                  input: {
+                    style: { opacity: formik.isSubmitting ? 0.5 : 1 },
+                    disabled: formik.isSubmitting,
+                  },
+                }}
+              />
+              <Countdown date={countdownDate}>
+                {(countdown) => {
+                  const isCodeSent =
+                    countdown.days ||
+                    countdown.minutes ||
+                    countdown.seconds ||
+                    countdown.seconds;
 
-              return (
-                <>
-                  {isCodeSent ? (
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      className="text-center"
-                    >
-                      Resend OTP in{" "}
-                      <Typography
-                        component="span"
-                        color="primary"
-                        className="font-semibold"
-                      >
-                        {countdown.minutes}:
-                        {countdown.seconds < 10
-                          ? `0${countdown.seconds}`
-                          : countdown.seconds}
-                      </Typography>
-                    </Typography>
-                  ) : (
-                    <div className="flex items-center justify-center">
-                      <Typography className="text-center">
-                        Didn’t receive code?{" "}
-                        <ButtonBase
-                          disableRipple
-                          color="primary"
-                          disabled={signupYieldUserMutationResult?.isLoading}
-                          component={MuiLink}
-                          onClick={sendOtp}
-                          className="underline font-bold"
+                  return (
+                    <>
+                      {isCodeSent ? (
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          className="text-center"
                         >
-                          Resend.
-                        </ButtonBase>
-                      </Typography>
-                      {/* {requestOtpMutationResult.isLoading && (
+                          Resend OTP in{" "}
+                          <Typography
+                            component="span"
+                            color="primary"
+                            className="font-semibold"
+                          >
+                            {countdown.minutes}:
+                            {countdown.seconds < 10
+                              ? `0${countdown.seconds}`
+                              : countdown.seconds}
+                          </Typography>
+                        </Typography>
+                      ) : (
+                        <div className="flex items-center justify-center">
+                          <Typography className="text-center">
+                            Didn’t receive code?{" "}
+                            <ButtonBase
+                              disableRipple
+                              color="primary"
+                              disabled={
+                                signupYieldUserMutationResult?.isLoading
+                              }
+                              component={MuiLink}
+                              onClick={sendOtp}
+                              className="underline font-bold"
+                            >
+                              Resend.
+                            </ButtonBase>
+                          </Typography>
+                          {/* {requestOtpMutationResult.isLoading && (
                 <CircularProgress size={12} thickness={8} className="ml-1" />
               )} */}
-                    </div>
-                  )}
-                </>
-              );
-            }}
-          </Countdown>
-        </div>
-        <Typography
-          color="primary"
-          className="text-center font-semibold cursor-pointer mt-2"
-          onClick={triggerIgree}
-        >
-          I don’t have access to this phone number.
-        </Typography>
-        <LoadingButton
-          type="submit"
-          className="mt-6"
-          fullWidth
-          size="large"
-          loading={formik.isSubmitting}
-          loadingPosition="end"
-          endIcon={<></>}
-        >
-          Verify
-        </LoadingButton>
+                        </div>
+                      )}
+                    </>
+                  );
+                }}
+              </Countdown>
+            </div>
+            <Typography
+              color="primary"
+              className="text-center font-semibold cursor-pointer mt-2"
+              onClick={triggerIgree}
+            >
+              I don’t have access to this phone number.
+            </Typography>
+            <LoadingButton
+              type="submit"
+              className="mt-6"
+              fullWidth
+              size="large"
+              loading={formik.isSubmitting}
+              loadingPosition="end"
+              endIcon={<></>}
+            >
+              Verify
+            </LoadingButton>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
