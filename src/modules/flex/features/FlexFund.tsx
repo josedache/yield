@@ -22,6 +22,7 @@ import CurrencyTextField from "components/CurrencyTextField";
 import useStepper from "hooks/useStepper";
 import { Icon as Iconify } from "@iconify-icon/react";
 import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
+import CdlLogo from "assets/imgs/cdl-logo.png";
 import PaymentGatewayInline from "libs/payment-gateway-inline/inline";
 import {
   PaymentGatewayInlineChannel,
@@ -198,7 +199,7 @@ function FlexFund(props: FlexFundProps) {
             //   onClick: handleWallet,
             // },
             {
-              icon: <Iconify icon="lsicon:send-outline" className="text-4xl" />,
+              icon: <img src={CdlLogo} width={32} height={32} />,
               label: "Transfer to your CDL Account",
               onClick: handleWallet,
               disabled:
