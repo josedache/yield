@@ -104,6 +104,17 @@ function Flex() {
 
   const virtualItems = virtualizer.getVirtualItems();
 
+  function handleFlexFundSuccess(check = 3) {
+    savingsAccountsQueryResult.refetch();
+    savingsAccountQueryResult.refetch();
+
+    if (check) {
+      setTimeout(() => {
+        handleFlexFundSuccess(check - 1);
+      }, 1000 * 10);
+    }
+  }
+
   const isLoading =
     savingsAccountsQueryResult.isLoading || savingsAccountQueryResult.isLoading;
 
@@ -139,7 +150,7 @@ function Flex() {
                 Credit Direct Limited:
               </span>
               {"  "}
-              <FlexFund>
+              <FlexFund onSuccess={handleFlexFundSuccess}>
                 {({ toggleOpen }) => (
                   <MuiLink
                     color="textPrimary"
@@ -210,7 +221,7 @@ function Flex() {
                     </div>
                     {isActive ? (
                       <div className="space-y-2">
-                        <FlexFund>
+                        <FlexFund onSuccess={handleFlexFundSuccess}>
                           {({ toggleOpen }) => (
                             <Button fullWidth onClick={toggleOpen}>
                               Add Money
@@ -231,7 +242,7 @@ function Flex() {
                         </YieldWithdraw>
                       </div>
                     ) : (
-                      <FlexFund>
+                      <FlexFund onSuccess={handleFlexFundSuccess}>
                         {({ toggleOpen }) => (
                           <Button
                             fullWidth

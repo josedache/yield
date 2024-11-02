@@ -138,28 +138,28 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
 
                   return (
                     <>
-                      {isCodeSent ? (
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          className="text-center"
-                        >
-                          Resend OTP in{" "}
-                          <Typography
-                            component="span"
-                            color="primary"
-                            className="font-semibold"
-                          >
-                            {countdown.minutes}:
-                            {countdown.seconds < 10
-                              ? `0${countdown.seconds}`
-                              : countdown.seconds}
-                          </Typography>
-                        </Typography>
-                      ) : (
-                        <div className="flex items-center justify-center">
-                          <Typography className="text-center">
-                            Didn’t receive code?{" "}
+                      <div className="flex items-center justify-center">
+                        <Typography className="text-center">
+                          Didn’t receive code?{" "}
+                          {isCodeSent ? (
+                            <Typography
+                              variant="body2"
+                              color="primary"
+                              className="text-center"
+                            >
+                              Resend OTP in{" "}
+                              <Typography
+                                component="span"
+                                color="primary"
+                                className=""
+                              >
+                                {countdown.minutes}:
+                                {countdown.seconds < 10
+                                  ? `0${countdown.seconds}`
+                                  : countdown.seconds}
+                              </Typography>
+                            </Typography>
+                          ) : (
                             <ButtonBase
                               disableRipple
                               color="primary"
@@ -168,16 +168,16 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
                               }
                               component={MuiLink}
                               onClick={sendOtp}
-                              className="underline font-bold"
+                              className=""
                             >
-                              Resend.
+                              Resend OTP
                             </ButtonBase>
-                          </Typography>
-                          {/* {requestOtpMutationResult.isLoading && (
+                          )}
+                        </Typography>
+                        {/* {requestOtpMutationResult.isLoading && (
                 <CircularProgress size={12} thickness={8} className="ml-1" />
               )} */}
-                        </div>
-                      )}
+                      </div>
                     </>
                   );
                 }}

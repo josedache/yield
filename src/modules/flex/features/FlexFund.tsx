@@ -37,7 +37,7 @@ import { FlexFundStep } from "../enums/FlexFundStep";
 import { transactionApi } from "apis/transaction-api";
 
 function FlexFund(props: FlexFundProps) {
-  const { children, onClose, ...restProps } = props;
+  const { onSuccess, children, onClose, ...restProps } = props;
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -133,6 +133,7 @@ function FlexFund(props: FlexFundProps) {
         currency: "NGN",
         metadata: {},
         async onSuccess() {
+          onSuccess?.();
           stepper.go(getEnumStepIndex(FlexFundStep.SUCCESS));
         },
         onClose() {},
@@ -284,6 +285,7 @@ function FlexFund(props: FlexFundProps) {
                         variant: "info",
                       }
                     );
+                    onSuccess?.();
                     handleClose(e);
                   }}
                   size="large"
@@ -314,8 +316,7 @@ function FlexFund(props: FlexFundProps) {
             Success!
           </Typography>
           <Typography className="text-center">
-            You’ve successfully created a Yield profile. You can now sign in to
-            complete your onboarding.
+            You’ve funded your Yield successfully.
           </Typography>
           <Button className="max-w-[255px]" fullWidth onClick={handleClose}>
             Okay
@@ -386,6 +387,7 @@ const STEPS_INDEX = [
 
 export type FlexFundProps = {
   id?: string;
+  onSuccess?: () => void;
   children?:
     | ReactNode
     | ((props: {
