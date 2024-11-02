@@ -143,33 +143,35 @@ function Flex() {
         <div className="flex items-center flex-wrap gap-2">
           <Typography variant="h5">Flex Yield</Typography>
           <div className="flex-1" />
-          <Paper
-            variant="outlined"
-            className="flex items-center gap-2 p-2 bg-[#5EB1BF1A] border-[#5EB1BFB2]"
-          >
-            <Iconify
-              icon="icon-park-outline:send-one"
-              className="text-lg text-[#5EB1BF]"
-            />
-            <Typography>
-              <span className="text-text-secondary">
-                Credit Direct Limited:
-              </span>
-              {"  "}
-              <FlexFund onSuccess={handleFlexFundSuccess}>
-                {({ toggleOpen }) => (
-                  <MuiLink
-                    color="textPrimary"
-                    className="font-semibold cursor-pointer"
-                    component="span"
-                    onClick={toggleOpen}
-                  >
-                    {savingsAccount?.account_no}
-                  </MuiLink>
-                )}
-              </FlexFund>
-            </Typography>
-          </Paper>
+          {savingsAccount ? (
+            <Paper
+              variant="outlined"
+              className="flex items-center gap-2 p-2 bg-[#5EB1BF1A] border-[#5EB1BFB2]"
+            >
+              <Iconify
+                icon="icon-park-outline:send-one"
+                className="text-lg text-[#5EB1BF]"
+              />
+              <Typography>
+                <span className="text-text-secondary">
+                  Credit Direct Limited:
+                </span>
+                {"  "}
+                <FlexFund onSuccess={handleFlexFundSuccess}>
+                  {({ toggleOpen }) => (
+                    <MuiLink
+                      color="textPrimary"
+                      className="font-semibold cursor-pointer"
+                      component="span"
+                      onClick={toggleOpen}
+                    >
+                      {savingsAccount?.account_no}
+                    </MuiLink>
+                  )}
+                </FlexFund>
+              </Typography>
+            </Paper>
+          ) : null}
         </div>
 
         <LoadingContent loading={isLoading} error={isError} onRetry={onRefetch}>
