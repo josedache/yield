@@ -37,9 +37,14 @@ function AuthSignin() {
         });
         navigate(DASHBOARD);
       } catch (error: any) {
-        enqueueSnackbar(error?.data?.message || "Failed to login", {
-          variant: "error",
-        });
+        enqueueSnackbar(
+          Array.isArray(error?.data?.message)
+            ? error?.data?.message?.[0]
+            : error?.data?.message || "Failed to login",
+          {
+            variant: "error",
+          }
+        );
       }
     },
   });

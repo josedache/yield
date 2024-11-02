@@ -25,6 +25,19 @@ function AppProtectedHeader(props: AppBarProps) {
 
   const sideNavigation = useSideNavigation();
 
+  const isBasicInformationCompleted =
+    authUser?.firstname &&
+    authUser?.lastname &&
+    authUser?.bvn &&
+    authUser?.mobileNo &&
+    authUser?.email;
+
+  const isIdentificationCompleted = authUser?.nin;
+
+  const isAccountDetailsCompleted =
+    authUser?.bank_details?.accountnumber &&
+    authUser?.bank_details?.accountname;
+
   // const islg = useMediaQuery(MediaBreakpoint.LG);
 
   return (
@@ -50,7 +63,12 @@ function AppProtectedHeader(props: AppBarProps) {
               </Icon>
             </IconButton>
             <Typography>
-              Hello, <b>{authUser?.firstname}</b>
+              {isBasicInformationCompleted &&
+              isIdentificationCompleted &&
+              isAccountDetailsCompleted
+                ? "Hello"
+                : "Welcome"}
+              , <b>{authUser?.firstname}</b>
             </Typography>
             <div className="flex-1" />
 

@@ -78,8 +78,8 @@ function Profile() {
         <div className="flex-1" />
       </div>
 
-      <div className="flex gap-8">
-        <div className="flex-1 space-y-8">
+      <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex-1 space-y-8 w-full lg:w-[65%]">
           <Paper variant="outlined">
             <div className="px-6 p-4 border-b">
               <Typography variant="h6" className="font-medium">
@@ -116,7 +116,7 @@ function Profile() {
             <div className="p-6">
               <Paper
                 variant="outlined"
-                className="inline-flex items-start gap-4 p-6"
+                className="inline-flex items-start gap-4 p-6 w-full max-w-[350px] overflow-hidden relative"
               >
                 <IconButton
                   variant="soft"
@@ -124,7 +124,10 @@ function Profile() {
                   shape="default"
                   disableRipple
                 >
-                  <Iconify icon="teenyicons:bank-outline" />
+                  <Iconify
+                    className="text-[#4B5563]"
+                    icon="teenyicons:bank-outline"
+                  />
                 </IconButton>
                 <div className="space-y-1">
                   <Typography className="font-bold">
@@ -154,13 +157,33 @@ function Profile() {
                     >
                       <Iconify icon="material-symbols:file-copy-outline" />
                     </IconButton>
+
+                    <svg
+                      width="82"
+                      height="100"
+                      viewBox="0 0 82 134"
+                      fill="none"
+                      className="absolute right-0 bottom-0"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M56.5048 57.1503V120.973L56.5046 120.973V121.678C25.5277 121.409 0.5 96.1513 0.5 65.0301V0.502172C15.9057 0.636075 29.8377 6.9522 39.9554 17.0925C50.182 27.3422 56.5048 41.5039 56.5048 57.1503Z"
+                        stroke="#042A2B"
+                        strokeOpacity="0.1"
+                      />
+                      <path
+                        d="M122.274 65.0308V65.1461C122.212 96.213 97.2047 121.41 66.2688 121.679V92.5979C66.2688 76.9519 72.5916 62.7896 82.8183 52.5358C92.9357 42.3918 106.868 36.0794 122.274 35.9455V65.0308ZM66.2688 171.141V122.72C91.7654 125.05 111.736 146.542 111.736 172.714C111.736 186.25 106.384 198.528 97.6938 207.556L96.8788 208.403H96.8948L61.6583 244.828L26.7679 208.762H26.7878L25.9529 207.911C22.6872 204.585 19.8796 200.804 17.6376 196.671C13.7752 189.553 11.5808 181.396 11.5808 172.718C11.5808 146.731 31.2647 125.359 56.5008 122.772V179.937V180.437H57.0008C62.1211 180.437 66.2688 176.271 66.2688 171.141Z"
+                        stroke="#042A2B"
+                        strokeOpacity="0.1"
+                      />
+                    </svg>
                   </div>
                 </div>
               </Paper>
             </div>
           </Paper>
         </div>
-        <div className="w-full md:w-1/3">
+        <div className="w-full lg:w-[35%]">
           <Paper variant="outlined">
             <div className="px-6 p-4 border-b">
               <Typography variant="h6" className="font-medium">

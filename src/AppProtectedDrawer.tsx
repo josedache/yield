@@ -45,7 +45,7 @@ function AppProtectedDrawer() {
         },
         {
           icon: "ph:plant",
-          label: "Yield",
+          label: "Yields",
           links: [
             {
               label: "Fixed Yield",

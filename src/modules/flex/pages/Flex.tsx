@@ -5,6 +5,7 @@ import {
   Typography,
   Link as MuiLink,
   ButtonBase,
+  Skeleton,
 } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
 import CurrencyTypography from "components/CurrencyTypography";
@@ -42,6 +43,11 @@ function Flex() {
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
 
   const transactionsParentRef = useRef(null);
+
+  const getSavingsProductInformationQuery =
+    savingsApi.useGetSavingsProductInformationQuery({
+      params: { productId: 10 },
+    });
 
   const savingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
     useMemo(
@@ -171,7 +177,7 @@ function Flex() {
             <div className="flex flex-col md:flex-row gap-6">
               <div className="space-y-8 w-full md:w-[60%]">
                 <Paper className="p-6">
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex lg:items-center flex-col lg:flex-row justify-between gap-4">
                     <div className="space-y-2">
                       <Typography
                         variant="body2"
@@ -198,29 +204,53 @@ function Flex() {
                           />
                         </IconButton>
                       </div>
-
-                      {isActive ? (
+                      <div>
                         <div>
-                          <Typography
-                            variant="body2"
-                            className="flex items-center gap-2 text-text-secondary"
-                          >
-                            Total Interest
-                            <span className="w-2 h-2 bg-text-secondary rounded-full"></span>
-                            <span className="">
-                              {savingsAccount.interest_rate}%
-                            </span>{" "}
-                            P/A
-                          </Typography>
+                          {getSavingsProductInformationQuery?.isLoading ? (
+                            <Skeleton variant="text" className="text-xl" />
+                          ) : (
+                            <>
+                              {isActive ? (
+                                <div>
+                                  <Typography
+                                    variant="body2"
+                                    className="flex items-center gap-2 text-text-secondary"
+                                  >
+                                    Total Interest
+                                    <span className="w-2 h-2 bg-text-secondary rounded-full"></span>
+                                    <span className="">
+                                      {
+                                        getSavingsProductInformationQuery?.data
+                                          ?.data?.interest_rate
+                                      }
+                                      %
+                                    </span>{" "}
+                                    P/A
+                                  </Typography>
+                                </div>
+                              ) : (
+                                <Typography
+                                  variant="body2"
+                                  color="textSecondary"
+                                >
+                                  Interest is{" "}
+                                  <b>
+                                    {
+                                      getSavingsProductInformationQuery?.data
+                                        ?.data?.interest_rate
+                                    }
+                                    %
+                                  </b>{" "}
+                                  per annum.
+                                </Typography>
+                              )}
+                            </>
+                          )}
                         </div>
-                      ) : (
-                        <Typography variant="body2" color="textSecondary">
-                          Interest is <b>14%</b> per annum.
-                        </Typography>
-                      )}
+                      </div>
                     </div>
                     {isActive ? (
-                      <div className="space-y-2">
+                      <div className="w-full lg:max-w-[135px] grid grid-cols-2 lg:grid-cols-1 gap-3">
                         <FlexFund onSuccess={handleFlexFundSuccess}>
                           {({ toggleOpen }) => (
                             <Button fullWidth onClick={toggleOpen}>
@@ -246,10 +276,10 @@ function Flex() {
                         {({ toggleOpen }) => (
                           <Button
                             fullWidth
-                            className="max-w-[135px]"
+                            className="lg:max-w-[135px]"
                             onClick={toggleOpen}
                           >
-                            Add Money
+                            Fund Wallet
                           </Button>
                         )}
                       </FlexFund>
@@ -259,7 +289,7 @@ function Flex() {
 
                 <Paper
                   variant="outlined"
-                  className="p-4 pb-8 space-y-4 h-[calc(100vh-370px)]"
+                  className="p-4 pb-8 space-y-4 min-h-[calc(100vh-370px)]"
                 >
                   <div className="flex items-center justify-between">
                     <Typography
