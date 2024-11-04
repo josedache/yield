@@ -63,8 +63,9 @@ function Flex() {
   const listSavingsAccount =
     savingsAccountsQueryResult.data?.data?.savingsAccounts?.[0];
 
-  const totalAvailableBalance =
-    savingsAccountsQueryResult.data?.data?.totalAvailableBalance ?? 0;
+  const totalAvailableBalance = Number(
+    savingsAccountsQueryResult.data?.data?.totalAvailableBalance ?? 0
+  );
 
   const isActive = Number(totalAvailableBalance) > 0;
 
@@ -110,15 +111,29 @@ function Flex() {
 
   const virtualItems = virtualizer.getVirtualItems();
 
-  function handleFlexFundSuccess(check = 3) {
-    savingsAccountsQueryResult.refetch();
-    savingsAccountQueryResult.refetch();
+  async function handleFlexFundSuccess(
+    totalAvailableBalance: number,
+    interval?: any
+  ) {
+    try {
+      const [savingsData] = await Promise.all([
+        savingsAccountsQueryResult.refetch().unwrap(),
+        savingsAccountQueryResult.refetch().unwrap(),
+        savingsTransactionsQueryResult.refetch().unwrap(),
+      ]);
 
-    if (check) {
-      setTimeout(() => {
-        handleFlexFundSuccess(check - 1);
-      }, 1000 * 10);
-    }
+      const retry =
+        Number(savingsData?.data?.totalAvailableBalance) ==
+        Number(totalAvailableBalance);
+
+      if (retry) {
+        interval = setTimeout(() => {
+          handleFlexFundSuccess(totalAvailableBalance, interval);
+        }, 1000 * 5);
+      } else {
+        clearTimeout(interval);
+      }
+    } catch {}
   }
 
   const isLoading =
@@ -157,7 +172,9 @@ function Flex() {
                   Credit Direct Limited:
                 </span>
                 {"  "}
-                <FlexFund onSuccess={handleFlexFundSuccess}>
+                <FlexFund
+                  onSuccess={() => handleFlexFundSuccess(totalAvailableBalance)}
+                >
                   {({ toggleOpen }) => (
                     <MuiLink
                       color="textPrimary"
@@ -253,7 +270,11 @@ function Flex() {
                     </div>
                     {isActive ? (
                       <div className="w-full lg:max-w-[135px] grid grid-cols-2 lg:grid-cols-1 gap-3">
-                        <FlexFund onSuccess={handleFlexFundSuccess}>
+                        <FlexFund
+                          onSuccess={() =>
+                            handleFlexFundSuccess(totalAvailableBalance)
+                          }
+                        >
                           {({ toggleOpen }) => (
                             <Button fullWidth onClick={toggleOpen}>
                               Add Money
@@ -274,7 +295,11 @@ function Flex() {
                         </YieldWithdraw>
                       </div>
                     ) : (
-                      <FlexFund onSuccess={handleFlexFundSuccess}>
+                      <FlexFund
+                        onSuccess={() =>
+                          handleFlexFundSuccess(totalAvailableBalance)
+                        }
+                      >
                         {({ toggleOpen }) => (
                           <Button
                             fullWidth
@@ -590,7 +615,11 @@ function Flex() {
         </LoadingContent>
       </div>
 
-      <FlexFund open={isFund} onClose={toggleFund} />
+      <FlexFund
+        open={isFund}
+        onClose={toggleFund}
+        onSuccess={() => handleFlexFundSuccess(totalAvailableBalance)}
+      />
     </>
   );
 }

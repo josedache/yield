@@ -50,6 +50,10 @@ function Fixed() {
     params: { type: "fixed_deposit", ...(statusId ? { statusId } : {}) },
   });
 
+  const totalAvailableBalance = Number(
+    getSavingsAccountsQuery?.data?.data?.totalAvailableBalance ?? 0
+  );
+
   const savedCard = false;
 
   const tableInstance = useTable({
@@ -57,6 +61,29 @@ function Fixed() {
     data: getSavingsAccountsQuery?.data?.data?.savingsAccounts || null,
     manualPagination: true,
   });
+
+  async function handleFixedCreatePlanSuccess(
+    totalAvailableBalance: number,
+    interval?: any
+  ) {
+    try {
+      const [savingsData] = await Promise.all([
+        getSavingsAccountsQuery.refetch().unwrap(),
+      ]);
+
+      const retry =
+        Number(savingsData?.data?.totalAvailableBalance) ==
+        Number(totalAvailableBalance);
+
+      if (retry) {
+        interval = setTimeout(() => {
+          handleFixedCreatePlanSuccess(totalAvailableBalance, interval);
+        }, 1000 * 5);
+      } else {
+        clearTimeout(interval);
+      }
+    } catch {}
+  }
 
   return (
     <div className="space-y-8">
@@ -298,6 +325,7 @@ function Fixed() {
         <FixedCreatePlan
           onClose={toggleFixedCreatePlan}
           open={isFixedCreatePlan}
+          onSuccess={() => handleFixedCreatePlanSuccess(totalAvailableBalance)}
         />
       )}
     </div>

@@ -46,9 +46,10 @@ export default function FixedCreatePlan(
     savingsId?: string;
     isEdit?: boolean;
     isPayment?: boolean;
+    onSuccess?: () => void;
   }
 ) {
-  const { onClose, savingsId, isEdit, isPayment, ...rest } = props;
+  const { onSuccess, onClose, savingsId, isEdit, isPayment, ...rest } = props;
 
   const stepper = useStepper();
   const { enqueueSnackbar } = useSnackbar();
@@ -238,6 +239,7 @@ export default function FixedCreatePlan(
         currency: "NGN",
         metadata: {},
         async onSuccess() {
+          onSuccess?.();
           stepper.go(4);
         },
         onClose() {},
@@ -268,6 +270,9 @@ export default function FixedCreatePlan(
 
       if (fundSource === "transfer") {
         stepper.go(3);
+      }
+      if (fundSource === "paystack") {
+        handlePaystack();
       } else {
         stepper.go(4);
       }
@@ -324,9 +329,12 @@ export default function FixedCreatePlan(
             {
               icon: <img src={PaystackIconPngUrl} width={32} height={32} />,
               label: "Fund via Paystack",
-              onClick: handlePaystack,
+              onClick: () => {
+                handleFundYield("paystack");
+              },
               disabled:
-                generateTransactionOutwardPaymentReferenceMutationResult.isLoading,
+                generateTransactionOutwardPaymentReferenceMutationResult.isLoading ||
+                savingsActivateAccountMutationResult.isLoading,
             },
           ].map(({ label, more, icon, ...restProps }) => {
             return (
