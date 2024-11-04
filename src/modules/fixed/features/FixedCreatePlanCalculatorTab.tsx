@@ -17,7 +17,9 @@ export default function FixedCreatePlanCalculatorTab(
     },
     {
       title: "Duration",
-      value: `${savingsDepositCalculator?.data?.depositPeriod} months`,
+      value: `${savingsDepositCalculator?.data?.depositPeriod} month${
+        savingsDepositCalculator?.data?.depositPeriod > 1 ? "s" : ""
+      }`,
     },
     {
       title: "Maturity Date",

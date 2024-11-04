@@ -26,7 +26,10 @@ import { savingsApi } from "apis/savings-api";
 import FixedStatusChip from "../features/FixedStatusChip";
 import LoadingContent from "components/LoadingContent";
 import DashboardWithdrawalAccountCard from "modules/dashboard/features/DashboardWithdrawalaccountCard";
-import { ALL_ACTIVE_SAVINGS_ACCOUNT_STATUS_TYPE } from "constants/savings";
+import {
+  ALL_ACTIVE_SAVINGS_ACCOUNT_STATUS_TYPE,
+  SAVINGS_ACCOUNT_STATUS_TYPE,
+} from "constants/savings";
 import { FixedUrlDialog } from "../enums/FixedUrlDialog";
 import { urlSearchParamsExtractor } from "utils/url";
 
@@ -325,7 +328,12 @@ const columns: ColumnDef<any>[] = [
     cell: (info) => {
       return (
         <CurrencyTypography>
-          {info.row.original.maturity_amount}
+          {[
+            SAVINGS_ACCOUNT_STATUS_TYPE.REJECTED,
+            SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL,
+          ].includes(info.row.original?.account_status_code)
+            ? info.row.original?.principal
+            : info.row.original?.available_balance}
         </CurrencyTypography>
       );
     },
