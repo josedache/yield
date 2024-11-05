@@ -468,6 +468,8 @@ export const theme = responsiveFontSizes(
               },
 
               "& .MuiInputBase-input": {
+                fontSize: "1rem",
+
                 "&:-webkit-autofill": {
                   WebkitBoxShadow: `0 0 0 100px transparent inset`,
                   WebkitTextFillColor: "#000000",
