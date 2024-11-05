@@ -39,6 +39,8 @@ import { transactionApi } from "apis/transaction-api";
 function FlexFund(props: FlexFundProps) {
   const { onSuccess, children, onClose, ...restProps } = props;
 
+  const minimumDeposit = 50000;
+
   const { enqueueSnackbar } = useSnackbar();
 
   const authUser = useAuthUser();
@@ -77,7 +79,7 @@ function FlexFund(props: FlexFundProps) {
 
   const formik = useFormik({
     initialValues: {
-      amount: 0,
+      amount: null,
     },
     enableReinitialize: true,
     validationSchema: yup.object({
@@ -163,6 +165,7 @@ function FlexFund(props: FlexFundProps) {
             fullWidth
             label="Amount"
             margin="normal"
+            placeholder="0.00"
             {...getFormikTextFieldProps(
               formik,
               "amount",
@@ -173,13 +176,18 @@ function FlexFund(props: FlexFundProps) {
             <LoadingButton
               size="large"
               fullWidth
-              disabled={!formik.isValid}
+              disabled={
+                !formik.dirty ||
+                !formik.isValid ||
+                (isLowBalance &&
+                  Number(formik.values.amount) < Number(minimumDeposit))
+              }
               onClick={formik.handleSubmit as any}
             >
               Continue
             </LoadingButton>
             <Typography
-              variant="caption"
+              variant="body2"
               className="text-center block"
               color="textSecondary"
             >
@@ -302,7 +310,7 @@ function FlexFund(props: FlexFundProps) {
     },
     {
       content: (
-        <div className="space-y-8 max-w-md mx-auto flex py-6 justify-center flex-col items-center">
+        <div className="space-y-8 max-w-[400px] mx-auto flex py-6 justify-center flex-col items-center">
           <div className="flex justify-center text-6xl">
             <Icon
               fontSize="inherit"
@@ -334,7 +342,16 @@ function FlexFund(props: FlexFundProps) {
 
   return (
     <>
-      <Dialog maxWidth="xs" open={isOpen} fullWidth {...restProps}>
+      <Dialog
+        PaperProps={{
+          sx: {
+            maxWidth: isLastStep ? 400 : 442,
+          },
+        }}
+        open={isOpen}
+        fullWidth
+        {...restProps}
+      >
         {!isBlankStep ? (
           <DialogTitleXCloseButton onClose={handleClose}>
             {stepper.step ? (

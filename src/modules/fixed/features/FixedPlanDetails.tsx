@@ -194,7 +194,7 @@ export default function FixedPlanDetails(
         <div className="py-6">
           <div className="flex justify-between gap-2 items-center px-6">
             <div className="flex gap-1 items-center">
-              <Typography className="capitalize">
+              <Typography className="capitalize" variant="h6">
                 {getSavingsQuery?.data?.data?.plan_name || "..."}{" "}
               </Typography>
 

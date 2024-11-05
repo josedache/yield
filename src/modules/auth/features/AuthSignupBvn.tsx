@@ -90,7 +90,7 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
       <DialogTitleXCloseButton
         onClose={() => stepper.previous()}
       ></DialogTitleXCloseButton>
-      <DialogContent className="px-8 pb-10">
+      <DialogContent className="px-5 md:px-8 pb-8 md:pb-10">
         {iAgreeUserMutationResult.isLoading ? (
           <>
             <div className="flex flex-col items-center">

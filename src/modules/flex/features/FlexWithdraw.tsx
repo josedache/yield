@@ -11,6 +11,7 @@ import {
   Typography,
   Link as MuiLink,
   CircularProgress,
+  FormHelperText,
 } from "@mui/material";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import { useFormik } from "formik";
@@ -74,7 +75,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
 
   const formik = useFormik({
     initialValues: {
-      amount: 0,
+      amount: null,
       otp: "",
       channel: null as FlexWithdrawChannel,
     },
@@ -188,22 +189,21 @@ function FlexWithdraw(props: FlexWithdrawProps) {
       description: "Please, enter how much you want to withdraw.",
       content: (
         <div className="space-y-8">
-          <CurrencyTextField
-            fullWidth
-            label="Amount"
-            margin="normal"
-            maskOptions={{ min: 1, max: availableBalance }}
-            {...getFormikTextFieldProps(
-              formik,
-              "amount",
-              <>
-                Available amount:{" "}
-                <CurrencyTypography component="span">
-                  {availableBalance - formik.values.amount}
-                </CurrencyTypography>
-              </>
-            )}
-          />
+          <div>
+            <CurrencyTextField
+              fullWidth
+              label="Amount"
+              placeholder="0.00"
+              maskOptions={{ min: 1, max: availableBalance }}
+              {...getFormikTextFieldProps(formik, "amount")}
+            />
+            <FormHelperText className="mt-2">
+              Available amount:{" "}
+              <CurrencyTypography component="span" variant="caption">
+                {availableBalance - formik.values.amount}
+              </CurrencyTypography>
+            </FormHelperText>
+          </div>
           {/* <Paper
             variant="outlined"
             className="border-[#5EB1BF] bg-[#5EB1BF1A] max-w-md mx-auto"
@@ -234,7 +234,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
             <LoadingButton
               size="large"
               fullWidth
-              disabled={isWithdrawEnabled}
+              disabled={isWithdrawEnabled || !formik.isValid || !formik.dirty}
               onClick={async (e) => {
                 if (isWithdrawEnabled) {
                   return;
@@ -390,6 +390,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
           <LoadingButton
             fullWidth
             size="large"
+            disabled={!formik.isValid || !formik.dirty}
             loading={formik.isSubmitting}
             loadingPosition="end"
             endIcon={<></>}
@@ -440,7 +441,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
     <>
       <Dialog open={isOpen} maxWidth="xs" fullWidth {...restProps}>
         {!isBlankStep ? (
-          <DialogTitleXCloseButton onClose={handleClose}>
+          <DialogTitleXCloseButton onClose={handleClose} className="pt-4">
             {stepper.step ? (
               <IconButton
                 variant="soft"
@@ -453,7 +454,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
             ) : null}
           </DialogTitleXCloseButton>
         ) : null}
-        <DialogContent className="space-y-4">
+        <DialogContent className="space-y-4 px-8 pb-10">
           {!isBlankStep ? (
             <div className="text-center">
               <Typography variant="h6">
@@ -464,7 +465,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
               </Typography>
             </div>
           ) : null}
-          <div className="p-4">{stepConfig?.content}</div>
+          <div>{stepConfig?.content}</div>
         </DialogContent>
       </Dialog>
 

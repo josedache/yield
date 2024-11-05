@@ -21,7 +21,6 @@ import EmptyPlanSvg from "assets/svgs/empty-state.svg?react";
 import FixedCreatePlan from "../features/FixedCreatePlan";
 import TanStandardTable from "components/TanStandardTable";
 import useTable from "hooks/useTable";
-import FixedPlanListActionMenu from "../features/FixedPlanListActionMenu";
 import { savingsApi } from "apis/savings-api";
 import FixedStatusChip from "../features/FixedStatusChip";
 import LoadingContent from "components/LoadingContent";
@@ -32,6 +31,7 @@ import {
 } from "constants/savings";
 import { FixedUrlDialog } from "../enums/FixedUrlDialog";
 import { urlSearchParamsExtractor } from "utils/url";
+import FixedPlanDetails from "../features/FixedPlanDetails";
 
 function Fixed() {
   const [searchParams] = useSearchParams();
@@ -45,6 +45,8 @@ function Fixed() {
     dialog === FixedUrlDialog.CREATE_PLAN
   );
   const [statusId, setStatusId] = useState<number>(0);
+  const [isPlanDetails, togglePlanDetails] = useToggle();
+  const [info, setInfo] = useState();
 
   const getSavingsAccountsQuery = savingsApi.useGetSavingsAccountsQuery({
     params: { type: "fixed_deposit", ...(statusId ? { statusId } : {}) },
@@ -194,7 +196,7 @@ function Fixed() {
                     }}
                     // slotProps={{
                     //   input: {
-                    //     startAdornment: <CircularProgress size={10} />,
+                    //     startAdornment: <CircularProgress size={} />,
                     //   },
                     // }}
                     placeholder="Filter By"
@@ -218,6 +220,21 @@ function Fixed() {
                       error={getSavingsAccountsQuery.isError}
                       onErrorRetry={getSavingsAccountsQuery.refetch}
                       onEmptyRetry={getSavingsAccountsQuery.refetch}
+                      // slots={{ bodyCell: CardActionArea }}
+                      slotProps={{
+                        bodyRow(bodyRow) {
+                          return {
+                            onClick: () => {
+                              setInfo(bodyRow.original);
+                              togglePlanDetails();
+                            },
+                          };
+                        },
+                      }}
+                      classes={{
+                        // bodyCell: "pointer bg-red-500",
+                        bodyRow: "table-row cursor-pointer",
+                      }}
                       pagination={false}
                     />
                   </div>
@@ -328,6 +345,17 @@ function Fixed() {
           onSuccess={() => handleFixedCreatePlanSuccess(totalAvailableBalance)}
         />
       )}
+
+      {isPlanDetails && (
+        <FixedPlanDetails
+          info={info}
+          onClose={() => {
+            setInfo(null);
+            togglePlanDetails();
+          }}
+          open={isPlanDetails}
+        />
+      )}
     </div>
   );
 }
@@ -394,10 +422,5 @@ const columns: ColumnDef<any>[] = [
         </div>
       );
     },
-  },
-
-  {
-    header: "Action",
-    cell: (info) => <FixedPlanListActionMenu info={info.row.original} />,
   },
 ];

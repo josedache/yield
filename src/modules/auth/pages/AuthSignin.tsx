@@ -54,8 +54,8 @@ function AuthSignin() {
       onSubmit={formik.handleSubmit as any}
       className="h-full flex flex-col justify-center items-center"
     >
-      <Paper className="w-full max-w-lg min-h-0 max-h-full overflow-auto">
-        <div className="sticky top-0 z-10 bg-inherit p-8 pb-4">
+      <Paper className="w-full max-w-[455px] min-h-0 max-h-full overflow-auto">
+        <div className="sticky top-0 z-10 bg-inherit p-5 md::p-8 pb-4">
           <Typography variant="h4" className="font-bold mb-4">
             Welcome Back
           </Typography>
@@ -64,7 +64,7 @@ function AuthSignin() {
           </Typography>
         </div>
 
-        <div className="px-8">
+        <div className="px-5 md:px-8">
           <NumberTextField
             freeSolo
             fullWidth
@@ -82,7 +82,7 @@ function AuthSignin() {
           />
         </div>
 
-        <div className="sticky bottom-0 p-8 pt-4 bg-inherit z-10 space-y-8">
+        <div className="sticky bottom-0 p-5 md:p-8 pt-6 bg-inherit z-10 space-y-8">
           <LoadingButton
             type="submit"
             fullWidth
