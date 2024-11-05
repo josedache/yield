@@ -238,7 +238,7 @@ function AuthResetPassword() {
       className="h-full flex flex-col justify-center items-center"
     >
       <Paper className="w-full max-w-[455px] min-h-0 max-h-full overflow-auto">
-        <div className="sticky top-0 z-10 bg-inherit p-8 pb-4">
+        <div className="sticky top-0 z-10 bg-inherit p-5 md:p-8 pb-4">
           {!isFirstStep ? (
             <ButtonBase
               className="flex items-center gap-2 mb-4"
@@ -256,9 +256,9 @@ function AuthResetPassword() {
           </Typography>
         </div>
 
-        <div className="px-8">{content?.body}</div>
+        <div className="px-5 md:px-8">{content?.body}</div>
 
-        <div className="sticky bottom-0 p-8 bg-inherit z-10 space-y-2">
+        <div className="sticky bottom-0 p-5 md:p-8 bg-inherit z-10 space-y-2">
           <LoadingButton
             type="submit"
             fullWidth
@@ -281,7 +281,7 @@ function AuthResetPassword() {
           </LoadingButton>
 
           {isFirstStep || isLastStep ? (
-            <Typography color="textSecondary">
+            <Typography color="textSecondary" className="pt-6">
               Already have an account?{" "}
               <Typography
                 color="primary"

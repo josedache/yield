@@ -14,6 +14,8 @@ import {
   ListItemButton,
   Collapse,
   Button,
+  Popover,
+  Avatar,
 } from "@mui/material";
 import clsx from "clsx";
 import Logo from "components/Logo";
@@ -27,11 +29,15 @@ import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import useToggle from "hooks/useToggle";
 import { useMemo } from "react";
 import useAuthUser from "hooks/useAuthUser";
+import usePopover from "hooks/usePopover";
 
 function AppProtectedDrawer() {
   const islg = useMediaQuery(MediaBreakpoint.LG);
 
   const { logout } = useLogout();
+  const authUser = useAuthUser();
+
+  const infoPopover = usePopover();
 
   const sideNavigation = useSideNavigation();
 
@@ -95,6 +101,7 @@ function AppProtectedDrawer() {
       <Drawer
         open={sideNavigation.isOpen}
         variant={islg ? "permanent" : "temporary"}
+        anchor={islg ? "left" : "right"}
         PaperProps={{
           rounded: "default",
           className: clsx(
@@ -104,11 +111,38 @@ function AppProtectedDrawer() {
         }}
         onClose={() => sideNavigation.toggle()}
       >
-        <Toolbar className="flex items-center justify-between mt-6">
-          <Logo variant="1" />
+        <Toolbar className="flex items-center justify-between  mt-6">
+          {islg && <Logo variant="1" />}
+          {!islg && (
+            <div className="flex gap-4">
+              {" "}
+              <Avatar src={authUser?.avatar}>
+                {authUser?.firstname?.[0]}
+                {authUser?.lastname?.[0]}
+              </Avatar>
+              <Popover
+                open={infoPopover.isOpen}
+                anchorEl={infoPopover.anchorEl}
+                onClose={infoPopover.togglePopover}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                className="p-2"
+              ></Popover>
+              <div className=" border rounded-full w-10 h-10 border-neutral-100 ">
+                <IconButton color="inherit" className="bg-neutral-50" disabled>
+                  {/* <Badge badgeContent={7} color="error"> */}
+                  <Iconify
+                    className="MuiIcon-root text-[#292D32]"
+                    icon="mdi:bell-outline"
+                  />
+                  {/* </Badge> */}
+                </IconButton>
+              </div>
+            </div>
+          )}
           {!islg && (
             <IconButton color="inherit" onClick={() => sideNavigation.toggle()}>
-              <Icon>chevron_left</Icon>
+              <Icon>close</Icon>
             </IconButton>
           )}
         </Toolbar>
