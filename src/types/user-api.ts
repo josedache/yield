@@ -10,6 +10,7 @@ export type UserLoginApiRequest = ApiRequest<{
 
 export type UserLoginApiResponse = ApiResponse<{
   userId: number;
+  user: any;
   token: string;
   is_new_device: boolean;
 }>;

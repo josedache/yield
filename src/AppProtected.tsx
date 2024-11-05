@@ -2,16 +2,26 @@
 import store from "configs/store";
 import AppProtectedHeader from "./AppProtectedHeader";
 import AppProtectedDrawer from "./AppProtectedDrawer";
-import { matchPath, Outlet, redirect } from "react-router-dom";
+import { Navigate, Outlet, redirect, useMatch } from "react-router-dom";
 import { DASHBOARD_KYC, SIGNIN } from "constants/urls";
 import { Container } from "@mui/material";
 import { userApi } from "apis/user-api";
 import LoadingContent from "components/LoadingContent";
+import useAuthUser from "hooks/useAuthUser";
 
 function AppProtected() {
   const userClientKycQueryResult = userApi.useGetUserClientKycQuery(undefined);
   const userSelfieFileQueryResult =
     userApi.useGetUserSelfieFileQuery(undefined);
+
+  const authUser = useAuthUser();
+
+  const isKycCompleted =
+    authUser?.kyc_validation?.basic &&
+    authUser?.kyc_validation?.nin &&
+    authUser?.kyc_validation?.bank;
+
+  const dashboardKycMatch = useMatch({ path: DASHBOARD_KYC, end: true });
 
   return (
     <LoadingContent
@@ -39,6 +49,9 @@ function AppProtected() {
           <div className="lg:ml-[270px]">
             <Container className="p-4 md:p-8">{<Outlet />}</Container>
           </div>
+          {!isKycCompleted && !dashboardKycMatch ? (
+            <Navigate to={DASHBOARD_KYC} />
+          ) : null}
         </>
       )}
     </LoadingContent>
@@ -55,20 +68,6 @@ export function loader() {
   if (!authUser?.isAuthenticated) {
     return redirect(SIGNIN);
   }
-
-  // const isKycCompleted =
-  //   authUser?.kyc_validation?.basic &&
-  //   authUser?.kyc_validation?.nin &&
-  //   authUser?.kyc_validation?.bank;
-
-  //   console.log(matchPath({ path: DASHBOARD_KYC, end: true }, window.location.pathname))
-
-  // if (
-  //   !isKycCompleted &&
-  //   !matchPath({ path: DASHBOARD_KYC, end: true }, window.location.pathname)
-  // ) {
-  //   return redirect(DASHBOARD_KYC);
-  // }
 
   return null;
 }

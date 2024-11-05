@@ -56,8 +56,9 @@ export const slice = createSlice({
         userApi.endpoints.loginUser.matchFulfilled,
         (state, { payload }) => {
           state.authUser = {
-            kyc_validation: getKyc(payload.data),
-            ...payload.data,
+            // kyc_validation: getKyc(payload.data?.user),
+            ...payload.data?.user,
+            token: payload?.data?.token,
             isAuthenticated: true,
           } as User;
         }
