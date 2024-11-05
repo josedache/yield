@@ -2,7 +2,7 @@
 import store from "configs/store";
 import AppProtectedHeader from "./AppProtectedHeader";
 import AppProtectedDrawer from "./AppProtectedDrawer";
-import { Outlet, redirect } from "react-router-dom";
+import { matchPath, Outlet, redirect } from "react-router-dom";
 import { DASHBOARD_KYC, SIGNIN } from "constants/urls";
 import { Container } from "@mui/material";
 import { userApi } from "apis/user-api";
@@ -56,14 +56,19 @@ export function loader() {
     return redirect(SIGNIN);
   }
 
-  const isKycCompleted =
-    authUser?.kyc_validation?.basic &&
-    authUser?.kyc_validation?.nin &&
-    authUser?.kyc_validation?.bank;
+  // const isKycCompleted =
+  //   authUser?.kyc_validation?.basic &&
+  //   authUser?.kyc_validation?.nin &&
+  //   authUser?.kyc_validation?.bank;
 
-  if (!isKycCompleted && window.location.pathname !== DASHBOARD_KYC) {
-    return redirect(DASHBOARD_KYC);
-  }
+  //   console.log(matchPath({ path: DASHBOARD_KYC, end: true }, window.location.pathname))
+
+  // if (
+  //   !isKycCompleted &&
+  //   !matchPath({ path: DASHBOARD_KYC, end: true }, window.location.pathname)
+  // ) {
+  //   return redirect(DASHBOARD_KYC);
+  // }
 
   return null;
 }
