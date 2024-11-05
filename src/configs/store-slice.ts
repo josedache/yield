@@ -55,7 +55,11 @@ export const slice = createSlice({
       .addMatcher(
         userApi.endpoints.loginUser.matchFulfilled,
         (state, { payload }) => {
-          state.authUser = { ...payload.data, isAuthenticated: true } as User;
+          state.authUser = {
+            kyc_validation: getKyc(payload.data),
+            ...payload.data,
+            isAuthenticated: true,
+          } as User;
         }
       )
       .addMatcher(
@@ -76,7 +80,9 @@ export const slice = createSlice({
       .addMatcher(
         userApi.endpoints.getUserClientKyc.matchFulfilled,
         (state, { payload }) => {
-          state.authUser = Object.assign(state.authUser, payload.data);
+          state.authUser = Object.assign(state.authUser, payload.data, {
+            kyc_validation: getKyc(payload.data),
+          });
         }
       )
       .addMatcher(
@@ -95,6 +101,24 @@ export default slice;
 
 export function getStorageState({ authUser }: typeof initialState) {
   return { authUser };
+}
+
+function getKyc(authUser: Partial<User>) {
+  const basic = !!(
+    authUser?.firstname &&
+    authUser?.lastname &&
+    authUser?.bvn &&
+    authUser?.mobileNo &&
+    authUser?.email
+  );
+
+  const nin = !!authUser?.nin;
+
+  const bank = !!(
+    authUser?.bank_details?.accountnumber && authUser?.bank_details?.accountname
+  );
+
+  return { basic, nin, bank };
 }
 
 // export interface MyObjectType {

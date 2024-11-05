@@ -37,6 +37,11 @@ export type User = {
     is_selfie_validated: boolean;
     is_adddress_validated: boolean;
   };
+  kyc_validation: {
+    basic: boolean;
+    nin: boolean;
+    bank: boolean;
+  };
   bank_details: {
     bankId: string;
     accountnumber: string;

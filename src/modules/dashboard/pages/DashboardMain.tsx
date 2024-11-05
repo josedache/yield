@@ -111,18 +111,9 @@ function DashboardMain() {
     },
   ];
 
-  const isBasicInformationCompleted =
-    authUser?.firstname &&
-    authUser?.lastname &&
-    authUser?.bvn &&
-    authUser?.mobileNo &&
-    authUser?.email;
-
-  const isIdentificationCompleted = authUser?.nin;
-
-  const isAccountDetailsCompleted =
-    authUser?.bank_details?.accountnumber &&
-    authUser?.bank_details?.accountname;
+  const isBasicInformationCompleted = authUser?.kyc_validation?.basic;
+  const isIdentificationCompleted = authUser?.kyc_validation?.nin;
+  const isAccountDetailsCompleted = authUser?.kyc_validation?.bank;
 
   if (
     !(

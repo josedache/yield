@@ -13,10 +13,11 @@ import {
   Link as MuiLink,
   ListItemButton,
   Collapse,
+  Button,
 } from "@mui/material";
 import clsx from "clsx";
 import Logo from "components/Logo";
-import { DASHBOARD, FIXED, FLEX, PROFILE } from "constants/urls";
+import { DASHBOARD, DASHBOARD_KYC, FIXED, FLEX, PROFILE } from "constants/urls";
 import MediaBreakpoint from "enums/MediaBreakpoint";
 import useSideNavigation from "hooks/useSideNavigation";
 import { Link, matchPath, useLocation } from "react-router-dom";
@@ -25,6 +26,7 @@ import useLogout from "hooks/useLogout";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import useToggle from "hooks/useToggle";
 import { useMemo } from "react";
+import useAuthUser from "hooks/useAuthUser";
 
 function AppProtectedDrawer() {
   const islg = useMediaQuery(MediaBreakpoint.LG);
@@ -42,6 +44,7 @@ function AppProtectedDrawer() {
           icon: "hugeicons:dashboard-square-02",
           label: "Dashboard",
           to: DASHBOARD,
+          kycAllow: true,
         },
         {
           icon: "ph:plant",
@@ -70,6 +73,7 @@ function AppProtectedDrawer() {
           icon: "ep:chat-dot-round",
           label: "Support",
           onClick: toggleSupport,
+          kycAllow: true,
         },
         // {
         //   icon: "la:cog",
@@ -80,6 +84,7 @@ function AppProtectedDrawer() {
           icon: "ion:power-outline",
           label: "Logout",
           onClick: logout,
+          kycAllow: true,
         },
       ],
     },
@@ -186,7 +191,16 @@ export default AppProtectedDrawer;
 
 function AppProtectedDrawerItem(props: any) {
   const item = props.item;
-  const { label, to, links, icon, onClick } = item;
+  const { kycAllow, label, to, links, icon, onClick } = item;
+
+  const [isKycDialog, toggleKycDialog] = useToggle();
+
+  const authUser = useAuthUser();
+
+  const isKycCompleted =
+    authUser?.kyc_validation?.basic &&
+    authUser?.kyc_validation?.nin &&
+    authUser?.kyc_validation?.bank;
 
   const isGroup = !!links;
 
@@ -218,9 +232,11 @@ function AppProtectedDrawerItem(props: any) {
         )}
         {...(isGroup
           ? { onClick: toggleSubMenu }
-          : onClick
-          ? { onClick }
-          : { component: Link, to })}
+          : isKycCompleted || kycAllow
+          ? onClick
+            ? { onClick }
+            : { component: Link, to }
+          : { onClick: toggleKycDialog })}
       >
         <Iconify icon={icon} className="text-2xl" />
         <Typography className="font-medium flex-1">{label}</Typography>
@@ -257,6 +273,28 @@ function AppProtectedDrawerItem(props: any) {
           </List>
         </Collapse>
       )}
+
+      <Dialog open={isKycDialog} fullWidth onClose={toggleKycDialog}>
+        <DialogContent>
+          <div className="flex flex-col gap-4 items-center">
+            <Icon color="warning" className="text-8xl">
+              sentiment_satisfied
+            </Icon>
+            <Typography className="text-center text-text-secondary">
+              Your KYC information is incomplete please update your profile to
+              yield and perform other actions.
+            </Typography>
+            <Button
+              component={Link}
+              to={DASHBOARD_KYC}
+              onClick={toggleKycDialog as any}
+              className="mt-4"
+            >
+              Update profile
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
