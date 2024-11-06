@@ -148,10 +148,13 @@ function FlexWithdraw(props: FlexWithdrawProps) {
     },
   });
 
-  const isWithdrawEnabled = (() => {
-    const newBalance = availableBalance - Number(formik.values.amount);
-    return newBalance > 0 ? newBalance < minimumBalance : false;
-  })();
+  const futureAvaialableBalance =
+    availableBalance - Number(formik.values.amount);
+
+  const isFutureAvailableBalanceLessThanMinimumBalance =
+    futureAvaialableBalance < minimumBalance;
+
+  const isTotalWithdrawal = Number(formik.values.amount) >= availableBalance;
 
   function handleClose(e?: any, reason?: any) {
     formik.resetForm();
@@ -212,7 +215,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
               You have 3 free withdrawals left this month
             </Typography>
           </Paper> */}
-          {isWithdrawEnabled ? (
+          {isFutureAvailableBalanceLessThanMinimumBalance ? (
             <div className="flex items-start gap-2 text-text-secondary font-medium">
               <Iconify
                 icon="si:warning-fill"
@@ -234,27 +237,26 @@ function FlexWithdraw(props: FlexWithdrawProps) {
             <LoadingButton
               size="large"
               fullWidth
-              disabled={isWithdrawEnabled || !formik.isValid || !formik.dirty}
+              disabled={!formik.isValid || !formik.dirty}
               onClick={async (e) => {
-                if (isWithdrawEnabled) {
-                  return;
-                  // await formik.setFieldValue("amount", availableBalance);
+                if (isFutureAvailableBalanceLessThanMinimumBalance) {
+                  await formik.setFieldValue("amount", availableBalance);
                 }
                 formik.handleSubmit(e as any);
               }}
             >
-              Continue
-              {/* {isWithdrawEnabled ? "Yes, Withdraw" : "Continue"} */}
+              {isFutureAvailableBalanceLessThanMinimumBalance
+                ? "Yes, Withdraw"
+                : "Continue"}
             </LoadingButton>
           </div>
         </div>
       ),
     },
     {
-      description:
-        Number(formik.values.amount) >= availableBalance
-          ? "You’ve decided to empty your flex yield balance. Please select an option below to receive your funds."
-          : "Please select a destination for withdrawal.",
+      description: isTotalWithdrawal
+        ? "You’ve decided to empty your flex yield balance. Please select an option below to receive your funds."
+        : "Please select a destination for withdrawal.",
       content: (
         <div className="space-y-8">
           <div className="space-y-2 text-center">

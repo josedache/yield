@@ -428,14 +428,14 @@ function DashboardMain() {
                         >
                           No Activities
                         </Typography>
-                        <Typography
+                        {/* <Typography
                           variant="body1"
                           color="textSecondary"
                           className="text-center"
                         >
                           Lorem ipsum dolor sit amet consectetur adipiscing
                           elit.
-                        </Typography>
+                        </Typography> */}
                       </div>
                     </div>
                   )}
