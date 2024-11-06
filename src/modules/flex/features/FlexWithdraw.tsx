@@ -259,12 +259,14 @@ function FlexWithdraw(props: FlexWithdrawProps) {
         : "Please select a destination for withdrawal.",
       content: (
         <div className="space-y-8">
-          <div className="space-y-2 text-center">
-            <Typography color="textSecondary">Amount to Withdraw</Typography>
-            <CurrencyTypography variant="h4">
-              {Number(formik.values.amount)}
-            </CurrencyTypography>
-          </div>
+          {isTotalWithdrawal ? (
+            <div className="space-y-2 text-center">
+              <Typography color="textSecondary">Amount to Withdraw</Typography>
+              <CurrencyTypography variant="h4">
+                {Number(formik.values.amount)}
+              </CurrencyTypography>
+            </div>
+          ) : null}
           <div className="space-y-4">
             {[
               {
