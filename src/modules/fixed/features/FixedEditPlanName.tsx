@@ -31,7 +31,7 @@ export default function FixedEditPlanName(
     },
     enableReinitialize: true,
     validationSchema: yup.object({
-      name: yup.string().label("Plan Name").min(6).required("Required"),
+      name: yup.string().label("Plan Name").required("Required"),
     }),
     onSubmit: async (values) => {
       try {

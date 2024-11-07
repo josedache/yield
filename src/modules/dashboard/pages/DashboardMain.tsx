@@ -237,6 +237,7 @@ function DashboardMain() {
                 // interestRate: `${
                 //   fixedSavingsProduct?.interest_rate ?? 0
                 // }% P.A.`,
+                isLoading: fixedSavingsAccountsQueryResult.isFetching,
                 interestRate: `15-20% P.A.`,
                 isValueVisible: isFixedYieldVisible,
                 onValueVisibilityClick: toggleFixedYieldVisible,
@@ -247,6 +248,7 @@ function DashboardMain() {
                 iconClassName: "bg-[#4920AA] text-white",
                 label: "Flex Yield",
                 value: flexSavingsAccounts?.totalAvailableBalance ?? 0,
+                isLoading: fixedSavingsAccountsQueryResult.isFetching,
                 interestRate: `${flexSavingsProduct?.interest_rate ?? 0}% P.A.`,
                 isValueVisible: isFlexYieldVisible,
                 onValueVisibilityClick: toggleFlexYieldVisible,
@@ -263,6 +265,7 @@ function DashboardMain() {
                   isValueVisible,
                   onValueVisibilityClick,
                   to,
+                  isLoading,
                 },
                 id
               ) => {
@@ -289,13 +292,21 @@ function DashboardMain() {
                       </div>
 
                       <div className="flex items-center my-8">
-                        <CurrencyTypography
-                          variant="h5"
-                          className="font-bold"
-                          blur={isValueVisible}
-                        >
-                          {value}
-                        </CurrencyTypography>
+                        {isLoading ? (
+                          <Skeleton
+                            variant="text"
+                            className="w-full text-3xl"
+                          />
+                        ) : (
+                          <CurrencyTypography
+                            variant="h5"
+                            className="font-bold"
+                            blur={isValueVisible}
+                          >
+                            {value}
+                          </CurrencyTypography>
+                        )}
+
                         <IconButton
                           onClick={(e) => {
                             e.preventDefault();
