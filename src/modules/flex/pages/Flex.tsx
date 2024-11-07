@@ -53,6 +53,7 @@ function Flex() {
     useMemo(
       () => ({
         params: {
+          statusId: 300,
           type: "recurring_deposit",
         },
       }),
