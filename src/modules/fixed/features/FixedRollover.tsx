@@ -145,7 +145,7 @@ export default function FixedRollover(
     {
       title: "Rollover Capital Only",
       description:
-        "To rollover only your capital, we’ll automatically reinvest your initial investment.",
+        "You can now proceed to create a plan with only your initial capital amount.",
       content: (
         <div>
           <Typography className="text-center">Amount to Rollover</Typography>
@@ -163,7 +163,8 @@ export default function FixedRollover(
               className="text-left block text-neutral-500"
             >
               Note: The interest earned previously will be added to your wallet
-              within 48 hours. A 10% tax is applied to the new interest earned.
+              within 48 hours. There is a <b>10%</b> Withholding Tax deduction
+              on interest accrued.
             </Typography>
           </div>
         </div>
@@ -173,7 +174,7 @@ export default function FixedRollover(
     {
       title: "Rollover Capital with Interest",
       description:
-        "To rollover your capital plus interest, we’ll automatically reinvest the total amount in this yield.",
+        "You can now proceed to create a plan with your initial capital amount and interest earned.",
       content: (
         <div>
           <Typography className="text-center">Amount to Rollover</Typography>

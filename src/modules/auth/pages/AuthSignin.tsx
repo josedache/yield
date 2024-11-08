@@ -57,10 +57,10 @@ function AuthSignin() {
       <Paper className="w-full max-w-[455px] min-h-0 max-h-full overflow-auto">
         <div className="sticky top-0 z-10 bg-inherit p-5 md::p-8 pb-4">
           <Typography variant="h4" className="font-bold mb-4">
-            Welcome Back
+            Welcome Back!
           </Typography>
           <Typography className="text-text-secondary">
-            Please, log back into your account to continue growing your yields.
+            Please log in to your account to continue using Yield.{" "}
           </Typography>
         </div>
 

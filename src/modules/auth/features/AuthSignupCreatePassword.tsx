@@ -91,8 +91,8 @@ function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
             Success!
           </Typography>
           <DialogContentText className="text-center">
-            You’ve successfully created a Yield profile. You can now sign in to
-            complete your onboarding.
+            You’ve successfully created your Yield profile. You can now sign in
+            to complete your onboarding.
           </DialogContentText>
           <Button
             className="max-w-[255px]"

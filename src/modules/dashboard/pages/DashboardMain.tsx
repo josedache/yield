@@ -94,8 +94,8 @@ function DashboardMain() {
   const quickAccess = [
     {
       icon: "solar:lock-outline",
-      label: "Create a fixed yield plan",
-      description: "Lock in some money and earn interest now.",
+      label: "Create a Fixed Yield plan",
+      description: "Lock in some money and start earning interest",
       border: "border-[#5EB1BF]",
       textColor: "text-[#5EB1BF]",
       onClick: () =>
@@ -104,7 +104,7 @@ function DashboardMain() {
     {
       icon: "solar:card-outline",
       label: "Fund your flex wallet",
-      description: "Save now and withdraw at any time.",
+      description: "Add money and withdraw at any time.",
       border: "border-[#4920AA96]",
       textColor: "text-[#4920AA96]",
       onClick: () => navigate(FLEX.concat("?dialog=", FlexUrlDialog.FUND)),
@@ -439,14 +439,13 @@ function DashboardMain() {
                         >
                           No Activities
                         </Typography>
-                        {/* <Typography
+                        <Typography
                           variant="body1"
                           color="textSecondary"
                           className="text-center"
                         >
-                          Lorem ipsum dolor sit amet consectetur adipiscing
-                          elit.
-                        </Typography> */}
+                          You don’t have any transaction history yet.
+                        </Typography>
                       </div>
                     </div>
                   )}

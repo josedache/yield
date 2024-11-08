@@ -234,7 +234,7 @@ function Profile() {
                       })}
                     >
                       <input {...getInputProps()} />
-                      {authUser?.avatar ? "Update" : "Upload"}
+                      {authUser?.avatar ? "Update" : "Add Photo"}
                     </LoadingButton>
                   )}
                 </Dropzone>

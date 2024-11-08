@@ -9,6 +9,7 @@ import {
   Icon,
   IconButton,
   Paper,
+  Skeleton,
   Typography,
 } from "@mui/material";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
@@ -54,6 +55,11 @@ function FlexFund(props: FlexFundProps) {
   });
 
   const enumStep = STEPS_INDEX[stepper.step];
+
+  const getSavingsProductInformationQuery =
+    savingsApi.useGetSavingsProductInformationQuery({
+      params: { productId: 10 },
+    });
 
   const [
     generateTransactionOutwardPaymentReferenceMutation,
@@ -169,7 +175,7 @@ function FlexFund(props: FlexFundProps) {
             {...getFormikTextFieldProps(
               formik,
               "amount",
-              isLowBalance ? "Min. amount: ₦50,000.00" : null
+              isLowBalance ? "Minimum amount: ₦50,000.00" : null
             )}
           />
           <div className="space-y-4">
@@ -191,7 +197,17 @@ function FlexFund(props: FlexFundProps) {
               className="text-center block"
               color="textSecondary"
             >
-              Estimated returns at <b>14%</b> per annum.
+              Earn{" "}
+              {getSavingsProductInformationQuery?.isLoading ? (
+                <Skeleton variant="text" className="text-xs max-w-10px" />
+              ) : (
+                <b>
+                  {" "}
+                  {getSavingsProductInformationQuery?.data?.data?.interest_rate}
+                  %
+                </b>
+              )}{" "}
+              per annum on your funds.
             </Typography>
           </div>
         </div>

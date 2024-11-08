@@ -22,7 +22,7 @@ export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
       <div className="mt-4">
         <Typography variant="body2">Duration (Months)</Typography>
         <FormHelperText className="1">
-          Move the slider to select how long you’ll like to save for.
+          Move the slider to select the duration of your plan.{" "}
         </FormHelperText>
         <FixedDurationSlider
           className="1"
@@ -65,7 +65,7 @@ export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
         maskOptions={{ thousandsSeparator: "," }}
       />
       <FormHelperText>
-        Min. amount to deposit:<span className="px-1"></span>
+        Minimum amount to deposit:<span className="px-1"></span>
         {formatNumberToCurrency(
           `${savingsFixedProductInformation.data.min_deposit_amt}`
         )}

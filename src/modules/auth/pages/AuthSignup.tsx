@@ -290,14 +290,12 @@ function AuthSignup() {
     },
     {
       title: "Create Password",
-      description:
-        "Please, set a password to protect and have access to your account.",
+      description: "Set a password to protect and log in to your account.",
       body: <AuthSignupCreatePassword {...contentProps} />,
     },
     {
       title: "Create Password",
-      description:
-        "Please, set a password to protect and have access to your account.",
+      description: "Set a password to protect and log in to your account.",
       body: <AuthSignupCreatePassword {...contentProps} />,
     },
   ];

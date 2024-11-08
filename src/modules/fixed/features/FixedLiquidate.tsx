@@ -286,7 +286,7 @@ export default function FixedLiquidate(
     },
     {
       title: "Verify Transaction",
-      description: `Please, enter the six (6) digit code sent to ${otpEmail} to complete this transaction.`,
+      description: `Enter the six (6) digit code sent to ${otpEmail} to complete this transaction.`,
       content: (
         <div className="mt-4">
           <OtpInput
@@ -343,8 +343,8 @@ export default function FixedLiquidate(
             Processing{" "}
           </Typography>
           <Typography className="text-center text-neutral-500 max-w-[336px]">
-            Your liquidation request has been sent for processing and will be
-            paid out shortly.{" "}
+            Your liquidation request is being processed and will be paid out
+            shortly.
           </Typography>
           <Button
             className="max-w-[255px]"

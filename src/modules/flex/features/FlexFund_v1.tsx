@@ -134,7 +134,7 @@ function FlexFund(props: FlexFundProps) {
               Continue
             </LoadingButton>
             <Typography className="text-center" color="textSecondary">
-              Estimated returns at <b>14%</b> per annum.
+              Earn <b>14%</b> per annum on your funds.
             </Typography>
           </div>
         </div>

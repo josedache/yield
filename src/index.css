@@ -33,22 +33,70 @@
   }
 }
 
-/* Customize scrollbar globally for all browsers */
-* {
-  scrollbar-width: 1px; /* Firefox */
-  scrollbar-color: #b5b5b5ae rgba(0, 0, 0, 0); /* Firefox */
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-*::-webkit-scrollbar {
-  width: 0.1px; /* Chrome, Safari, and Opera */
-  height: 10px; /* Chrome, Safari, and Opera */
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
 }
 
-*::-webkit-scrollbar-thumb {
-  background-color: #dddddd; /* Chrome, Safari, and Opera */
-  border-radius: 5px; /* Chrome, Safari, and Opera */
+/* Track */
+::-webkit-scrollbar-track {
+  border-radius: 5px;
+  width: 5px;
 }
 
-*::-webkit-scrollbar-track {
-  background: #dddddd; /* Chrome, Safari, and Opera */
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300;
+  border-radius: 10px;
+  width: 5px;
 }
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary-main;
+}
+
+/* Horizontal scrollbar */
+
+::-webkit-scrollbar:horizontal {
+  height: 5px;
+}
+::-webkit-scrollbar-thumb:horizontal {
+  @apply bg-gray-300;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:horizontal:hover {
+  @apply bg-primary-main;
+}
+/* End Horizontal scrollbar */
+
+.Typewriter {
+  display: inherit !important;
+}
+
+/* Slick dot customize */
+.slick-dots {
+  @apply max-w-md !bottom-0 !w-full !flex gap-4 !left-0;
+}
+
+.slick-dots li {
+  width: 30% !important;
+  height: 3px !important;
+  border: 4.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  margin: 0 !important;
+}
+
+.slick-dots .slick-active {
+  border: 4.5px solid white;
+  border-radius: 10px;
+}
+/* End Slick dot customize */

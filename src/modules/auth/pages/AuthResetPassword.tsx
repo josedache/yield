@@ -127,7 +127,7 @@ function AuthResetPassword() {
   const contents = [
     {
       title: "Reset Password",
-      description: "Please, enter your phone number to reset your password.",
+      description: "Enter your phone number to reset your password.",
       body: (
         <>
           <NumberTextField
@@ -144,7 +144,7 @@ function AuthResetPassword() {
     },
     {
       title: "Reset Password",
-      description: `Please, enter the six(6) digit verification code sent to ${formik.values.identifier} to reset your password.`,
+      description: `Enter the six(6) digit verification code sent to ${formik.values.identifier} to reset your password.`,
       body: (
         <>
           <OtpInput
@@ -168,8 +168,7 @@ function AuthResetPassword() {
     },
     {
       title: "Create Password",
-      description:
-        "Please, set a password to protect and have access to your account.",
+      description: "Set a password to protect and log in to your account.",
       body: (
         <div className="space-y-4">
           <PasswordTextField
