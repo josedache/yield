@@ -60,7 +60,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
   const wallet = walletQueryResult.data?.data;
 
   const flexSavingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
-    useMemo(() => ({ params: { type: "recurring_deposit" } }), [])
+    useMemo(() => ({ params: { type: "recurring_deposit", statusId: 300, } }), [])
   );
 
   const flexSavingsAccounts = flexSavingsAccountsQueryResult.data?.data;

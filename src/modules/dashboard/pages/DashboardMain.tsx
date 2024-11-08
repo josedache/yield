@@ -50,7 +50,7 @@ function DashboardMain() {
   const wallet = walletQueryResult.data?.data;
 
   const flexSavingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
-    useMemo(() => ({ params: { type: "recurring_deposit" } }), [])
+    useMemo(() => ({ params: { type: "recurring_deposit", } }), [])
   );
 
   const flexSavingsAccounts = flexSavingsAccountsQueryResult.data?.data;
@@ -238,7 +238,7 @@ function DashboardMain() {
                 //   fixedSavingsProduct?.interest_rate ?? 0
                 // }% P.A.`,
                 isLoading: fixedSavingsAccountsQueryResult.isFetching,
-                interestRate: `15-20% P.A.`,
+                interestRate: `16-21% P.A.`,
                 isValueVisible: isFixedYieldVisible,
                 onValueVisibilityClick: toggleFixedYieldVisible,
                 to: FIXED,

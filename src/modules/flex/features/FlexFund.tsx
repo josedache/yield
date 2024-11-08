@@ -64,6 +64,7 @@ function FlexFund(props: FlexFundProps) {
     useMemo(
       () => ({
         params: {
+          statusId: 300,
           type: "recurring_deposit",
         },
       }),
