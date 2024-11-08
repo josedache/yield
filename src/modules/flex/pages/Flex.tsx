@@ -472,15 +472,16 @@ function Flex() {
                         <span className="text-[#4920AA] font-semibold">
                           Flex Yield
                         </span>{" "}
-                        is a flexible savings product that allows you manage
-                        their funds more flexibly.
+                        is a flexible Yield type that allows you manage your
+                        funds as you like.
                       </Typography>
                       <Typography color="textSecondary" className="mt-3">
-                        The feature will allow you{" "}
+                        You can{" "}
                         <span className="text-[#5EB1BF] font-semibold">
                           autosave
-                        </span>
-                        , and enjoy the benefits of no-penalty withdrawals.
+                        </span>{" "}
+                        and withdraw up to four times a month without any
+                        penalty.
                       </Typography>
 
                       <Typography color="textSecondary" className="mt-3">
@@ -488,22 +489,8 @@ function Flex() {
                         <span className="text-[#7CA853] font-semibold">
                           labels
                         </span>{" "}
-                        within your target yield to organize your funds
-                        according to specific needs.
-                      </Typography>
-                    </div>
-
-                    <div>
-                      <Typography variant="h6" className="font-medium mt-8">
-                        Earn Interest
-                      </Typography>
-                      <Typography color="textSecondary" className="mt-4">
-                        With an interest rate of{" "}
-                        <span className="text-[#4920AA] font-semibold">
-                          14%
-                        </span>
-                        , you can save for as long as you like and withdraw your
-                        money at any time.
+                        and organize your funds according to your financial
+                        goals.
                       </Typography>
                     </div>
                   </Paper>

@@ -67,13 +67,12 @@ function WalletFund(props: WalletFundProps) {
     <>
       <Dialog open={isOpen} maxWidth="xs" fullWidth {...restProps}>
         <DialogTitleXCloseButton className="text-center" onClose={handleClose}>
-          Transfer to CDL Account <br />
-          <Typography
-            component="span"
-            color="textSecondary"
-            className="text-center"
-          >
-            Add money to your Wallet by transferring to the bank details below.
+          <Typography variant="h6" className="mt-3">
+            Transfer to Credit Direct Account
+          </Typography>
+          <Typography color="textSecondary" className="text-center">
+            Add money to your Flex Yield Wallet by transferring to the bank
+            details below.{" "}
           </Typography>
         </DialogTitleXCloseButton>
         <DialogContent>

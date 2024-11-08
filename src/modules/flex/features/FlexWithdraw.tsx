@@ -189,7 +189,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
   const stepConfigs = [
     {
       title: "",
-      description: "Please, enter how much you want to withdraw.",
+      description: "Please enter the exact amount you want to withdraw.",
       content: (
         <div className="space-y-8">
           <div>
@@ -318,7 +318,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
     },
     {
       title: "Verify Transaction",
-      description: `Please, enter the six (6) digit code sent to ${savingsOtp} to complete this transaction.`,
+      description: `Enter the six (6) digit code sent to ${savingsOtp} to complete this transaction.`,
       content: (
         <div className="space-y-8">
           <div className="space-y-4">
@@ -462,7 +462,7 @@ function FlexWithdraw(props: FlexWithdrawProps) {
           {!isBlankStep ? (
             <div className="text-center">
               <Typography variant="h6">
-                {stepConfig?.title || "Withdrawal"}
+                {stepConfig?.title || "Withdraw"}
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 {stepConfig?.description}

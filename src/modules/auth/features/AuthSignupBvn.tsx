@@ -107,8 +107,8 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
                 Verify BVN
               </Typography>
               <Typography color="textSecondary" className="text-center">
-                Please, enter the six(6) digit verification code sent to{" "}
-                {maskedPhone} to verify your BVN.
+                Enter the six(6) digit verification code sent to {maskedPhone}{" "}
+                to verify your BVN.
               </Typography>
             </div>
             <div className="mt-6 flex justify-center flex-col gap-2 items-center">

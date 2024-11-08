@@ -148,7 +148,7 @@ export default function FixedPlanDetails(
       status: [SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE],
     },
     {
-      name: "Complete Payment",
+      name: "Fund Plan",
       icon: "ic:twotone-plus",
       color: "primary",
       variant: "soft",

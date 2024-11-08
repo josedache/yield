@@ -430,7 +430,7 @@ export default function FixedCreatePlan(
 
     {
       content: (
-        <div className="space-y-8 max-w-md mx-auto">
+        <div className="space-y-8 mx-auto  flex justify-center flex-col items-center">
           <div className="flex justify-center text-6xl">
             <Icon
               fontSize="inherit"
@@ -445,9 +445,11 @@ export default function FixedCreatePlan(
           </Typography>
           <Typography className="text-center">
             You’ve successfully {isEdit ? "edited" : "created"}{" "}
-            {isEdit ? getSavingsQuery?.data?.data?.plan_name : "a Yield"} plan.
+            {isEdit ? getSavingsQuery?.data?.data?.plan_name : "a Fixed Yield"}{" "}
+            plan.
           </Typography>
           <Button
+            className="max-w-[255px]"
             fullWidth
             onClick={() => {
               onClose();
@@ -460,10 +462,24 @@ export default function FixedCreatePlan(
     },
   ];
 
+  const isLastStep = stepper.step === tabs.length - 1;
+
   return (
     <>
-      <Dialog fullWidth maxWidth="xs" onClose={onClose} {...rest}>
-        <DialogTitleXCloseButton onClose={onClose} className="text-center mt-3">
+      <Dialog
+        fullWidth
+        PaperProps={{
+          sx: {
+            maxWidth: isLastStep ? 400 : 440,
+          },
+        }}
+        onClose={onClose}
+        {...rest}
+      >
+        <DialogTitleXCloseButton
+          onClose={isLastStep ? null : onClose}
+          className="text-center mt-3"
+        >
           {tabs[stepper.step]?.title}
           <Typography variant="body2" className="text-neutral-500">
             {tabs[stepper.step]?.description}
