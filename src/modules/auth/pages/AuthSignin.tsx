@@ -55,7 +55,7 @@ function AuthSignin() {
       className="h-full flex flex-col justify-center items-center"
     >
       <Paper className="w-full max-w-[455px] min-h-0 max-h-full overflow-auto">
-        <div className="sticky top-0 z-10 bg-inherit p-5 md::p-8 pb-4">
+        <div className="sticky top-0 z-10 bg-inherit p-5 md:p-8 pb-4">
           <Typography variant="h4" className="font-bold mb-4">
             Welcome Back!
           </Typography>

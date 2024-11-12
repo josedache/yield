@@ -67,7 +67,7 @@ export default function FixedLiquidate(
   const formik = useFormik({
     initialValues: {
       savingsId: String(info?.id),
-      note: "others",
+      note: "",
       otp: "",
     },
     enableReinitialize: true,
@@ -75,7 +75,7 @@ export default function FixedLiquidate(
       ...(stepper.step === 3
         ? {
             savingsId: yup.string().label("Savings Id").required("Required"),
-            note: yup.string().label("Reason").required("Required"),
+            note: yup.string().label("Reason"),
             otp: yup.string().label("Otp").required("Required"),
           }
         : {}),
@@ -400,25 +400,43 @@ export default function FixedLiquidate(
       <DialogContent className="px-8 pb-10">
         <form onSubmit={formik.handleSubmit}>
           {tabs[stepper.step].content}
-          {stepper.step <= 3 ? (
-            <LoadingButton
-              loading={
-                sendOtpMutationResult?.isLoading ||
-                liquidateSavingsMutationResult?.isLoading
-              }
-              type="submit"
-              className={clsx(
-                ["mt-6", "mt-3", "mt-3 hidden", "mt-4"][stepper.step]
-              )}
+          <div
+            className={clsx(
+              stepper.step === 1 ? "grid grid-cols-2" : "grid grid-cols-1",
+              "gap-3",
+              ["mt-6", "mt-3", "mt-3 hidden", "mt-4"][stepper.step]
+            )}
+          >
+            <Button
               fullWidth
+              variant="outlined"
+              onClick={() => {
+                stepper.next();
+              }}
+              className={clsx(
+                stepper.step === 1 ? "block" : "hidden",
+                "bg-[#F2F6EE]"
+              )}
             >
-              {
-                ["Yes, Liquidate", "Continue", "Continue", "Verify"][
-                  stepper.step
-                ]
-              }
-            </LoadingButton>
-          ) : null}
+              SKip
+            </Button>
+            {stepper.step <= 3 ? (
+              <LoadingButton
+                loading={
+                  sendOtpMutationResult?.isLoading ||
+                  liquidateSavingsMutationResult?.isLoading
+                }
+                type="submit"
+                fullWidth
+              >
+                {
+                  ["Yes, Liquidate", "Continue", "Continue", "Verify"][
+                    stepper.step
+                  ]
+                }
+              </LoadingButton>
+            ) : null}
+          </div>
         </form>
       </DialogContent>
     </Dialog>
