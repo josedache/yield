@@ -150,7 +150,14 @@ export const savingsApi = coreApi.injectEndpoints({
 
     getSavingsAccounts: builder.query<
       SavingsAccountsApiResponse,
-      ApiRequest<void, void, { type?: "fixed_deposit" | "recurring_deposit" }>
+      ApiRequest<
+        void,
+        void,
+        {
+          type?: "fixed_deposit" | "recurring_deposit";
+          statusId?: number | number[];
+        }
+      >
     >({
       query: (config) => ({
         url: BASE_URL + "/accounts",

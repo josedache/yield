@@ -12,7 +12,7 @@ import { Icon as Iconify } from "@iconify/react";
 import { useSearchParams } from "react-router-dom";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import CurrencyTypography from "components/CurrencyTypography";
 import useToggle from "hooks/useToggle";
@@ -48,12 +48,31 @@ function Fixed() {
   const [isPlanDetails, togglePlanDetails] = useToggle();
   const [info, setInfo] = useState();
 
-  const getSavingsAccountsQuery = savingsApi.useGetSavingsAccountsQuery({
-    params: { type: "fixed_deposit", ...(statusId ? { statusId } : {}) },
-  });
+  const getSavingsAccountsQuery = savingsApi.useGetSavingsAccountsQuery(
+    useMemo(
+      () => ({
+        params: { type: "fixed_deposit", ...(statusId ? { statusId } : {}) },
+      }),
+      [statusId]
+    )
+  );
+
+  const savingsAccountsBalanceQueryResult =
+    savingsApi.useGetSavingsAccountsQuery(
+      useMemo(() => {
+        const params = new URLSearchParams();
+        params.set("type", "fixed_deposit");
+        params.set("statusId", String(SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE));
+        params.append("statusId", String(SAVINGS_ACCOUNT_STATUS_TYPE.MATURED));
+
+        return {
+          params: params as any,
+        };
+      }, [])
+    );
 
   const totalAvailableBalance = Number(
-    getSavingsAccountsQuery?.data?.data?.totalAvailableBalance ?? 0
+    savingsAccountsBalanceQueryResult?.data?.data?.totalAvailableBalance ?? 0
   );
 
   const savedCard = false;
@@ -101,7 +120,7 @@ function Fixed() {
                   Total Balance
                 </Typography>
                 <div className="flex items-center mt-1">
-                  {getSavingsAccountsQuery?.isLoading ? (
+                  {savingsAccountsBalanceQueryResult?.isLoading ? (
                     <Skeleton
                       variant="text"
                       width={100}
@@ -114,7 +133,7 @@ function Fixed() {
                       blur={isWalletBalanceVisible}
                     >
                       {
-                        getSavingsAccountsQuery?.data?.data
+                        savingsAccountsBalanceQueryResult?.data?.data
                           ?.totalAvailableBalance
                       }
                     </CurrencyTypography>
@@ -141,7 +160,7 @@ function Fixed() {
               <Button
                 className="w-full md:w-[30%]"
                 fullWidth
-                disabled={getSavingsAccountsQuery?.isLoading}
+                disabled={savingsAccountsBalanceQueryResult?.isLoading}
                 onClick={toggleFixedCreatePlan}
               >
                 Create Plan
@@ -324,6 +343,7 @@ function Fixed() {
                       Save your card to help you fund your yield easily.
                     </Typography>
                     <ButtonBase
+                      disabled
                       disableRipple
                       className="inline-block underline text-[#4920AA]"
                     >

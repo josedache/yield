@@ -270,7 +270,7 @@ function AppProtectedDrawerItem(props: any) {
           ? onClick
             ? { onClick }
             : { component: Link, to }
-          : { onClick: toggleKycDialog })}
+          : { onClick: toggleKycDialog, disabled: true })}
       >
         <Iconify icon={icon} className="text-2xl" />
         <Typography className="font-medium flex-1">{label}</Typography>
