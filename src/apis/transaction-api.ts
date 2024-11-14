@@ -46,7 +46,7 @@ export const transactionApi = coreApi.injectEndpoints({
         amount: string | number;
         provider: "PAYSTACK";
         yieldType: "fixed" | "flex";
-        transactionType: "wallet";
+        transactionType: "flex";
         transactionId: string | number;
       }>
     >({

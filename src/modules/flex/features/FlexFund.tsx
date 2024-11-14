@@ -126,7 +126,7 @@ function FlexFund(props: FlexFundProps) {
             provider: PaymentGatewayInlineProvider.PAYSTACK,
             amount: String(formik.values.amount),
             transactionId: String(savingsAccount?.id),
-            transactionType: "wallet",
+            transactionType: "flex",
             yieldType: "flex",
           },
         }).unwrap();
