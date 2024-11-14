@@ -29,7 +29,7 @@ import {
   PaymentGatewayInlineChannel,
   PaymentGatewayInlineProvider,
 } from "libs/payment-gateway-inline";
-import { PAYSTACK_PUBLIC_KEY } from "constants/env";
+import { FLEX_PRODUCT_ID, PAYSTACK_PUBLIC_KEY } from "constants/env";
 import { savingsApi } from "apis/savings-api";
 import LoadingContent from "components/LoadingContent";
 import useAuthUser from "hooks/useAuthUser";
@@ -58,7 +58,7 @@ function FlexFund(props: FlexFundProps) {
 
   const getSavingsProductInformationQuery =
     savingsApi.useGetSavingsProductInformationQuery({
-      params: { productId: 10 },
+      params: { productId: FLEX_PRODUCT_ID },
     });
 
   const [

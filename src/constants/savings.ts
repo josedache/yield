@@ -1,5 +1,3 @@
-export const FIXED_PRODUCT_ID = 1;
-
 export const SAVING_STATUS_COLOR = {
   0: "error",
   100: "info",

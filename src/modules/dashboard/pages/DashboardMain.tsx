@@ -34,6 +34,7 @@ import {
 import * as dfns from "date-fns";
 import { FlexUrlDialog } from "modules/flex/enums/FlexUrlDialog";
 import { FixedUrlDialog } from "modules/fixed/enums/FixedUrlDialog";
+import { FLEX_PRODUCT_ID } from "constants/env";
 
 function DashboardMain() {
   const authUser = useAuthUser();
@@ -50,14 +51,14 @@ function DashboardMain() {
   const wallet = walletQueryResult.data?.data;
 
   const flexSavingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
-    useMemo(() => ({ params: { type: "recurring_deposit", } }), [])
+    useMemo(() => ({ params: { type: "recurring_deposit" } }), [])
   );
 
   const flexSavingsAccounts = flexSavingsAccountsQueryResult.data?.data;
 
   const flexSavingsProductQueryResult =
     savingsApi.useGetSavingsProductInformationQuery(
-      useMemo(() => ({ params: { productId: 10 } }), [])
+      useMemo(() => ({ params: { productId: FLEX_PRODUCT_ID } }), [])
     );
 
   const flexSavingsProduct = flexSavingsProductQueryResult.data?.data;
@@ -67,13 +68,6 @@ function DashboardMain() {
   );
 
   const fixedSavingsAccounts = fixedSavingsAccountsQueryResult.data?.data;
-
-  // const fixedSavingsProductQueryResult =
-  //   savingsApi.useGetSavingsProductInformationQuery(
-  //     useMemo(() => ({ params: { productId: 1 } }), [])
-  //   );
-
-  // const fixedSavingsProduct = fixedSavingsProductQueryResult.data?.data;
 
   const savingsRecentActivitiesQueryResult =
     savingsApi.useGetSavingsRecentActivitiesQuery(

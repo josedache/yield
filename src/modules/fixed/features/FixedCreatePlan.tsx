@@ -30,13 +30,12 @@ import FixedCreatePlanTab from "./FixedCreatePlanTab";
 import { FixedCreatePlanFormikType } from "../types/FixedCreatePlan";
 import { savingsApi } from "apis/savings-api";
 import LoadingContent from "components/LoadingContent";
-import { FIXED_PRODUCT_ID } from "constants/savings";
 import CdlLogo from "assets/imgs/cdl-logo.png";
 import { walletApi } from "apis/wallet-api";
 import { formatNumberToCurrency } from "utils/number";
 import useClipboard from "hooks/useClipboard";
 import { LoadingButton } from "@mui/lab";
-import { PAYSTACK_PUBLIC_KEY } from "constants/env";
+import { FIXED_PRODUCT_ID, PAYSTACK_PUBLIC_KEY } from "constants/env";
 import useAuthUser from "hooks/useAuthUser";
 import { transactionApi } from "apis/transaction-api";
 

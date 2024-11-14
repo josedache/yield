@@ -28,6 +28,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { useSearchParams } from "react-router-dom";
 import { urlSearchParamsExtractor } from "utils/url";
 import { FlexUrlDialog } from "../enums/FlexUrlDialog";
+import { FLEX_PRODUCT_ID } from "constants/env";
 
 function Flex() {
   const [searchParams] = useSearchParams();
@@ -46,7 +47,7 @@ function Flex() {
 
   const getSavingsProductInformationQuery =
     savingsApi.useGetSavingsProductInformationQuery({
-      params: { productId: 10 },
+      params: { productId: FLEX_PRODUCT_ID },
     });
 
   const savingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
