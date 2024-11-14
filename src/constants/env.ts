@@ -10,5 +10,5 @@ export const CDL_IAGREE_INLINE_MODE = import.meta.env
 export const CDL_IAGREE_INLINE_BASE_URL = import.meta.env
   .VITE_CDL_IAGREE_INLINE_BASE_URL;
 
-export const FLEX_PRODUCT_ID = import.meta.env.VITE_FLEX_PRODUCT_ID;
-export const FIXED_PRODUCT_ID = import.meta.env.VITE_FIXED_PRODUCT_ID;
+export const FLEX_PRODUCT_ID = Number(import.meta.env.VITE_FLEX_PRODUCT_ID);
+export const FIXED_PRODUCT_ID =  Number(import.meta.env.VITE_FIXED_PRODUCT_ID);
