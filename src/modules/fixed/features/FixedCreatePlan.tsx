@@ -222,7 +222,7 @@ export default function FixedCreatePlan(
             provider: PaymentGatewayInlineProvider.PAYSTACK,
             amount: String(formik.values.depositAmount),
             transactionId: String(wallet.id),
-            transactionType: "fixed",
+            transactionType: "wallet",
             yieldType: "fixed",
           },
         }).unwrap();
