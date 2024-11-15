@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
 import { useSearchParams } from "react-router-dom";
-import { format } from "date-fns";
+import { format, isValid as dfnsIsValid } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 
@@ -421,7 +421,7 @@ const columns: ColumnDef<any>[] = [
       return (
         <div>
           <Typography>
-            {info.row.original.maturity_date
+            {info.row.original.maturity_date && dfnsIsValid(info.getValue())
               ? format(info.row.original.maturity_date, "PP")
               : "-"}
           </Typography>
