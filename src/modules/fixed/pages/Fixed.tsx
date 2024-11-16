@@ -421,7 +421,8 @@ const columns: ColumnDef<any>[] = [
       return (
         <div>
           <Typography>
-            {info.row.original.maturity_date && dfnsIsValid(info.getValue())
+            {info.row.original.maturity_date &&
+            dfnsIsValid(new Date(info.getValue() as any))
               ? format(info.row.original.maturity_date, "PP")
               : "-"}
           </Typography>

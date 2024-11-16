@@ -56,5 +56,32 @@ export const transactionApi = coreApi.injectEndpoints({
         ...config,
       }),
     }),
+
+    transferSelfOutwardTransaction: builder.mutation<
+      ApiResponse<string>,
+      ApiRequest<{
+        amount: string | number;
+      }>
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/outward/transfer-self",
+        method: "POST",
+        ...config,
+      }),
+    }),
+
+    verifyTransferLiquidateOutwardTransaction: builder.mutation<
+      ApiResponse<{ transactionId: string }>,
+      ApiRequest<{
+        otp: string;
+        transactionId: string;
+      }>
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/outward/transfer-liquidate/verify",
+        method: "POST",
+        ...config,
+      }),
+    }),
   }),
 });

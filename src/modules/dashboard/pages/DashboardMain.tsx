@@ -35,6 +35,7 @@ import * as dfns from "date-fns";
 import { FlexUrlDialog } from "modules/flex/enums/FlexUrlDialog";
 import { FixedUrlDialog } from "modules/fixed/enums/FixedUrlDialog";
 import { FLEX_PRODUCT_ID } from "constants/env";
+import WalletTransfer from "modules/wallet/features/WalletTransfer";
 
 function DashboardMain() {
   const authUser = useAuthUser();
@@ -216,9 +217,18 @@ function DashboardMain() {
                   )}
                 </WalletFund>
 
-                <Button disabled fullWidth variant="outlined">
-                  Transfer
-                </Button>
+                <WalletTransfer>
+                  {({ toggleOpen }) => (
+                    <Button
+                      onClick={wallet?.balance ? toggleOpen : undefined}
+                      disabled={!wallet?.balance}
+                      fullWidth
+                      variant="outlined"
+                    >
+                      Transfer
+                    </Button>
+                  )}
+                </WalletTransfer>
               </div>
             </Paper>
 
