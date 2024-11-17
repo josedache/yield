@@ -8,28 +8,43 @@ import { DASHBOARD, RESET_PASSWORD, SIGNUP } from "constants/urls";
 import PasswordTextField from "components/PasswordTextField";
 import { getFormikTextFieldProps } from "utils/formik";
 import NumberTextField from "components/NumberTextField";
-import { useDispatch } from "react-redux";
-import { setAuthUser } from "configs/store-slice";
+import { userApi } from "apis/user-api";
 
 function AuthSignin() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
-  const dispatch = useDispatch();
+  const [loginUserMutation] = userApi.useLoginUserMutation();
 
   const formik = useFormik({
     initialValues: {
-      email: "",
       password: "",
+      phone: "",
+      login_method: "password",
+      channel: "yield",
+      version: "1",
     },
     validateOnBlur: true,
-    validationSchema: yup.object().shape({}),
-    onSubmit: async () => {
+    validationSchema: yup.object().shape({
+      phone: yup.string().label("Phone Number").required("${path} is required"),
+      password: yup.string().label("Password").required("${path} is required"),
+    }),
+    onSubmit: async (values) => {
       try {
-        dispatch(setAuthUser({ token: "kdkdkd" }));
+        const data = await loginUserMutation({ body: values }).unwrap();
+        enqueueSnackbar(data.message || "Login Successful", {
+          variant: "success",
+        });
         navigate(DASHBOARD);
-      } catch {
-        enqueueSnackbar("Error", { variant: "error" });
+      } catch (error: any) {
+        enqueueSnackbar(
+          Array.isArray(error?.data?.message)
+            ? error?.data?.message?.[0]
+            : error?.data?.message || "Failed to login",
+          {
+            variant: "error",
+          }
+        );
       }
     },
   });
@@ -39,24 +54,24 @@ function AuthSignin() {
       onSubmit={formik.handleSubmit as any}
       className="h-full flex flex-col justify-center items-center"
     >
-      <Paper className="w-full max-w-lg min-h-0 max-h-full overflow-auto">
-        <div className="sticky top-0 z-10 bg-inherit p-8 pb-4">
+      <Paper className="w-full max-w-[455px] min-h-0 max-h-full overflow-auto">
+        <div className="sticky top-0 z-10 bg-inherit p-5 md:p-8 pb-4">
           <Typography variant="h4" className="font-bold mb-4">
-            Welcome Back
+            Welcome Back!
           </Typography>
           <Typography className="text-text-secondary">
-            Please, log back into your account to continue growing your yields.
+            Please log in to your account to continue using Yield.{" "}
           </Typography>
         </div>
 
-        <div className="px-8">
+        <div className="px-5 md:px-8">
           <NumberTextField
             freeSolo
             fullWidth
             margin="normal"
             label="Phone Number"
             placeholder="Enter Phone Number"
-            {...getFormikTextFieldProps(formik, "phoneNumber")}
+            {...getFormikTextFieldProps(formik, "phone")}
           />
           <PasswordTextField
             fullWidth
@@ -67,10 +82,11 @@ function AuthSignin() {
           />
         </div>
 
-        <div className="sticky bottom-0 p-8 pt-4 bg-inherit z-10 space-y-8">
+        <div className="sticky bottom-0 p-5 md:p-8 pt-6 bg-inherit z-10 space-y-8">
           <LoadingButton
             type="submit"
             fullWidth
+            disabled={!formik.isValid || !formik.dirty}
             size="large"
             loading={formik.isSubmitting}
             loadingPosition="end"
@@ -99,7 +115,7 @@ function AuthSignin() {
                 component={Link}
                 to={SIGNUP}
               >
-                Signup
+                Sign up
               </Typography>
             </Typography>
           </div>

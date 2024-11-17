@@ -26,6 +26,9 @@ const commonPaletteOptions: PaletteOptions = {
     darker: "#042A2B",
     contrastText: "#FFFFFF",
   },
+  // secondary: {
+
+  // },
   neutral: {
     "50": "#F9FAFB",
     "100": "#F3F4F6",
@@ -90,6 +93,15 @@ export const theme = responsiveFontSizes(
         },
       },
     },
+    shadows: [
+      "none",
+      "0px 4px 40px 0px rgba(107, 114, 128, 0.15)",
+      "0px 2px 5px 0px rgba(145, 158, 171, 0.12),0px 2px 2px 0px rgba(145, 158, 171, 0.12),0px 3px 1px -2px rgba(145, 158, 171, 0.12)",
+      "0px 2px 9px 0px rgba(145, 158, 171, 0.12),0px 1px 3px 0px rgba(145, 158, 171, 0.12),0px 3px 3px -2px rgba(145, 158, 171, 0.12)",
+      "0px 4px 4px -1px rgba(145, 158, 171, 0.12),0px 0px 5px 0px rgba(145, 158, 171, 0.12),0px 1px 10px 0px rgba(145, 158, 171, 0.12)",
+      "0px 6px 6px -1px rgba(145, 158, 171, 0.12),0px -1px 10px 0px rgba(145, 158, 171, 0.12),0px 1px 14px 0px rgba(145, 158, 171, 0.12)",
+      "0px 6px 6px -1px rgba(145, 158, 171, 0.2),0px -2px 12px 0px rgba(145, 158, 171, 0.2),0px 1px 18px 0px rgba(145, 158, 171, 0.2)",
+    ] as any,
     breakpoints: {
       values: {
         xs: 0,
@@ -119,6 +131,7 @@ export const theme = responsiveFontSizes(
       button: {
         textTransform: "none",
         fontWeight: 500,
+        fontSize: "0.785rem",
       },
       h5: {
         fontWeight: 600,
@@ -271,8 +284,36 @@ export const theme = responsiveFontSizes(
         styleOverrides: {
           root: ({ theme, ownerState }) => {
             return {
+              ...(ownerState.variant === "contained"
+                ? {
+                    "&.Mui-disabled": {
+                      backgroundColor: alpha(
+                        theme.palette[ownerState.color]?.main,
+                        0.4
+                      ),
+                      color: alpha(
+                        theme.palette[ownerState.color]?.contrastText,
+                        0.9
+                      ),
+                    },
+                  }
+                : {}),
               ...(!isNaN(Number(ownerState.shape))
                 ? { borderRadius: Number(ownerState.shape) }
+                : {}),
+              ...(ownerState.variant === "soft" &&
+              ownerState.color === "primary"
+                ? {
+                    color: theme.palette[ownerState.color]?.main,
+                    backgroundColor: "#F2F6EE",
+                    "&:hover": {
+                      backgroundColor: alpha(
+                        theme.palette[ownerState.color]?.main ||
+                          theme.palette.grey[500],
+                        0.3
+                      ),
+                    },
+                  }
                 : {}),
               ...(ownerState.variant === "soft"
                 ? {
@@ -282,7 +323,7 @@ export const theme = responsiveFontSizes(
                     backgroundColor: alpha(
                       theme.palette[ownerState.color]?.main ||
                         theme.palette.grey[500],
-                      0.2
+                      0.1
                     ),
                     "&:hover": {
                       backgroundColor: alpha(
@@ -312,6 +353,8 @@ export const theme = responsiveFontSizes(
                         theme.palette.grey[500],
                       0.2
                     ),
+                    padding: "1px px",
+                    height: 24,
                     "&:hover": {
                       backgroundColor: alpha(
                         theme.palette[ownerState.color]?.main ||
@@ -424,6 +467,15 @@ export const theme = responsiveFontSizes(
                 border: "none",
               },
 
+              "& .MuiInputBase-input": {
+                fontSize: "1rem",
+
+                "&:-webkit-autofill": {
+                  WebkitBoxShadow: `0 0 0 100px transparent inset`,
+                  WebkitTextFillColor: "#000000",
+                },
+              },
+
               ...(ownerState.variant === "outlined"
                 ? {
                     paddingTop: ownerState.label
@@ -492,6 +544,14 @@ export const theme = responsiveFontSizes(
       MuiPaper: {
         defaultProps: {
           shape: "circular",
+        },
+        styleOverrides: {
+          root: ({ theme, ownerState }) => {
+            return {
+              borderRadius: { square: 0, default: 8 }[ownerState.shape],
+              border: `1px solid ${theme.palette.divider}`,
+            };
+          },
         },
       },
       MuiDialog: {

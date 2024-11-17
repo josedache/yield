@@ -25,8 +25,8 @@
 
 .TanStandardTable__table__header,
 .TanStandardTable__table__footer {
-  font-weight: 700;
-  @apply text-text-secondary bg-inherit;
+  font-weight: 600;
+  @apply text-neutral-700 bg-inherit;
 }
 
 .TanStandardTable__table__header,
@@ -34,14 +34,14 @@
 .TanStandardTable__pagination {
   position: sticky;
   z-index: 10;
-  background-color: inherit;
+  @apply bg-neutral-100;
 }
 
 .TanStandardTable__table__header__row,
 .TanStandardTable__table__body__row,
 .TanStandardTable__table__footer__row {
-  border-bottom: 1px solid lightgray;
-  /* background-color: inherit; */
+  background-color: inherit;
+  @apply border-b border-solid border-neutral-200;
 }
 
 .TanStandardTable__table__header__row--relative,
@@ -60,15 +60,15 @@
 }
 
 .TanStandardTable__table__header__row__cell {
-  font-weight: 700;
-  text-transform: uppercase;
+  font-weight: 600;
+  text-transform: capitalize;
 }
 
 .TanStandardTable__table__header__row__cell,
 .TanStandardTable__table__body__row__cell,
 .TanStandardTable__table__footer__row__cell {
   position: relative;
-  padding: 8px;
+  padding: 16px;
   /* height: 48px; */
   text-align: left;
 }

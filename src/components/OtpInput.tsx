@@ -7,15 +7,18 @@ import ReactOtpInput, { OTPInputProps } from "react-otp-input";
  * @returns
  */
 function OtpInput(props: OtpInputProps) {
-  const { slotProps, ...restProps } = props as Required<OtpInputProps>;
+  const { slot, slotProps, ...restProps } = props as Required<OtpInputProps>;
+
+  const Input = slot?.input ?? "input";
+
   return (
     <ReactOtpInput
-      renderSeparator={<span className="mx-2"></span>}
+      renderSeparator={<span className="mx-1"></span>}
       renderInput={(props) => (
-        <input
+        <Input
           {...props}
           placeholder="*"
-          className="w-14 h-14 text-center outline-none border border-[#E5E7EB] rounded-lg bg-[#F9FAFB]"
+          className="w-full  h-[48px] md:h-14 text-center outline-none border border-[#E5E7EB] rounded-lg bg-[#F9FAFB]"
           {...slotProps?.input}
         />
       )}
@@ -27,5 +30,6 @@ function OtpInput(props: OtpInputProps) {
 export default OtpInput;
 
 export type OtpInputProps = {
+  slot?: { input?: any };
   slotProps?: { input?: ComponentPropsWithoutRef<"input"> };
 } & Partial<OTPInputProps>;

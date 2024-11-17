@@ -9,17 +9,13 @@ import {
   Icon,
   Typography,
 } from "@mui/material";
-import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import { AuthSignupStep } from "../enums/AuthSignupStep";
-import OtpInput from "components/OtpInput";
-import { LoadingButton } from "@mui/lab";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { SIGNIN } from "constants/urls";
+import clsx from "clsx";
 
 function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
-  const { formik, enumStep, stepper } = props;
-
-  const navigate = useNavigate();
+  const { formik, enumStep } = props;
 
   return (
     <>
@@ -28,17 +24,40 @@ function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
           fullWidth
           margin="normal"
           label="New Password"
-          placeholder="**********"
+          placeholder="Enter Password"
           {...getFormikTextFieldProps(formik, "password")}
         />
         <div className="space-y-1">
           {[
-            { label: "Must be at least 8 characters long" },
-            { label: "Must contain an uppercase and a lowercase letter (A,z)" },
-            { label: "Must contain a number (0,1,2,3,4,5,6,7,8,9)" },
-            { label: "Must contain a special characater (!,%,@,#, etc.)" },
-          ].map(({ label }) => (
-            <div className="flex items-center gap-2 text-primary-main">
+            {
+              label: "Must be at least 8 characters long",
+              test: (value: string) => value.length >= 8,
+            },
+            {
+              label: "Must contain a number (0,1,2,3,4,5,6,7,8,9)",
+              test: (value: string) => /\d/.test(value),
+            },
+            {
+              label: "Must contain a lowercase letter (a-z)",
+              test: (value: string) => /[a-z]/.test(value),
+            },
+            {
+              label: "Must contain an uppercase letter (A-Z)",
+              test: (value: string) => /[A-Z]/.test(value),
+            },
+            {
+              label: "Must contain a special character (!,%,@,#, etc.)",
+              test: (value: string) => /[!@#$%^&*]/.test(value),
+            },
+          ].map(({ label, test }) => (
+            <div
+              className={clsx(
+                "flex items-center gap-2",
+                test(formik.values.password)
+                  ? "text-primary-main"
+                  : "text-text-secondary"
+              )}
+            >
               <Icon>check_circle</Icon>
               <Typography>{label}</Typography>
             </div>
@@ -48,82 +67,17 @@ function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
           fullWidth
           margin="normal"
           label="Confirm Password"
-          placeholder="Pas$word99"
-          {...getFormikTextFieldProps(formik, "password")}
+          placeholder="Re-enter Password"
+          {...getFormikTextFieldProps(formik, "confirmPassword")}
         />
       </div>
 
       <Dialog
-        component="form"
-        onSubmit={formik.handleSubmit as any}
         fullWidth
-        open={enumStep === AuthSignupStep.VERIFICATION}
+        maxWidth="xs"
+        open={enumStep === AuthSignupStep.SUCCESS}
       >
-        <DialogTitleXCloseButton
-          onClose={() => stepper.previous()}
-        ></DialogTitleXCloseButton>
-        <DialogContent className="space-y-8 max-w-md mx-auto">
-          <div>
-            <Typography variant="h5" className="text-center mb-4">
-              Verify OTP
-            </Typography>
-            <Typography color="textSecondary" className="text-center">
-              Please, enter the six(6) digit verification code sent to
-              +23491******72.
-            </Typography>
-          </div>
-          <div className="space-y-2">
-            <OtpInput
-              value={formik.values.token}
-              onChange={(token) => {
-                formik.setFieldValue("token", token);
-              }}
-              numInputs={6}
-              shouldAutoFocus
-              // inputType="password"
-              slotProps={{
-                input: {
-                  style: { opacity: formik.isSubmitting ? 0.5 : 1 },
-                  disabled: formik.isSubmitting,
-                },
-              }}
-            />
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              className="text-center"
-            >
-              Resend OTP in{" "}
-              <Typography
-                component="span"
-                color="primary"
-                className="font-semibold"
-              >
-                1:00
-              </Typography>
-            </Typography>
-          </div>
-          <Typography color="primary" className="text-center font-semibold">
-            I don’t have access to this phone number.
-          </Typography>
-          <LoadingButton
-            type="submit"
-            fullWidth
-            size="large"
-            loading={formik.isSubmitting}
-            loadingPosition="end"
-            endIcon={<></>}
-          >
-            Verify
-          </LoadingButton>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog fullWidth open={enumStep === AuthSignupStep.SUCCESS}>
-        <DialogTitleXCloseButton
-          onClose={() => navigate(SIGNIN)}
-        ></DialogTitleXCloseButton>
-        <DialogContent className="space-y-8 max-w-md mx-auto">
+        <DialogContent className="space-y-8 max-w-md pb-10 pt-10 mx-auto flex justify-center flex-col items-center">
           <div className="flex justify-center text-6xl">
             <Icon
               fontSize="inherit"
@@ -137,11 +91,16 @@ function AuthSignupCreatePassword(props: AuthSignupStepContentProps) {
             Success!
           </Typography>
           <DialogContentText className="text-center">
-            You’ve successfully created a Yield profile. You can now sign in to
-            complete your onboarding.
+            You’ve successfully created your Yield profile. You can now sign in
+            to complete your onboarding.
           </DialogContentText>
-          <Button fullWidth component={Link} to={SIGNIN}>
-            Signin
+          <Button
+            className="max-w-[255px]"
+            fullWidth
+            component={Link}
+            to={SIGNIN}
+          >
+            Sign In
           </Button>
         </DialogContent>
       </Dialog>

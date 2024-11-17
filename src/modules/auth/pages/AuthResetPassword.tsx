@@ -1,4 +1,4 @@
-import { ButtonBase, Paper, Typography } from "@mui/material";
+import { ButtonBase, Paper, Typography, Icon } from "@mui/material";
 import { useFormik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
@@ -7,15 +7,27 @@ import useStepper from "hooks/useStepper";
 import { AuthResetPasswordValues } from "../types/AuthResetPassword";
 import { LoadingButton } from "@mui/lab";
 import { SIGNIN } from "constants/urls";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon as Iconify } from "@iconify/react/dist/iconify.js";
 import { AuthResetPasswordStep } from "../enums/AuthResetPasswordStep";
 import NumberTextField from "components/NumberTextField";
 import { getFormikTextFieldProps } from "utils/formik";
 import OtpInput from "components/OtpInput";
+import { userApi } from "apis/user-api";
+import PasswordTextField from "components/PasswordTextField";
+import NumberInput from "components/NumberInput";
+import clsx from "clsx";
 
 function AuthResetPassword() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+
+  const [sendUserResetPasswordMutation] =
+    userApi.useSendUserResetPasswordMutation();
+
+  const [verifyUserResetPasswordMutation] =
+    userApi.useVerifyUserResetPasswordMutation();
+
+  const [resetPasswordMutation] = userApi.useResetPasswordMutation();
 
   const stepper = useStepper({
     initialStep: getEnumStepIndex(AuthResetPasswordStep.REQUEST),
@@ -25,54 +37,125 @@ function AuthResetPassword() {
 
   const formik = useFormik<AuthResetPasswordValues>({
     initialValues: {
-      username: "",
-      token: "",
+      identifier: "",
+      otp: "",
+      password: "",
+      confirmPassword: "",
     },
     validateOnBlur: true,
-    validationSchema: yup.object().shape({}),
-    onSubmit: async () => {
+    validationSchema: yup.object().shape({
+      ...{
+        [AuthResetPasswordStep.REQUEST]: {
+          identifier: yup.string().label("Phone Number").length(11).required(),
+        },
+        [AuthResetPasswordStep.VERIFY]: {
+          otp: yup.string().label("OTP").required(),
+        },
+        [AuthResetPasswordStep.CHANGE]: {
+          password: yup
+            .string()
+            .label("Password")
+            .trim()
+            .min(8, "Your password must be at least 8 characters long")
+            .max(25)
+            .matches(/^(?=.{8,})/, "Must Contain 8 Characters")
+            .matches(/^(?=.*[a-z])/, "Must Contain One Lowercase")
+            .matches(/^(?=.*[A-Z])/, "Must Contain One Uppercase")
+            .matches(/^(?=.*\d)/, "Must contain a number")
+            .matches(/^(?=.*[@$!%*?&#%])/, "Must contain a special character")
+            .required(),
+          confirmPassword: yup
+            .string()
+            .label("Confirm Password")
+            .oneOf([yup.ref("password")], "Passwords must match")
+            .required(),
+        },
+      }[enumStep],
+    }),
+    onSubmit: async (values) => {
       try {
-        if (isLastStep) {
-          return navigate(SIGNIN);
+        switch (enumStep) {
+          case AuthResetPasswordStep.REQUEST: {
+            const data = await sendUserResetPasswordMutation({
+              body: { identifier: values.identifier, device_id: "kdkdkdd" },
+            }).unwrap();
+            enqueueSnackbar(data?.message || "Password reset otp sent", {
+              variant: "success",
+            });
+            break;
+          }
+          case AuthResetPasswordStep.VERIFY: {
+            const data = await verifyUserResetPasswordMutation({
+              body: {
+                otp: values.otp,
+                channel: values.identifier.includes("@") ? "email" : "phone",
+              },
+            }).unwrap();
+            enqueueSnackbar(data?.message || "OTP verified successfully!", {
+              variant: "success",
+            });
+            break;
+          }
+          case AuthResetPasswordStep.CHANGE: {
+            const data = await resetPasswordMutation({
+              body: {
+                password: values.password,
+              },
+            }).unwrap();
+            enqueueSnackbar(data?.message || "Password reset successful", {
+              variant: "success",
+            });
+
+            return navigate(SIGNIN);
+          }
+          default:
+            break;
         }
+
         return stepper.next();
-      } catch {
-        enqueueSnackbar("Error", { variant: "error" });
+      } catch (error: any) {
+        enqueueSnackbar(
+          error?.data?.message || "Failed to process password reset",
+          {
+            variant: "error",
+          }
+        );
       }
     },
   });
 
   const contents = [
     {
-      title: "Reset Password ",
-      description: "",
+      title: "Reset Password",
+      description: "Enter your phone number to reset your password.",
       body: (
         <>
           <NumberTextField
             freeSolo
+            maskOptions={{ max: 11 }}
             fullWidth
             margin="normal"
             label="Phone Number"
             placeholder="Enter Phone Number"
-            {...getFormikTextFieldProps(formik, "phoneNumber")}
+            {...getFormikTextFieldProps(formik, "identifier")}
           />
         </>
       ),
     },
     {
-      title: "Reset Password ",
-      description:
-        "Please, enter the six(6) digit verification code sent to +23491******72 to reset your password.",
+      title: "Reset Password",
+      description: `Enter the six(6) digit verification code sent to ${formik.values.identifier} to reset your password.`,
       body: (
         <>
           <OtpInput
-            value={formik.values.token}
-            onChange={(token) => {
-              formik.setFieldValue("token", token);
+            value={formik.values.otp}
+            onChange={(otp) => {
+              formik.setFieldValue("otp", otp);
             }}
             numInputs={6}
             shouldAutoFocus
             // inputType="password"
+            slot={{ input: NumberInput }}
             slotProps={{
               input: {
                 style: { opacity: formik.isSubmitting ? 0.5 : 1 },
@@ -81,6 +164,64 @@ function AuthResetPassword() {
             }}
           />
         </>
+      ),
+    },
+    {
+      title: "Create Password",
+      description: "Set a password to protect and log in to your account.",
+      body: (
+        <div className="space-y-4">
+          <PasswordTextField
+            fullWidth
+            margin="normal"
+            label="New Password"
+            placeholder="Enter Password"
+            {...getFormikTextFieldProps(formik, "password")}
+          />
+          <div className="space-y-1">
+            {[
+              {
+                label: "Must be at least 8 characters long",
+                test: (value: string) => value.length >= 8,
+              },
+              {
+                label: "Must contain a number (0,1,2,3,4,5,6,7,8,9)",
+                test: (value: string) => /\d/.test(value),
+              },
+              {
+                label: "Must contain a lowercase letter (a-z)",
+                test: (value: string) => /[a-z]/.test(value),
+              },
+              {
+                label: "Must contain an uppercase letter (A-Z)",
+                test: (value: string) => /[A-Z]/.test(value),
+              },
+              {
+                label: "Must contain a special character (!,%,@,#, etc.)",
+                test: (value: string) => /[!@#$%^&*]/.test(value),
+              },
+            ].map(({ label, test }) => (
+              <div
+                className={clsx(
+                  "flex items-center gap-2",
+                  test(formik.values.password)
+                    ? "text-primary-main"
+                    : "text-text-secondary"
+                )}
+              >
+                <Icon>check_circle</Icon>
+                <Typography>{label}</Typography>
+              </div>
+            ))}
+          </div>
+          <PasswordTextField
+            fullWidth
+            margin="normal"
+            label="Confirm Password"
+            placeholder="Re-enter Password"
+            {...getFormikTextFieldProps(formik, "confirmPassword")}
+          />
+        </div>
       ),
     },
   ];
@@ -95,14 +236,14 @@ function AuthResetPassword() {
       onSubmit={formik.handleSubmit as any}
       className="h-full flex flex-col justify-center items-center"
     >
-      <Paper className="w-full max-w-lg min-h-0 max-h-full overflow-auto">
-        <div className="sticky top-0 z-10 bg-inherit p-8 pb-4">
+      <Paper className="w-full max-w-[455px] min-h-0 max-h-full overflow-auto">
+        <div className="sticky top-0 z-10 bg-inherit p-5 md:p-8 pb-4">
           {!isFirstStep ? (
             <ButtonBase
               className="flex items-center gap-2 mb-4"
               onClick={() => stepper.previous()}
             >
-              <Icon icon="gravity-ui:arrow-left" fontSize={20} />
+              <Iconify icon="gravity-ui:arrow-left" fontSize={20} />
               <Typography>Back</Typography>
             </ButtonBase>
           ) : null}
@@ -114,13 +255,23 @@ function AuthResetPassword() {
           </Typography>
         </div>
 
-        <div className="px-8">{content?.body}</div>
+        <div className="px-5 md:px-8">{content?.body}</div>
 
-        <div className="sticky bottom-0 p-8 bg-inherit z-10 space-y-2">
+        <div className="sticky bottom-0 p-5 md:p-8 bg-inherit z-10 space-y-2">
           <LoadingButton
             type="submit"
             fullWidth
             size="large"
+            disabled={
+              !formik.isValid ||
+              [
+                formik.values.identifier.length < 11,
+                formik.values.otp.length < 6,
+                formik.values.confirmPassword !== formik.values.password ||
+                  !formik.values.password ||
+                  !formik.values.confirmPassword,
+              ][stepper.step]
+            }
             loading={formik.isSubmitting}
             loadingPosition="end"
             endIcon={<></>}
@@ -129,7 +280,7 @@ function AuthResetPassword() {
           </LoadingButton>
 
           {isFirstStep || isLastStep ? (
-            <Typography color="textSecondary">
+            <Typography color="textSecondary" className="pt-6">
               Already have an account?{" "}
               <Typography
                 color="primary"
@@ -158,5 +309,6 @@ function getEnumStepIndex(enumStep: AuthResetPasswordStep) {
 
 const STEPS_INDEX = [
   AuthResetPasswordStep.REQUEST,
+  AuthResetPasswordStep.VERIFY,
   AuthResetPasswordStep.CHANGE,
 ];

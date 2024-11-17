@@ -1,4 +1,4 @@
-function isBase64DataURL(dataURL?: string) {
+export function isBase64DataURL(dataURL?: string) {
   if (typeof dataURL !== "string") return false;
   const base64Match = dataURL.match(/^data:[^;]+;base64,([^,]+)$/);
 
@@ -61,7 +61,7 @@ export function blobToBase64(blob: Blob) {
 }
 
 export function getAssetInfo(src) {
-  const result = { name: "src", type: "" };
+  const result = { name: "src", type: "", mimeType: "" };
   if (src instanceof File) {
     result.name = src.name;
     result.type = src.name.slice(src.name.lastIndexOf(".") + 1)?.toLowerCase();
@@ -74,5 +74,15 @@ export function getAssetInfo(src) {
       result.type = src.slice(src.lastIndexOf(".") + 1);
     }
   }
+
+  result.mimeType =
+    {
+      jpg: "image/jpg",
+      jpeg: "image/jpeg",
+      png: "image/png",
+      gif: "image/gif",
+      mp4: "video/mp4",
+      pdf: "application/pdf",
+    }[result.type] || "application/octet-stream";
   return result;
 }

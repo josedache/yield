@@ -2,27 +2,40 @@ import {
   AppBar,
   AppBarProps,
   Avatar,
-  Badge,
-  Container,
   Icon,
   IconButton,
   Popover,
   Toolbar,
   Typography,
-  // useMediaQuery,
 } from "@mui/material";
-// import MediaBreakpoint from "enums/MediaBreakpoint";
 import usePopover from "hooks/usePopover";
 import useSideNavigation from "hooks/useSideNavigation";
 import { Icon as Iconify } from "@iconify/react";
 import clsx from "clsx";
+import useAuthUser from "hooks/useAuthUser";
+import Logo from "components/Logo";
 
 function AppProtectedHeader(props: AppBarProps) {
   const { ...restProps } = props;
 
+  const authUser = useAuthUser();
+
   const infoPopover = usePopover();
 
   const sideNavigation = useSideNavigation();
+
+  const isBasicInformationCompleted =
+    authUser?.firstname &&
+    authUser?.lastname &&
+    authUser?.bvn &&
+    authUser?.mobileNo &&
+    authUser?.email;
+
+  const isIdentificationCompleted = authUser?.nin;
+
+  const isAccountDetailsCompleted =
+    authUser?.bank_details?.accountnumber &&
+    authUser?.bank_details?.accountname;
 
   // const islg = useMediaQuery(MediaBreakpoint.LG);
 
@@ -33,12 +46,12 @@ function AppProtectedHeader(props: AppBarProps) {
         position="sticky"
         color="inherit"
         className={clsx(
-          "w-full lg:w-[calc(100%-270px)] lg:ml-[270px] bg-white rounded-none border-b border-gray-200"
+          "w-full lg:w-[calc(100%-270px)] lg:ml-[270px] md:bg-white bg-[#042A2B] rounded-none border-b md:border-gray-200 border-[#042A2B] py-1"
         )}
         {...restProps}
       >
         <Toolbar disableGutters>
-          <Container className="flex items-center justify-center gap-2 px-8">
+          <div className="md:flex hidden items-center justify-center gap-2 px-8 w-full">
             <IconButton
               className="lg:hidden"
               color="inherit"
@@ -49,19 +62,27 @@ function AppProtectedHeader(props: AppBarProps) {
               </Icon>
             </IconButton>
             <Typography>
-              Hello, <b>Stephanie</b>
+              {isBasicInformationCompleted &&
+              isIdentificationCompleted &&
+              isAccountDetailsCompleted
+                ? "Hello"
+                : "Welcome"}
+              , <b>{authUser?.firstname}</b>
             </Typography>
             <div className="flex-1" />
 
             <div className=" border rounded-full w-10 h-10 border-neutral-100 ">
-              <IconButton color="inherit" className="">
-                <Badge badgeContent={7} color="error">
-                  <Iconify className="MuiIcon-root" icon="mdi:bell-outline" />
-                </Badge>
+              <IconButton color="inherit" className="" disabled>
+                {/* <Badge badgeContent={7} color="error"> */}
+                <Iconify className="MuiIcon-root" icon="mdi:bell-outline" />
+                {/* </Badge> */}
               </IconButton>
             </div>
 
-            <Avatar>ST</Avatar>
+            <Avatar src={authUser?.avatar}>
+              {authUser?.firstname?.[0]}
+              {authUser?.lastname?.[0]}
+            </Avatar>
             <Popover
               open={infoPopover.isOpen}
               anchorEl={infoPopover.anchorEl}
@@ -70,7 +91,20 @@ function AppProtectedHeader(props: AppBarProps) {
               transformOrigin={{ vertical: "top", horizontal: "right" }}
               className="p-2"
             ></Popover>
-          </Container>
+          </div>
+
+          <div className="flex md:hidden items-center justify-between gap-2 px-8 w-full">
+            <Logo variant="1" />
+
+            <IconButton
+              className="text-white"
+              onClick={() => sideNavigation.toggle()}
+            >
+              <Icon>
+                <Iconify icon="material-symbols:menu" />
+              </Icon>
+            </IconButton>
+          </div>
         </Toolbar>
       </AppBar>
     </>

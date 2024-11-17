@@ -1,4 +1,7 @@
-import { getFormikTextFieldProps } from "utils/formik";
+import {
+  getFormikTextFieldProps,
+  getFormikCheckFieldProps,
+} from "utils/formik";
 import { AuthSignupStepContentProps } from "../types/AuthSignup";
 import {
   Checkbox,
@@ -18,21 +21,27 @@ function AuthSignupBasicInformation(props: AuthSignupStepContentProps) {
         margin="normal"
         label="First Name"
         placeholder="Stephanie"
-        {...getFormikTextFieldProps(formik, "firstName")}
+        value={formik.values.firstName}
+        disabled
+        // {...getFormikTextFieldProps(formik, "firstName")}
       />
       <TextField
         fullWidth
         margin="normal"
         label="Last Name"
         placeholder="Takeme"
-        {...getFormikTextFieldProps(formik, "lastName")}
+        value={formik.values.lastName}
+        disabled
+        // {...getFormikTextFieldProps(formik, "lastName")}
       />
       <TextField
         fullWidth
         margin="normal"
         label="BVN"
         placeholder="22876543210"
-        {...getFormikTextFieldProps(formik, "bvn")}
+        value={formik.values.bvn}
+        disabled
+        // {...getFormikTextFieldProps(formik, "bvn")}
       />
       <NumberTextField
         freeSolo
@@ -40,7 +49,9 @@ function AuthSignupBasicInformation(props: AuthSignupStepContentProps) {
         margin="normal"
         label="Phone Number"
         placeholder="Enter Phone Number"
-        {...getFormikTextFieldProps(formik, "phoneNumber")}
+        value={formik.values.phone}
+        disabled
+        // {...getFormikTextFieldProps(formik, "phone")}
       />
       <TextField
         fullWidth
@@ -54,16 +65,32 @@ function AuthSignupBasicInformation(props: AuthSignupStepContentProps) {
         margin="normal"
         label="Referral Code (Optional)"
         placeholder="Enter Code"
-        {...getFormikTextFieldProps(formik, "email")}
+        {...getFormikTextFieldProps(formik, "referal_code")}
       />
       <div>
         <FormControlLabel
           label={
             <Typography>
-              I agree to Yield’s Terms & Conditions and Privacy Policy
+              I agree to Yield’s{" "}
+              <a
+                className="text-[#4920AA]"
+                href="https://www.creditdirect.ng/loan-agreement-terms-conditions/"
+                target="_blank"
+              >
+                Terms & Conditions
+              </a>{" "}
+              and{" "}
+              <a
+                className="text-[#4920AA]"
+                href="https://www.creditdirect.ng/privacy-policy/"
+                target="_blank"
+              >
+                Privacy Policy
+              </a>
             </Typography>
           }
           control={<Checkbox />}
+          {...getFormikCheckFieldProps(formik, "igree")}
         />
         <FormControlLabel
           label="Click here to subscribe to our mailing list"

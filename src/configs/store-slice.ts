@@ -1,14 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { logout } from "./store-actions";
+import { userApi } from "apis/user-api";
+import { User } from "src/types/user";
+import { isBase64DataURL } from "utils/file";
 
-type initialStateType = {
-  authUser: null;
+type InitialState = {
+  authUser: User;
   isSideNavigation: boolean;
   isIconOnly: boolean;
 };
 
-export const initialState: initialStateType = {
-  authUser: null as null,
+export const initialState: InitialState = {
+  authUser: null,
   isSideNavigation: false,
   isIconOnly: false,
 };
@@ -29,7 +32,68 @@ export const slice = createSlice({
     },
   },
   extraReducers: (builder) =>
-    builder.addCase(logout, () => ({ ...initialState })),
+    builder
+      .addCase(logout, () => ({ ...initialState }))
+      .addMatcher(
+        userApi.endpoints.signupYieldUser.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = { token: payload.data.token } as User;
+        }
+      )
+      .addMatcher(
+        userApi.endpoints.signupYieldSecondStageUser.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = { token: payload.data.token } as User;
+        }
+      )
+      .addMatcher(
+        userApi.endpoints.iAgreeUser.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = { token: payload.data.token } as User;
+        }
+      )
+      .addMatcher(
+        userApi.endpoints.loginUser.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = {
+            // kyc_validation: getKyc(payload.data?.user),
+            ...payload.data?.user,
+            token: payload?.data?.token,
+            isAuthenticated: true,
+          } as User;
+        }
+      )
+      .addMatcher(
+        userApi.endpoints.sendUserResetPassword.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = payload.data as User;
+        }
+      )
+      .addMatcher(
+        userApi.endpoints.verifyUserResetPassword.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser.token = payload.data;
+        }
+      )
+      .addMatcher(userApi.endpoints.resetPassword.matchFulfilled, (state) => {
+        state.authUser = null;
+      })
+      .addMatcher(
+        userApi.endpoints.getUserClientKyc.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = Object.assign(state.authUser, payload.data, {
+            kyc_validation: getKyc(payload.data),
+          });
+        }
+      )
+      .addMatcher(
+        userApi.endpoints.getUserSelfieFile.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser.avatar = isBase64DataURL(payload.data)
+            ? payload.data
+            : `data:image/png;base64,${payload.data}`;
+        }
+      ),
 });
 
 export const { toggleIconOnlyMenuAction, setAuthUser } = slice.actions;
@@ -38,6 +102,24 @@ export default slice;
 
 export function getStorageState({ authUser }: typeof initialState) {
   return { authUser };
+}
+
+function getKyc(authUser: Partial<User>) {
+  const basic = !!(
+    authUser?.firstname &&
+    authUser?.lastname &&
+    authUser?.bvn &&
+    authUser?.mobileNo &&
+    authUser?.email
+  );
+
+  const nin = !!authUser?.nin;
+
+  const bank = !!(
+    authUser?.bank_details?.accountnumber && authUser?.bank_details?.accountname
+  );
+
+  return { basic, nin, bank };
 }
 
 // export interface MyObjectType {
