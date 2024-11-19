@@ -26,7 +26,7 @@ function Auth() {
     {
       title: "High Returns ",
       description:
-        "With competitive returns of up to 20% per annum, Yield helps you make the most of your money.",
+        "With competitive returns of up to 21% per annum, Yield helps you make the most of your money.",
     },
     {
       title: "Customizable Plans",
