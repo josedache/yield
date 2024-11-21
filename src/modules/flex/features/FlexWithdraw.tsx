@@ -60,7 +60,10 @@ function FlexWithdraw(props: FlexWithdrawProps) {
   const wallet = walletQueryResult.data?.data;
 
   const flexSavingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
-    useMemo(() => ({ params: { type: "recurring_deposit", statusId: 300, } }), [])
+    useMemo(
+      () => ({ params: { type: "recurring_deposit", statusId: 300 } }),
+      []
+    )
   );
 
   const flexSavingsAccounts = flexSavingsAccountsQueryResult.data?.data;
@@ -94,32 +97,33 @@ function FlexWithdraw(props: FlexWithdrawProps) {
           channel: yup.string().label("Channel").required(),
         },
         [FlexWithdrawStep.VERIFICATION]: {
-          otp: yup.string().label("OTP").required(),
+          // otp: yup.string().label("OTP").required(),
         },
       }[enumStep],
     }),
     onSubmit: async (values) => {
       try {
         switch (enumStep) {
-          case FlexWithdrawStep.DESTINATION: {
-            const data = await sendSavingsOtpMutation({
-              body: {
-                action: "withdraw",
-                amount: Number(values.amount),
-                channel: "phone",
-              },
-            }).unwrap();
-            setCountdownDate(getCountdownDate());
-            enqueueSnackbar(data?.message || "Otp Sent", {
-              variant: "success",
-            });
-            break;
-          }
+          // case FlexWithdrawStep.DESTINATION: {
+          //   const data = await sendSavingsOtpMutation({
+          //     body: {
+          //       action: "withdraw",
+          //       amount: Number(values.amount),
+          //       channel: "phone",
+          //     },
+          //   }).unwrap();
+          //   setCountdownDate(getCountdownDate());
+          //   enqueueSnackbar(data?.message || "Otp Sent", {
+          //     variant: "success",
+          //   });
+          //   break;
+          // }
+          case FlexWithdrawStep.DESTINATION:
           case FlexWithdrawStep.VERIFICATION: {
             if (values.channel === FlexWithdrawChannel.CREDIT_DIRECT) {
               const data = await transferSavingsMutation({
                 body: {
-                  otp: values.otp,
+                  // otp: values.otp,
                   savingsId: savingsAccount?.id,
                   transferAmount: Number(values.amount),
                   type: "withdraw",
@@ -130,6 +134,8 @@ function FlexWithdraw(props: FlexWithdrawProps) {
               enqueueSnackbar(data?.message || "Withdrawal Successful", {
                 variant: "success",
               });
+
+              return stepper.next(getEnumStepIndex(FlexWithdrawStep.SUCCESS));
             }
             break;
           }
@@ -497,6 +503,7 @@ const STEPS_INDEX = [
   FlexWithdrawStep.AMOUNT,
   FlexWithdrawStep.DESTINATION,
   FlexWithdrawStep.VERIFICATION,
+  FlexWithdrawStep.SUCCESS,
 ];
 
 export type FlexWithdrawProps = {
