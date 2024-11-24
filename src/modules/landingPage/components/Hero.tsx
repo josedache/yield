@@ -7,7 +7,7 @@ const Hero = () => {
   return (
     <>
       <div className=" lg:bg-gradient-to-r from-[#F2F6EE] via-[#D8E5CB] to-[#7DA851] border-none pb-48">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 ">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 xl:px-4 ">
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between pt-16 md:pt-40 lg:pt-52 mt-5  ">
             <div className="w-full  ">
               <div>
@@ -44,9 +44,9 @@ const Hero = () => {
           </div>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto -mt-36 lg:-mt-48 px-4 lg:px-8 ">
-        <div className="flex flex-col md:flex-row z-30 rounded-3xl bg-[#F0FDF4] sm:py-10 lg:py-24 lg:px-10 xl:px-20 ">
-          <div className="md:w-[50%] xl:w-[60%] mt-11 lg:mt-8 px-4 sm:pl-5 ">
+      <div className="max-w-7xl mx-auto -mt-36 lg:-mt-48 px-4 lg:px-3 ">
+        <div className="flex flex-col lg:flex-row z-30 rounded-3xl bg-[#F0FDF4] sm:py-10 lg:py-24 lg:px-10 xl:px-20 ">
+          <div className="lg:w-[50%] xl:w-[60%] mt-11 lg:mt-7 px-4 sm:pl-5 ">
             <Typography className="font-bold text-[#033650] text-4xl sm:text-[44px]  sm:leading-[48px]">
               Growing <span className=" text-primary-main ">your money</span>{" "}
               shouldn't be complicated
@@ -68,7 +68,7 @@ const Hero = () => {
             </div>
           </div>
           <div className="mt-10 lg:mt-0 ">
-            <img src={Graph} alt="Graph" width="full" height="full" />           
+            <img src={Graph} alt="Graph" width="full" height="full" className=" w-[800px] lg:w-auto" />           
           </div>
         </div>
       </div>

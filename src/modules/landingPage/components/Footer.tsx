@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="mx-auto max-w-7xl px-6 py-5 lg:px-8 lg:py-16">
         <div className=" lg:grid lg:grid-cols-3  ">
           <div className="space-y-8">
-           <Logo variant="3" width="212px" height="105px" />
+            <Logo variant="3" width="212px" height="105px" />
             <p className="text-balance text-sm/6 ">
               Yield – Begin your journey to financial growth
             </p>
@@ -14,7 +14,7 @@ const Footer = () => {
 
           <div className="mt-16 grid sm:grid-cols-2 gap-8 lg:gap-4 lg:col-span-2 lg:mt-0  ">
             <div className="lg:grid lg:grid-cols-2 ">
-            <div className="col-span-1 lg:col-span-2 block xl:hidden ">
+              <div className="col-span-1 lg:col-span-2 block xl:hidden ">
                 <h3 className="text-lg font-semibold text-gray-950 lg:text-right">
                   Contact Us
                 </h3>
@@ -22,7 +22,7 @@ const Footer = () => {
                   {navigation.ContactUs.map((item) => (
                     <li key={item.name}>
                       <a
-                      target="_blank"
+                        target="_blank"
                         href={item.href}
                         className=" text-gray-600 hover:text-gray-900 "
                       >
@@ -34,7 +34,7 @@ const Footer = () => {
               </div>
             </div>
             <div className="lg:grid lg:grid-cols-2">
-            <div className="hidden xl:block ">
+              <div className="hidden xl:block ">
                 <h3 className="text-lg font-semibold text-gray-950 lg:text-right">
                   Contact Us
                 </h3>
@@ -42,7 +42,7 @@ const Footer = () => {
                   {navigation.ContactUs.map((item) => (
                     <li key={item.name}>
                       <a
-                      target="_blank"
+                        target="_blank"
                         href={item.href}
                         className=" text-gray-600 hover:text-gray-900 "
                       >
@@ -52,7 +52,7 @@ const Footer = () => {
                   ))}
                 </ul>
               </div>
-              <div  className="col-span-1 lg:col-span-2 xl:col-auto">
+              <div className="col-span-1 lg:col-span-2 xl:col-auto">
                 <h3 className="text-lg font-semibold text-gray-950 lg:text-right">
                   Company
                 </h3>
@@ -60,7 +60,7 @@ const Footer = () => {
                   {navigation.company.map((item) => (
                     <li key={item.name}>
                       <a
-                      target="_blank"
+                        target="_blank"
                         href={item.href}
                         className=" text-gray-600 hover:text-gray-900"
                       >
@@ -113,7 +113,7 @@ const navigation = {
     { name: "About", href: "#" },
     { name: "Legal", href: "#" },
     { name: "Privacy policy", href: "#" },
-    { name: "Terms of service", href: "#" },
+    { name: "Terms & Conditions", href: "#" },
   ],
   social: [
     {
@@ -125,6 +125,24 @@ const navigation = {
             fillRule="evenodd"
             d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
             clipRule="evenodd"
+          />
+        </svg>
+      ),
+    },
+    {
+      name: "X",
+      href: "#",
+      icon: (props) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="1em"
+          height="1em"
+          viewBox="0 0 24 24"
+          {...props}
+        >
+          <path
+            fill="currentColor"
+            d="M7.91 20.889c8.302 0 12.845-6.885 12.845-12.845c0-.193 0-.387-.009-.58A9.2 9.2 0 0 0 23 5.121a9.2 9.2 0 0 1-2.597.713a4.54 4.54 0 0 0 1.99-2.5a9 9 0 0 1-2.87 1.091A4.5 4.5 0 0 0 16.23 3a4.52 4.52 0 0 0-4.516 4.516c0 .352.044.696.114 1.03a12.82 12.82 0 0 1-9.305-4.718a4.526 4.526 0 0 0 1.4 6.03a4.6 4.6 0 0 1-2.043-.563v.061a4.524 4.524 0 0 0 3.62 4.428a4.4 4.4 0 0 1-1.189.159q-.435 0-.845-.08a4.51 4.51 0 0 0 4.217 3.135a9.05 9.05 0 0 1-5.608 1.936A9 9 0 0 1 1 18.873a12.84 12.84 0 0 0 6.91 2.016"
           />
         </svg>
       ),
@@ -143,23 +161,19 @@ const navigation = {
       ),
     },
     {
-      name: "X",
+      name: "LinkedIn",
       href: "#",
       icon: (props) => (
-        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
-          <path d="M13.6823 10.6218L20.2391 3H18.6854L12.9921 9.61788L8.44486 3H3.2002L10.0765 13.0074L3.2002 21H4.75404L10.7663 14.0113L15.5685 21H20.8131L13.6819 10.6218H13.6823ZM11.5541 13.0956L10.8574 12.0991L5.31391 4.16971H7.70053L12.1742 10.5689L12.8709 11.5655L18.6861 19.8835H16.2995L11.5541 13.096V13.0956Z" />
-        </svg>
-      ),
-    },
-    {
-      name: "YouTube",
-      href: "#",
-      icon: (props) => (
-        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="1em"
+          height="1em"
+          viewBox="0 0 1024 1024"
+          {...props}
+        >
           <path
-            fillRule="evenodd"
-            d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.746 22 12 22 12s0 3.255-.418 4.814a2.504 2.504 0 0 1-1.768 1.768c-1.56.419-7.814.419-7.814.419s-6.255 0-7.814-.419a2.505 2.505 0 0 1-1.768-1.768C2 15.255 2 12 2 12s0-3.255.417-4.814a2.507 2.507 0 0 1 1.768-1.768C5.744 5 11.998 5 11.998 5s6.255 0 7.814.418ZM15.194 12 10 15V9l5.194 3Z"
-            clipRule="evenodd"
+            fill="currentColor"
+            d="M880 112H144c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V144c0-17.7-14.3-32-32-32M349.3 793.7H230.6V411.9h118.7zm-59.3-434a68.8 68.8 0 1 1 68.8-68.8c-.1 38-30.9 68.8-68.8 68.8m503.7 434H675.1V608c0-44.3-.8-101.2-61.7-101.2c-61.7 0-71.2 48.2-71.2 98v188.9H423.7V411.9h113.8v52.2h1.6c15.8-30 54.5-61.7 112.3-61.7c120.2 0 142.3 79.1 142.3 181.9z"
           />
         </svg>
       ),

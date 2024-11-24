@@ -7,12 +7,12 @@ import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Logo from "components/Logo";
 import { Link } from "react-router-dom";
+import { Icon as Iconify } from "@iconify/react";
 
 interface Props {
   /**
@@ -59,17 +59,11 @@ export default function Header(props: Props) {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-      <Box
-        sx={{ display: "flex" }}
-        className="bg-white max-h-20 mx-auto max-w-7xl"
-      >
-        <CssBaseline />
-        <AppBar
-          elevation={0}
-          component="nav"
-          className="bg-white lg:px-14 xl:px-28"
-        >
-          <Toolbar>
+    <header className="inset-x-0 top-0 z-50 sticky">
+      <CssBaseline />
+      <AppBar elevation={0} component="nav" className="bg-white ">
+        <Toolbar>
+          <div className=" flex flex-wrap justify-between items-center mx-auto py-2 sm:py-4  w-full lg:max-w-7xl ">
             <Typography variant="h6" component="div">
               <Logo variant="3" />
             </Typography>
@@ -80,7 +74,7 @@ export default function Header(props: Props) {
               onClick={handleDrawerToggle}
               className="block sm:hidden ml-auto"
             >
-              <MenuIcon />
+               <Iconify icon="ci:menu-alt-01" className="text-neutral-900 size-7"/>
             </IconButton>
 
             <Box className="hidden sm:flex items-center ml-auto gap-4">
@@ -100,28 +94,29 @@ export default function Header(props: Props) {
                 Get Started
               </Button>
             </Box>
-          </Toolbar>
-        </AppBar>
-        <nav>
-          <Drawer
-            container={container}
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true,
-            }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-              },
-            }}
-          >
-            {drawer}
-          </Drawer>
-        </nav>
-      </Box>
+          </div>
+        </Toolbar>
+      </AppBar>
+      <nav>
+        <Drawer
+          container={container}
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true,
+          }}
+          sx={{
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+            },
+          }}
+        >
+          {drawer}
+        </Drawer>
+      </nav>
+    </header>
   );
 }

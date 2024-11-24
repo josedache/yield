@@ -6,10 +6,10 @@ import {
   Typography,
 } from "@mui/material";
 import RemoveCircleOutlineRoundedIcon from "@mui/icons-material/RemoveCircleOutlineRounded";
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useState } from "react";
-import GradientBackground from "../../../assets/imgs/Gradient.png"
-import YieldFlower from "../../../assets/svgs/flower.svg"
+import GradientBackground from "../../../assets/imgs/Gradient.png";
+import YieldFlower from "../../../assets/svgs/flower.svg";
 
 const FaqSection = () => {
   const faqs = [
@@ -43,18 +43,15 @@ const FaqSection = () => {
   ];
   const [expanded, setExpanded] = useState<string | false>(false);
 
-  const handleChange = (panel: string) => (
-    event: React.SyntheticEvent,
-    isExpanded: boolean
-  ) => {
-    event
-    setExpanded(isExpanded ? panel : false);
-  };
+  const handleChange =
+    (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : false);
+    };
   return (
     <div>
-      <div className="mx-auto max-w-7xl px-6 py-14 sm:pt-16 lg:px-8 lg:py-24">
+      <div className="mx-auto max-w-7xl px-6 py-14 sm:pt-16 lg:px-4 xl:px-0 lg:py-24">
         <div className="lg:grid lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-6 lg:px-6 ">
+          <div className="lg:col-span-6 lg:px-6 text-center md:text-start">
             <h2 className="text-pretty text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
               Frequently Asked Questions
             </h2>
@@ -62,7 +59,7 @@ const FaqSection = () => {
               Everything you need to know about Yield.
             </p>
             <Button
-              href="#"
+              href="/FAQs"
               className="hidden lg:block font-medium text-primary-main hover:text-primary-dark bg-transparent px-0 underline text-lg mt-5"
             >
               View All FAQs
@@ -86,18 +83,20 @@ const FaqSection = () => {
                   <AccordionSummary
                     key={faq.question}
                     expandIcon={
-                        expanded === `panel-${index}` ? (
-                          <RemoveCircleOutlineRoundedIcon />
-                        ) : (
-                          <AddCircleOutlineIcon />
-                        )
-                      }
-                      aria-controls={`panel-${index}-content`}
-                      id={`panel-${index}-header`}
-                    
+                      expanded === `panel-${index}` ? (
+                        <RemoveCircleOutlineRoundedIcon />
+                      ) : (
+                        <AddCircleOutlineIcon />
+                      )
+                    }
+                    aria-controls={`panel-${index}-content`}
+                    id={`panel-${index}-header`}
                     className=" text-base/7 font-medium text-gray-900 sm:pb-2 px-0 "
                   >
-                   <span className="w-5/6 sm:w-full font-medium"> {faq.question} </span> 
+                    <span className="w-5/6 sm:w-full font-medium">
+                      {" "}
+                      {faq.question}{" "}
+                    </span>
                   </AccordionSummary>
                   <AccordionDetails className="-mt-7 text-base/7 text-gray-600 px-0">
                     {faq.answer}
@@ -107,34 +106,44 @@ const FaqSection = () => {
             </dl>
           </div>
 
-       <div className="flex items-center justify-center">
-       <Button
-              href="#"
+          <div className="flex items-center justify-center">
+            <Button
+              href="/FAQs"
               className="block lg:hidden font-medium text-primary-main hover:text-primary-dark bg-transparent px-0 underline text-lg mt-5"
             >
               View All FAQs
             </Button>
-       </div>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl px-6 mx-auto  text-white lg:grid lg:grid-cols-8 pt-20 pb-14 xl:pb-0 md:px-20 mb-20 bg-no-repeat bg-cover md:rounded-2xl"   style={{ backgroundImage: `url(${GradientBackground})` }}>
-       <div className=" lg:col-span-5 justify-between text-center lg:text-start">
-       <Typography variant="h2" className="text-3xl sm:text-5xl font-bold lg:tracking-tighter lg:leading-tight ">
-        Join Thousands of <span className="text-primary-main"> Satisfied </span> Customers on Yield
-        </Typography>
-        <Typography className="text-lg sm:text-xl mt-6 font-medium">
-        No matter your financial goal—whether it’s securing your future, building an emergency fund, or planning for major life events—Yield is here to support your journey.
-        </Typography>
+      <div
+        className="max-w-7xl px-6 mx-auto  text-white lg:grid lg:grid-cols-8 pt-20 pb-14 xl:pb-0 md:px-20 mb-20 bg-no-repeat bg-cover md:rounded-2xl"
+        style={{ backgroundImage: `url(${GradientBackground})` }}
+      >
+        <div className=" lg:col-span-5 justify-between text-center lg:text-start">
+          <Typography
+            variant="h2"
+            className="text-3xl sm:text-5xl font-bold lg:tracking-tighter lg:leading-tight "
+          >
+            Join Thousands of{" "}
+            <span className="text-primary-main"> Satisfied </span> Customers on
+            Yield
+          </Typography>
+          <Typography className="text-lg sm:text-xl mt-6 font-medium">
+            No matter your financial goal—whether it’s securing your future,
+            building an emergency fund, or planning for major life events—Yield
+            is here to support your journey.
+          </Typography>
 
-        <Button className="bg-white text-black mt-10 w-3/4 md:w-1/3 text-lg font-medium">
+          <Button href="/signup" className="bg-white text-black mt-10 w-3/4 md:w-1/3 text-lg font-medium">
             Get Started
-        </Button>
-       </div>
+          </Button>
+        </div>
 
-       <div className="hidden lg:block lg:col-span-3 ml-auto  pt-16 ">
-       <img src={YieldFlower} alt="A Flower" width="auto" height="auto" />
-       </div>
+        <div className="hidden lg:block lg:col-span-3 ml-auto  pt-16 ">
+          <img src={YieldFlower} alt="A Flower" width="auto" height="auto" />
+        </div>
       </div>
     </div>
   );

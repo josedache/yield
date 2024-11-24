@@ -57,8 +57,8 @@ type CardType = {
   
 function MoreOnYield() {
   return (
-    <div className="max-w-7xl px-6 md:px-8 mx-auto mb-16 lg:mb-36 ">
-    <Typography className="text-center font-semibold text-4xl md:text-md my-6 lg:my-20 max-w-xs md:max-w-[540px] text-headerText mx-auto leading-title ">
+    <div className="max-w-7xl px-6 md:px-8 lg:px-3 xl:px-0 mx-auto mb-16 lg:mb-36 ">
+    <Typography className="text-center font-semibold text-4xl my-6 lg:my-20 max-w-xs md:max-w-[540px] mx-auto leading-title ">
       More on Yield
     </Typography>
     <div className="flex flex-col gap-6">
