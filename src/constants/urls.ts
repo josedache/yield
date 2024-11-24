@@ -11,3 +11,5 @@ export const FIXED = "/fixed";
 export const PROFILE = "/profile";
 export const SUPPORT = "/support";
 export const SETTINGS = "/settings";
+export const LANDING = "/home";
+export const FAQ = "/FAQs"
