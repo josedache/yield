@@ -225,7 +225,7 @@ function DashboardMain() {
                       fullWidth
                       variant="outlined"
                     >
-                      Transfer
+                      Withdraw
                     </Button>
                   )}
                 </WalletTransfer>

@@ -10,12 +10,13 @@ import {
   Typography,
   Link as MuiLink,
   FormHelperText,
+  Skeleton,
 } from "@mui/material";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import useToggle from "hooks/useToggle";
-import { ReactNode, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { getFormikTextFieldProps } from "utils/formik";
 import { useSnackbar } from "notistack";
 import CurrencyTextField from "components/CurrencyTextField";
@@ -28,11 +29,14 @@ import { WalletTransferStep } from "../enums/WalletTransferStep";
 import Countdown from "components/Countdown";
 import NumberInput from "components/NumberInput";
 import { transactionApi } from "apis/transaction-api";
+import useAuthUser from "hooks/useAuthUser";
 
 function WalletTransfer(props: WalletTransferProps) {
   const { children, onClose, ...restProps } = props;
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const authUser = useAuthUser();
 
   const [isOpen, toggleOpen, setOpen] = useToggle();
 
@@ -60,6 +64,22 @@ function WalletTransfer(props: WalletTransferProps) {
   const wallet = walletQueryResult.data?.data;
 
   const availableBalance = Number(wallet?.balance ?? 0);
+
+  const transactionOutwardBankListQueryResult =
+    transactionApi.useGetTransactionOutwardBankListQuery(undefined, {
+      skip: !authUser.bank_details.bankId,
+    });
+
+  const banks = transactionOutwardBankListQueryResult.data?.data;
+
+  const normalizedBanks = useMemo(
+    () =>
+      banks?.reduce((acc, curr) => {
+        acc[curr.id] = curr;
+        return acc;
+      }, {} as Record<string, (typeof banks)[0]>),
+    [banks]
+  );
 
   const formik = useFormik({
     initialValues: {
@@ -163,8 +183,9 @@ function WalletTransfer(props: WalletTransferProps) {
 
   const stepConfigs = [
     {
-      title: "",
-      description: "Please enter the exact amount you want to transfer.",
+      title: "Withdraw",
+      description:
+        "Please enter the exact amount you want to withdraw. The amount will be sent to your withdrawal account. ",
       content: (
         <div className="space-y-8">
           <div>
@@ -181,6 +202,19 @@ function WalletTransfer(props: WalletTransferProps) {
                 {availableBalance - formik.values.amount}
               </CurrencyTypography>
             </FormHelperText>
+          </div>
+          <div className="text-center space-y-2">
+            <Typography color="textSecondary">
+              {transactionOutwardBankListQueryResult?.isLoading ? (
+                <Skeleton />
+              ) : (
+                normalizedBanks?.[authUser.bank_details.bankId]?.name
+              )}
+            </Typography>
+            <Typography variant="h4" className="font-bold">
+              {authUser.bank_details.accountnumber}
+            </Typography>
+            <Typography>{authUser.bank_details.accountname}</Typography>
           </div>
           <div className="space-y-4">
             <LoadingButton
@@ -286,27 +320,52 @@ function WalletTransfer(props: WalletTransferProps) {
         </div>
       ),
     },
+    // {
+    //   content: (
+    //     <div className="space-y-8 max-w-md mx-auto">
+    //       <div className="flex justify-center text-6xl">
+    //         <Icon
+    //           fontSize="inherit"
+    //           color="success"
+    //           className="material-symbols-outlined-fill "
+    //         >
+    //           check_circle
+    //         </Icon>
+    //       </div>
+    //       <Typography variant="h4" className="text-center mb-4 font-bold">
+    //         Success!
+    //       </Typography>
+    //       <Typography className="text-center text-text-secondary">
+    //         You’ve successfully transfered{" "}
+    //         <CurrencyTypography component="b">
+    //           {Number(formik.values.amount)}
+    //         </CurrencyTypography>{" "}
+    //         to your account.
+    //       </Typography>
+    //       <Button size="large" fullWidth onClick={handleClose}>
+    //         Okay
+    //       </Button>
+    //     </div>
+    //   ),
+    // },
     {
       content: (
         <div className="space-y-8 max-w-md mx-auto">
           <div className="flex justify-center text-6xl">
             <Icon
               fontSize="inherit"
-              color="success"
-              className="material-symbols-outlined-fill "
+              color="warning"
+              className="material-symbols-outlined-fill"
             >
-              check_circle
+              error
             </Icon>
           </div>
           <Typography variant="h4" className="text-center mb-4 font-bold">
-            Success!
+            Processing
           </Typography>
-          <Typography className="text-center">
-            You’ve successfully transfered{" "}
-            <CurrencyTypography component="b">
-              {Number(formik.values.amount)}
-            </CurrencyTypography>{" "}
-            to your account.
+          <Typography className="text-center text-text-secondary">
+            Your withdrawal request is being processed and will be paid out
+            shortly.
           </Typography>
           <Button size="large" fullWidth onClick={handleClose}>
             Okay
