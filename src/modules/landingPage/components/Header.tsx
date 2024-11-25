@@ -48,7 +48,7 @@ export default function Header(props: Props) {
           </ListItem>
         ))}
 
-        <Button fullWidth size="small">
+        <Button  href="/signup" fullWidth size="small">
           Get Started
         </Button>
       </List>
@@ -90,7 +90,7 @@ export default function Header(props: Props) {
                 ))}
               </div>
 
-              <Button className="bg-primary-main text-white rounded-md px-5 py-2 text-base font-medium">
+              <Button  href="/signup" className="bg-primary-main text-white rounded-md px-5 py-2 text-base font-medium">
                 Get Started
               </Button>
             </Box>
