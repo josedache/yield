@@ -1,5 +1,6 @@
 export enum FlexWithdrawStep {
   AMOUNT,
   DESTINATION,
-  VERIFICATION
+  VERIFICATION,
+  SUCCESS,
 }

@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 import {
   Button,
   ButtonBase,
@@ -89,29 +88,30 @@ export default function FixedLiquidate(
           case 1:
             stepper.next();
             break;
+          // case 2:
+          //   const resp = await sendOtpMutation({
+          //     body: {
+          //       channel: "phone",
+          //       action: "liquidate",
+          //       amount: Number(info?.available_balance),
+          //     },
+          //   }).unwrap();
+          //   setOptEmail(resp?.data as any);
+          //   enqueueSnackbar("OTP sent!", {
+          //     variant: "success",
+          //   });
+          //   stepper.next();
+          //   break;
           case 2:
-            const resp = await sendOtpMutation({
-              body: {
-                channel: "phone",
-                action: "liquidate",
-                amount: Number(info?.available_balance),
-              },
-            }).unwrap();
-            setOptEmail(resp?.data as any);
-            enqueueSnackbar("OTP sent!", {
-              variant: "success",
-            });
-            stepper.next();
-            break;
           case 3:
             await liquidateSavingsMutation({
               body: {
                 savingsId: values?.savingsId,
                 note: values?.note,
-                otp: Number(values?.otp),
+                // otp: Number(values?.otp),
               },
             }).unwrap();
-            stepper.next();
+            stepper.next(4);
             break;
           case 4:
             stepper.next();
