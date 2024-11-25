@@ -186,3 +186,19 @@ export type UserIAgreeApiResponse = ApiResponse<{
   };
   token: string;
 }>;
+
+export type UserRequestVoiceOtp = ApiRequest<void, void, { phone: string }>;
+
+export type UserResponseVoiceOtp = ApiResponse<{
+  status: boolean;
+  message: string;
+  data: {
+    code: string;
+    balance: number;
+    message_id: string;
+    pinId: string;
+    message: string;
+  };
+  statusCode: string;
+  referenence: string;
+}>;

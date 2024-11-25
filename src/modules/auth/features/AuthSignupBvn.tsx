@@ -6,6 +6,7 @@ import {
   DialogContent,
   ButtonBase,
   CircularProgress,
+  Divider,
 } from "@mui/material";
 import { AuthSignupStepContentProps } from "../types/AuthSignup";
 import { getFormikTextFieldProps } from "utils/formik";
@@ -18,6 +19,8 @@ import { useEffect } from "react";
 import useDataRef from "hooks/useDataRef";
 import NumberInput from "components/NumberInput";
 import Countdown from "components/Countdown";
+import { userApi } from "apis/user-api";
+import { useSnackbar } from "notistack";
 
 function AuthSignupBvn(props: AuthSignupStepContentProps) {
   const { formik } = props;
@@ -69,9 +72,33 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
     iAgreeUserMutationResult,
   } = props;
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const open = enumStep === AuthSignupStep.BVN_VERIFICATION && !isIgree;
 
   const dataRef = useDataRef({ formik });
+
+  const [requestUserVoiceOtpMutation, requestUserVoiceOtpMutationResult] =
+    userApi.useLazyRequestUserVoiceOtpQuery(undefined);
+
+  async function handleRequestVoiceOtp() {
+    try {
+      if (requestUserVoiceOtpMutationResult.isFetching) {
+        return;
+      }
+
+      const data = await requestUserVoiceOtpMutation({
+        params: { phone: formik.values.phone },
+      }).unwrap();
+      enqueueSnackbar(data?.message || "Voice Otp successfully sent", {
+        variant: "success",
+      });
+    } catch (error) {
+      enqueueSnackbar(error?.data?.message || "Failed to send Voice Otp", {
+        variant: "success",
+      });
+    }
+  }
 
   useEffect(() => {
     if (!open) {
@@ -183,13 +210,31 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
                 }}
               </Countdown>
             </div>
-            <Typography
-              color="primary"
-              className="text-center font-semibold cursor-pointer mt-2"
-              onClick={triggerIgree}
-            >
-              I don’t have access to this phone number.
-            </Typography>
+            <div className="my-8 space-y-2">
+              <Typography
+                color="primary"
+                className="text-center font-semibold cursor-pointer"
+                onClick={triggerIgree}
+              >
+                I don’t have access to this phone number.
+              </Typography>
+              <Divider>OR</Divider>
+              <Typography className="text-center">
+                Dial <MuiLink className="font-semibold cursor-pointer">*5120#</MuiLink> on your
+                number to get your OTP, <br />
+                or{" "}
+                <MuiLink
+                  className="font-semibold cursor-pointer"
+                  onClick={handleRequestVoiceOtp}
+                >
+                  request a call
+                </MuiLink>
+                {requestUserVoiceOtpMutationResult.isFetching ? (
+                  <CircularProgress size={10} className="ml-1" />
+                ) : null}
+                .
+              </Typography>
+            </div>
             <LoadingButton
               type="submit"
               className="mt-6"

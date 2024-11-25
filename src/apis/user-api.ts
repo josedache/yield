@@ -12,12 +12,14 @@ import {
   UserLoginApiRequest,
   UserLoginApiResponse,
   UserLogoutApiRequest,
+  UserRequestVoiceOtp,
   UserResetPasswordApiRequest,
   UserResetPasswordApiResponse,
   UserResetPasswordSendApiRequest,
   UserResetPasswordSendApiResponse,
   UserResetPasswordVerifyApiRequest,
   UserResetPasswordVerifyApiResponse,
+  UserResponseVoiceOtp,
   UserSignupYieldApiRequest,
   UserSignupYieldApiResponse,
   UserVerifyOtpApiRequest,
@@ -186,6 +188,18 @@ export const userApi = coreApi.injectEndpoints({
         ...config,
       }),
       invalidatesTags: [tags.USER],
+    }),
+
+    requestUserVoiceOtp: builder.query<
+      UserResponseVoiceOtp,
+      UserRequestVoiceOtp
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/get_otp_voice",
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.USER],
     }),
   }),
 });
