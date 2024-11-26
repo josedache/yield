@@ -220,7 +220,7 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
               </Typography>
               <Divider>OR</Divider>
               <Typography className="text-center">
-                Dial <MuiLink className="font-semibold cursor-pointer">*5120#</MuiLink> on your
+                Dial <MuiLink className="font-semibold cursor-pointer">*5120*11#</MuiLink> on your
                 number to get your OTP, <br />
                 or{" "}
                 <MuiLink
