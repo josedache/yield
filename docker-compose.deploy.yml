@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  yield_web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: $YIELD_WEB_IMAGE # This is added by the pipeline. image: yield_web:latest
+    ports:
+      - "3001:80"
+    deploy:
+      mode: replicated
+      replicas: 2 # figure out a way to do sticky sessions with docker swarm to increase replicas
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '1'  # Limit to 2 CPU
+        reservations:
+          cpus: '0.5'  # Reserve 0.5 CPU  
+
+
