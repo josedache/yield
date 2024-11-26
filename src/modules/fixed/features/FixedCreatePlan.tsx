@@ -269,8 +269,7 @@ export default function FixedCreatePlan(
 
       if (fundSource === "transfer") {
         stepper.go(3);
-      }
-      if (fundSource === "paystack") {
+      } else if (fundSource === "paystack") {
         handlePaystack();
       } else {
         stepper.go(4);
