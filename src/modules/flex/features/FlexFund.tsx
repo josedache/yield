@@ -26,7 +26,7 @@ import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
 import CdlLogo from "assets/imgs/cdl-logo.png";
 import PaymentGatewayInline from "libs/payment-gateway-inline/inline";
 import {
-  PaymentGatewayInlineChannel,
+  // PaymentGatewayInlineChannel,
   PaymentGatewayInlineProvider,
 } from "libs/payment-gateway-inline";
 import { FLEX_PRODUCT_ID, PAYSTACK_PUBLIC_KEY } from "constants/env";
@@ -149,7 +149,7 @@ function FlexFund(props: FlexFundProps) {
         name: authUser?.displayName,
         email: authUser?.email,
         amount: formik.values.amount,
-        channels: [PaymentGatewayInlineChannel.CARD],
+        // channels: [PaymentGatewayInlineChannel.CARD],
         currency: "NGN",
         metadata: {},
         async onSuccess() {
