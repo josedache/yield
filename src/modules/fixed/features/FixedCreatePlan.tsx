@@ -19,7 +19,7 @@ import { useEffect } from "react";
 import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
 import PaymentGatewayInline from "libs/payment-gateway-inline/inline";
 import {
-  PaymentGatewayInlineChannel,
+  // PaymentGatewayInlineChannel,
   PaymentGatewayInlineProvider,
 } from "libs/payment-gateway-inline";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
@@ -234,7 +234,7 @@ export default function FixedCreatePlan(
         name: authUser?.displayName,
         email: authUser?.email,
         amount: formik.values.depositAmount,
-        channels: [PaymentGatewayInlineChannel.CARD],
+        // channels: [PaymentGatewayInlineChannel.CARD],
         currency: "NGN",
         metadata: {},
         async onSuccess() {
