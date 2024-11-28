@@ -71,6 +71,23 @@ const YieldCalculator = () => {
     months.push({ id: i, month: `${i} ${i === 1 ? "Month" : "Months"}` });
   }
 
+  const calculateYield = (depositAmount : number, depositPeriod : number) => {
+    if (depositAmount > 10_000_000 || depositAmount < 50_000  ) {
+      return {
+        bankInterestEarned: 0,
+      };
+    }
+    const bankInterestRate = 4;
+    const bankInterestEarned = depositAmount * (bankInterestRate / 100) * (depositPeriod / 12);
+    return {
+      bankInterestEarned: bankInterestEarned.toFixed(2),
+    };
+  };
+  const { depositAmount, depositPeriod} = formik.values;
+  const {  bankInterestEarned } = calculateYield(
+    parseFloat(depositAmount),
+    depositPeriod
+  );
 
   return (
     <div className=" flex flex-col lg:flex-row max-w-7xl items-center justify-between mx-auto gap-8 xl:gap-14 px-4 md:px-16 lg:px-8 xl:px-5 py-14">
@@ -200,7 +217,7 @@ const YieldCalculator = () => {
           </Typography>
 
           { savingsFixedDepositCalculationMutationResult.isLoading ? (
-          <Skeleton className="py-8 px-6 bg-neutral-200 mt-3 md:mt-6" />
+          <Skeleton className="py-8 px-6 bg-neutral-200 " />
            ) : (
           <Typography className="font-semibold text-3xl md:text-5xl w-[90%] text-primary-dark mt-3 md:mt-6 overflow-x-scroll scrollbar-hidden">
             {formatNumberToCurrency(`${savingsFixedDepositCalculationMutationResult?.data?.data?.maturityAmount}`)}
@@ -208,15 +225,20 @@ const YieldCalculator = () => {
            ) }
 
           { savingsFixedDepositCalculationMutationResult.isLoading ? (
-          <Skeleton className="py-6 px-4 my-5 bg-neutral-500 rounded-full " />
+          <Skeleton className="py-6 px-4 bg-neutral-500 rounded-full " />
            ) : (
           <p className=" bg-neutral-500 py-1 px-4 my-5 text-white border rounded-full font-medium text-xs md:text-lg">
             {formatNumberToCurrency(`${ savingsFixedDepositCalculationMutationResult?.data?.data?.expectedInterestAmount}`)} {" "} earned in returns on Yield
           </p>
            )}
-          <Typography className="font-medium text-xs md:text-lg py-1 px-4 border rounded-full bg-neutral-200">
-            *In a bank, you would’ve earned 
-          </Typography>
+
+          { savingsFixedDepositCalculationMutationResult.isLoading ? (
+          <Skeleton className="py-4 px-4 bg-neutral-200 rounded-full " />
+           ) : (
+          <Typography className="font-medium text-xs md:text-base py-1 px-4 border rounded-full bg-neutral-200">
+            *In a bank, you would’ve earned {formatNumberToCurrency(`${ bankInterestEarned}`)}
+          </Typography> )}
+
           <Button
             fullWidth
             size="large"
