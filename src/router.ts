@@ -16,15 +16,6 @@ const router = createBrowserRouter([
       {
         lazy: () => import("./AppPublic"),
         children: [
-          // {
-          //   lazy: () => import("./AppPublic"),
-          //   children: [
-          //     {
-          //       lazy: () => import("./modules/auth/Auth"),
-          //       children: AuthRoutes,
-          //     },
-          //   ],
-          // },
           {
             lazy: () => import("./modules/auth/Auth"),
             children: AuthRoutes,
