@@ -3,7 +3,7 @@ import store from "configs/store";
 import AppProtectedHeader from "./AppProtectedHeader";
 import AppProtectedDrawer from "./AppProtectedDrawer";
 import { Navigate, Outlet, redirect, useMatch } from "react-router-dom";
-import { DASHBOARD_KYC, SIGNIN } from "constants/urls";
+import { DASHBOARD_KYC, ENTRY } from "constants/urls";
 import { Container } from "@mui/material";
 import { userApi } from "apis/user-api";
 import LoadingContent from "components/LoadingContent";
@@ -66,7 +66,7 @@ export function loader() {
   const { authUser } = store.getState().global;
 
   if (!authUser?.isAuthenticated) {
-    return redirect(SIGNIN);
+    return redirect(ENTRY);
   }
 
   return null;
