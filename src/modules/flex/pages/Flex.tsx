@@ -308,7 +308,7 @@ function Flex() {
                             className="lg:max-w-[135px]"
                             onClick={toggleOpen}
                           >
-                            Fund Wallet
+                            Add Money
                           </Button>
                         )}
                       </FlexFund>
