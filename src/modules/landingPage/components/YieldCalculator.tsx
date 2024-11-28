@@ -5,6 +5,7 @@ import {
   InputAdornment,
   InputLabel,
   MenuItem,
+  Skeleton,
   TextField,
   Typography,
 } from "@mui/material";
@@ -15,81 +16,61 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { getFormikTextFieldProps } from "utils/formik";
 import { formatNumberToCurrency } from "utils/number";
+import { landingPageApi } from "apis/landingpage-api";
+import { useEffect } from "react";
+import { isEmpty } from "utils/object";
+import { LANDING_PAGE_CALCULATOR_PRODUCT_ID } from "constants/env";
 
-const minAmount = 50_000;
-const maxAmount = 10_000_000;
 
 const YieldCalculator = () => {
 
+  const [
+    savingsFixedDepositCalculationMutation,
+    savingsFixedDepositCalculationMutationResult,
+  ] = landingPageApi.useLandingPageCalculatorMutation()
+
   const formik = useFormik({
     initialValues: {
-      amount: "140000",
-      duration: 1,
+      depositAmount: "140000",
+      depositPeriod: 1,
+      depositPeriodFrequencyId: "2",
+      productId: LANDING_PAGE_CALCULATOR_PRODUCT_ID,
     },
     validateOnChange: true,
     validationSchema: Yup.object({
-      amount: Yup.number()
+      depositAmount: Yup.number()
         .required("Amount is required")
-        .min(50000, "Amount must be greater than 50000")
-        .max(10000000, "Amount must be less than 10000000"),
-      duration: Yup.number().min(1, "Please select a duration"),
+        .min(50000, `Amount must be greater than ${formatNumberToCurrency(`50000`)}`)
+        .max(10000000, `Amount must be less than ${formatNumberToCurrency(`10000000`)}`),
+        depositPeriod: Yup.number().min(1, "Please select a duration"),
     }),
-    onSubmit: async () => {},
+    onSubmit: async (values) => {
+      try {
+         await savingsFixedDepositCalculationMutation({
+          body: {
+            depositAmount: Number(values.depositAmount),
+            depositPeriod: String(values.depositPeriod),
+            depositPeriodFrequencyId: values.depositPeriodFrequencyId,
+            productId: String(values.productId),
+          },
+        }).unwrap();
+      } catch (error) {
+        console.error("API Error:", error);
+      }
+    },
   });
 
-  const months = [
-    { id: 1, month: "1 Month" },
-    { id: 2, month: "2 Months" },
-    { id: 3, month: "3 Months" },
-    { id: 4, month: "4 Months" },
-    { id: 5, month: "5 Months" },
-    { id: 6, month: "6 Months" },
-    { id: 7, month: "7 Months" },
-    { id: 8, month: "8 Months" },
-    { id: 9, month: "9 Months" },
-    { id: 10, month: "10 Months" },
-    { id: 11, month: "11 Months" },
-    { id: 12, month: "12 Months" },
-  ];
-
-  const getInterestRate = (month) => {
-    if (month === 1) return 16;
-    if (month === 2) return 17;
-    if (month >= 3 && month <= 5) return 18;
-    if (month >= 6 && month <= 8) return 19;
-    if (month >= 9 && month <= 11) return 20;
-    return 21; 
-  };
-
-  const calculateYield = (amount : number, duration : number) => {
-    const interestRate = getInterestRate(duration);
-    if (amount > maxAmount || amount < minAmount) {
-      return {
-        interestRate,
-        earnedYield: 0,
-        maturityAmount: 0,
-        bankInterestEarned: 0,
-      };
+  useEffect(() => {
+    if ( isEmpty(formik.errors)) {
+      formik.handleSubmit()
     }
+  }, [formik.values.depositAmount, formik.values.depositPeriod]);
 
-    const interestEarned = amount * (interestRate / 100) * (duration / 12);
-    const maturityAmount = amount + interestEarned;
+  const months = [];
+  for (let i = 1; i <= 12; i++) {
+    months.push({ id: i, month: `${i} ${i === 1 ? "Month" : "Months"}` });
+  }
 
-    const bankInterestRate = 4;
-    const bankInterestEarned =
-      amount * (bankInterestRate / 100) * (duration / 12);
-
-    return {
-      interestRate,
-      earnedYield: interestEarned.toFixed(2),
-      maturityAmount: maturityAmount.toFixed(2),
-      bankInterestEarned: bankInterestEarned.toFixed(2),
-    };
-  };
-
-  const { amount, duration } = formik.values;
-  const { interestRate, earnedYield, maturityAmount, bankInterestEarned } =
-    calculateYield(parseFloat(amount), duration);
 
   return (
     <div className=" flex flex-col lg:flex-row max-w-7xl items-center justify-between mx-auto gap-8 xl:gap-14 px-4 md:px-16 lg:px-8 xl:px-5 py-14">
@@ -111,7 +92,7 @@ const YieldCalculator = () => {
               type="number"
               className="placeholder:text-primary-dark text-primary-dark font-semibold text-2xl   "
               id="standard-adornment-amount"
-              {...getFormikTextFieldProps(formik, "amount")}
+              {...getFormikTextFieldProps(formik, "depositAmount")}
               startAdornment={
                 <InputAdornment position="start">
                   <span className="text-primary-dark font-semibold">₦</span>
@@ -128,8 +109,10 @@ const YieldCalculator = () => {
               disableUnderline
             />
 
-            {formik.errors.amount && (
-              <p className="text-red-500 text-sm">{formik.errors.amount}</p>
+            {formik.errors.depositAmount && (
+              <p className="text-red-500 text-sm">
+                {formik.errors.depositAmount}
+              </p>
             )}
           </FormControl>
         </div>
@@ -141,7 +124,7 @@ const YieldCalculator = () => {
             defaultValue={1}
             placeholder="Months"
             className="bg-transparent text-3xl text-primary-dark font-semibold"
-            {...getFormikTextFieldProps(formik, "duration")}
+            {...getFormikTextFieldProps(formik, "depositPeriod")}
             variant="outlined"
             slotProps={{
               select: {
@@ -192,10 +175,12 @@ const YieldCalculator = () => {
             ))}
           </TextField>
         </div>
-
+        { savingsFixedDepositCalculationMutationResult.isLoading ? (
+          <Skeleton className="py-6 px-4 rounded-full bg-[#E5EEDC]" />
+           ) : (
         <Typography className="rounded-full bg-[#E5EEDC] py-2 px-6 font-medium text-primary-dark text-xl ">
-          {interestRate}% per annum
-        </Typography>
+          {savingsFixedDepositCalculationMutationResult?.data?.data?.nominalAnnualInterestRate || 16}% per annum
+        </Typography> )}
       </div>
 
       <div className="relative z-0 flex items-center justify-center w-full md:w-53 lg:w-[50%] py-6 px-6 sm:px-12 ">
@@ -214,16 +199,23 @@ const YieldCalculator = () => {
             At Maturity, you’d have
           </Typography>
 
+          { savingsFixedDepositCalculationMutationResult.isLoading ? (
+          <Skeleton className="py-8 px-6 bg-neutral-200 mt-3 md:mt-6" />
+           ) : (
           <Typography className="font-semibold text-3xl md:text-5xl w-[90%] text-primary-dark mt-3 md:mt-6 overflow-x-scroll scrollbar-hidden">
-            {formatNumberToCurrency(`${maturityAmount}`)}
+            {formatNumberToCurrency(`${savingsFixedDepositCalculationMutationResult?.data?.data?.maturityAmount}`)}
           </Typography>
+           ) }
 
-          <p className=" bg-neutral-500 py-1 px-4 my-5 text-white border rounded-full font-medium text-xs md:text-xl">
-          {formatNumberToCurrency(`${earnedYield}`)} earned in returns on Yield
+          { savingsFixedDepositCalculationMutationResult.isLoading ? (
+          <Skeleton className="py-6 px-4 my-5 bg-neutral-500 rounded-full " />
+           ) : (
+          <p className=" bg-neutral-500 py-1 px-4 my-5 text-white border rounded-full font-medium text-xs md:text-lg">
+            {formatNumberToCurrency(`${ savingsFixedDepositCalculationMutationResult?.data?.data?.expectedInterestAmount}`)} {" "} earned in returns on Yield
           </p>
-
+           )}
           <Typography className="font-medium text-xs md:text-lg py-1 px-4 border rounded-full bg-neutral-200">
-            *In a bank, you would’ve earned {formatNumberToCurrency(`${bankInterestEarned}`)}
+            *In a bank, you would’ve earned 
           </Typography>
           <Button
             fullWidth
