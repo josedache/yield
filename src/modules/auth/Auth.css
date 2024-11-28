@@ -1,3 +1,10 @@
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
 .hexagon {
     position: relative;
     margin: 28.87px 0;
