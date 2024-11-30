@@ -26,7 +26,7 @@ type CardType = {
       id: 1,
       icon: Clock,
       iconAlt: "rate icon",
-      title: "Fixed Term",     
+      title: "Fixed Yield",     
       description:"Lock your funds for a set period of time and earn maximum returns of up to 21% when you create plans of up to 12 months. When your Yield plan matures, you can liquidate or roll-over your funds to increase your earnings.",
       img: Avatar,
       imgAlt: "a man smiling",
@@ -57,7 +57,7 @@ type CardType = {
   
 function MoreOnYield() {
   return (
-    <div className="max-w-7xl px-6 md:px-8 lg:px-3 xl:px-0 mx-auto mb-16 lg:mb-36 ">
+    <div className="landingPagecontainer px-6 md:px-8 lg:px-3 xl:px-0 mx-auto mb-16 lg:mb-36 ">
     <Typography className="text-center font-semibold text-4xl my-6 lg:my-20 max-w-xs md:max-w-[540px] mx-auto leading-title ">
       More on Yield
     </Typography>

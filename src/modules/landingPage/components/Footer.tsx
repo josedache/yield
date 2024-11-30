@@ -3,7 +3,7 @@ import Logo from "components/Logo";
 const Footer = () => {
   return (
     <footer className="bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-5 lg:px-8 lg:py-16">
+      <div className="mx-auto landingPagecontainer px-6 py-5 lg:px-8 lg:py-16">
         <div className=" lg:grid lg:grid-cols-3  ">
           <div className="space-y-8">
             <Logo variant="3" width="212px" height="105px" />
