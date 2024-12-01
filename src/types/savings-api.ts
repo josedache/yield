@@ -211,7 +211,7 @@ export type LiquidateSavingsApiResponse = ApiResponse<{
 
 export type SavingsTransferApiRequest = ApiRequest<{
   type: "withdraw" | "transfer";
-  otp: string;
+  // otp: string;
   savingsId: number;
   transferAmount: number;
   transferDescription?: string;

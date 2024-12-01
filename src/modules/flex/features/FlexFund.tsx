@@ -26,7 +26,7 @@ import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
 import CdlLogo from "assets/imgs/cdl-logo.png";
 import PaymentGatewayInline from "libs/payment-gateway-inline/inline";
 import {
-  PaymentGatewayInlineChannel,
+  // PaymentGatewayInlineChannel,
   PaymentGatewayInlineProvider,
 } from "libs/payment-gateway-inline";
 import { FLEX_PRODUCT_ID, PAYSTACK_PUBLIC_KEY } from "constants/env";
@@ -36,6 +36,9 @@ import useAuthUser from "hooks/useAuthUser";
 import useClipboard from "hooks/useClipboard";
 import { FlexFundStep } from "../enums/FlexFundStep";
 import { transactionApi } from "apis/transaction-api";
+import { formatNumberToCurrency } from "utils/number";
+import { walletApi } from "apis/wallet-api";
+import clsx from "clsx";
 
 function FlexFund(props: FlexFundProps) {
   const { onSuccess, children, onClose, ...restProps } = props;
@@ -55,6 +58,14 @@ function FlexFund(props: FlexFundProps) {
   });
 
   const enumStep = STEPS_INDEX[stepper.step];
+
+  const [transferSavingsMutation, transferSavingsMutationResult] =
+    savingsApi.useTransferSavingsMutation();
+
+  const walletQueryResult = walletApi.useGetWalletQuery(undefined, {
+    skip: stepper.step !== 1,
+  });
+  const wallet = walletQueryResult.data?.data;
 
   const getSavingsProductInformationQuery =
     savingsApi.useGetSavingsProductInformationQuery({
@@ -138,7 +149,7 @@ function FlexFund(props: FlexFundProps) {
         name: authUser?.displayName,
         email: authUser?.email,
         amount: formik.values.amount,
-        channels: [PaymentGatewayInlineChannel.CARD],
+        // channels: [PaymentGatewayInlineChannel.CARD],
         currency: "NGN",
         metadata: {},
         async onSuccess() {
@@ -162,6 +173,28 @@ function FlexFund(props: FlexFundProps) {
   function handleWallet() {
     formik.submitForm();
   }
+
+  const handleFundYield = async () => {
+    try {
+      await transferSavingsMutation({
+        body: {
+          savingsId: savingsAccount.id,
+          transferAmount: Number(formik.values.amount),
+          type: "transfer",
+        },
+      }).unwrap();
+      stepper.go(getEnumStepIndex(FlexFundStep.SUCCESS));
+    } catch (error) {
+      enqueueSnackbar(
+        (Array.isArray(error?.data?.message)
+          ? error?.data?.message?.[0]
+          : error?.data?.message) ?? "Failed to fund yield",
+        {
+          variant: "error",
+        }
+      );
+    }
+  };
 
   const stepConfigs = [
     {
@@ -240,18 +273,43 @@ function FlexFund(props: FlexFundProps) {
               disabled:
                 generateTransactionOutwardPaymentReferenceMutationResult.isLoading,
             },
-          ].map(({ label, icon, loading, ...restProps }) => {
+            {
+              icon: <Iconify icon="ph:wallet-light" className="text-4xl" />,
+              label: `Fund via Yield Wallet`,
+              more: `Wallet balance: ${formatNumberToCurrency(
+                String(wallet?.balance || 0)
+              )}`,
+              onClick: () => {
+                handleFundYield();
+              },
+              loading: transferSavingsMutationResult.isLoading,
+              disabled:
+                walletQueryResult?.isLoading ||
+                transferSavingsMutationResult.isLoading ||
+                (wallet?.balance && formik.values.amount > wallet?.balance),
+            },
+          ].map(({ label, more, icon, loading, ...restProps }) => {
             return (
               <ButtonBase
                 key={label}
                 component={Paper}
-                className="flex items-center text-left gap-4 p-2 rounded"
+                className={clsx(
+                  "flex items-center justify-between gap-4 p-3 rounded ",
+                  restProps?.disabled ? "text-neutral-400" : ""
+                )}
                 {...restProps}
               >
-                <div className="flex items-center justify-center w-8 h-8">
-                  {icon}
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8">
+                    {icon}
+                  </div>
+                  <div>
+                    <Typography className="flex-1">{label}</Typography>
+                    <Typography variant="caption" className="flex-1">
+                      {more}
+                    </Typography>
+                  </div>
                 </div>
-                <Typography className="flex-1">{label}</Typography>
                 {loading ? (
                   <CircularProgress size={12} />
                 ) : (

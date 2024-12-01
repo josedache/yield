@@ -154,7 +154,7 @@ function Fixed() {
                   color="textSecondary"
                   className="mt-2 md:mt-4"
                 >
-                  Interest Rate is <b>15</b> - <b>20%</b> per annum.{" "}
+                  Interest Rate is <b>16</b> - <b>21%</b> per annum.{" "}
                 </Typography>
               </div>
               <Button
