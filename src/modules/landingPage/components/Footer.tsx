@@ -21,13 +21,11 @@ const Footer = () => {
                 <ul role="list" className="mt-4 space-y-2 lg:text-right">
                   {navigation.ContactUs.map((item) => (
                     <li key={item.name}>
-                      <a
-                        target="_blank"
-                        href={item.href}
+                      <p
                         className=" text-gray-600 hover:text-gray-900 "
                       >
                         {item.name}
-                      </a>
+                      </p>
                     </li>
                   ))}
                 </ul>
@@ -41,13 +39,11 @@ const Footer = () => {
                 <ul role="list" className="mt-4 space-y-2 lg:text-right">
                   {navigation.ContactUs.map((item) => (
                     <li key={item.name}>
-                      <a
-                        target="_blank"
-                        href={item.href}
+                      <p
                         className=" text-gray-600 hover:text-gray-900 "
                       >
                         {item.name}
-                      </a>
+                      </p>
                     </li>
                   ))}
                 </ul>
@@ -110,15 +106,15 @@ const navigation = {
     { name: "Whatsapp: 09070309430", href: "#" },
   ],
   company: [
-    { name: "About", href: "#" },
+    { name: "About", href: "https://www.creditdirect.ng/about-us/" },
     { name: "Legal", href: "#" },
-    { name: "Privacy policy", href: "#" },
-    { name: "Terms & Conditions", href: "#" },
+    { name: "Privacy policy", href: "https://www.creditdirect.ng/privacy-policy/" },
+    { name: "Terms & Conditions", href: "https://yield.creditdirect.ng/terms-and-conditions" },
   ],
   social: [
     {
       name: "Facebook",
-      href: "#",
+      href: "https://www.facebook.com/creditdirectltd/",
       icon: (props) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path
@@ -131,7 +127,7 @@ const navigation = {
     },
     {
       name: "X",
-      href: "#",
+      href: "https://www.twitter.com/creditdirectltd",
       icon: (props) => (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +145,7 @@ const navigation = {
     },
     {
       name: "Instagram",
-      href: "#",
+      href: "https://www.instagram.com/yieldbycreditdirect/",
       icon: (props) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path
@@ -162,7 +158,7 @@ const navigation = {
     },
     {
       name: "LinkedIn",
-      href: "#",
+      href: "https://www.linkedin.com/company/11500510",
       icon: (props) => (
         <svg
           xmlns="http://www.w3.org/2000/svg"
