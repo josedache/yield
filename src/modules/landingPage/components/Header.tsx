@@ -63,10 +63,10 @@ export default function Header(props: Props) {
       <CssBaseline />
       <AppBar elevation={0} component="nav" className="bg-white ">
         <Toolbar>
-          <div className=" flex flex-wrap justify-between items-center mx-auto py-2 sm:py-4  w-full lg:max-w-7xl ">
-            <Typography variant="h6" component="div">
+          <div className=" flex flex-wrap justify-between items-center mx-auto py-2 sm:py-4  w-full landingPagecontainer ">
+            <Link to="/" >
               <Logo variant="3" />
-            </Typography>
+            </Link>
 
             <IconButton
               aria-label="open drawer"

@@ -19,7 +19,7 @@ import { formatNumberToCurrency } from "utils/number";
 import { landingPageApi } from "apis/landingpage-api";
 import { useEffect } from "react";
 import { isEmpty } from "utils/object";
-import { LANDING_PAGE_CALCULATOR_PRODUCT_ID } from "constants/env";
+import { FIXED_PRODUCT_ID } from "constants/env";
 
 
 const YieldCalculator = () => {
@@ -34,7 +34,7 @@ const YieldCalculator = () => {
       depositAmount: "140000",
       depositPeriod: 1,
       depositPeriodFrequencyId: "2",
-      productId: LANDING_PAGE_CALCULATOR_PRODUCT_ID,
+      productId: FIXED_PRODUCT_ID,
     },
     validateOnChange: true,
     validationSchema: Yup.object({
@@ -90,7 +90,7 @@ const YieldCalculator = () => {
   );
 
   return (
-    <div className=" flex flex-col lg:flex-row max-w-7xl items-center justify-between mx-auto gap-8 xl:gap-14 px-4 md:px-16 lg:px-8 xl:px-5 py-14">
+    <div className=" flex flex-col lg:flex-row landingPagecontainer items-center justify-between mx-auto gap-8 xl:gap-14 px-4 md:px-16 lg:px-8 xl:px-5 py-14">
       <div className="flex flex-col gap-8 w-full lg:max-w-[50%]  md:aspect-cyyLeft  ">
         <Typography className="font-semibold text-3xl md:text-[44px] text-[#101828] text-center lg:text-start">
           Calculate your Yield
@@ -227,7 +227,7 @@ const YieldCalculator = () => {
           { savingsFixedDepositCalculationMutationResult.isLoading ? (
           <Skeleton className="py-6 px-4 bg-neutral-500 rounded-full " />
            ) : (
-          <p className=" bg-neutral-500 py-1 px-4 my-5 text-white border rounded-full font-medium text-xs md:text-lg">
+          <p className=" bg-neutral-500 py-1 px-4 my-5 text-white border rounded-full font-medium text-xs md:text-xl">
             {formatNumberToCurrency(`${ savingsFixedDepositCalculationMutationResult?.data?.data?.expectedInterestAmount}`)} {" "} earned in returns on Yield
           </p>
            )}
@@ -235,7 +235,7 @@ const YieldCalculator = () => {
           { savingsFixedDepositCalculationMutationResult.isLoading ? (
           <Skeleton className="py-4 px-4 bg-neutral-200 rounded-full " />
            ) : (
-          <Typography className="font-medium text-xs md:text-base py-1 px-4 border rounded-full bg-neutral-200">
+          <Typography className="font-medium text-xs md:text-lg py-1 px-4 border rounded-full bg-neutral-200">
             *In a bank, you would’ve earned {formatNumberToCurrency(`${ bankInterestEarned}`)}
           </Typography> )}
 
