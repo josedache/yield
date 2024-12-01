@@ -9,7 +9,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 const FAQPage = () => {
   return (
     <div className="bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-16 sm:py-32 lg:px-8">
+      <div className="mx-auto landingPagecontainer px-6 py-16 sm:py-32 lg:px-8">
         <div className="mx-auto text-center px-16 py-8">
           <Typography className="text-4xl font-bold tracking-tight text-[#042A2B] sm:text-6xl">
             Frequently Asked Questions (FAQs)

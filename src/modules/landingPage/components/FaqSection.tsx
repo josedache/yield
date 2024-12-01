@@ -49,7 +49,7 @@ const FaqSection = () => {
     };
   return (
     <div>
-      <div className="mx-auto max-w-7xl px-6 py-14 sm:pt-16 lg:px-4 xl:px-0 lg:py-24">
+      <div className="mx-auto landingPagecontainer px-6 py-14 sm:pt-16 lg:px-4 xl:px-0 lg:py-24">
         <div className="lg:grid lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-6 lg:px-6 text-center md:text-start">
             <h2 className="text-pretty text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
@@ -118,7 +118,7 @@ const FaqSection = () => {
       </div>
 
       <div
-        className="max-w-7xl px-6 mx-auto  text-white lg:grid lg:grid-cols-8 pt-20 pb-14 xl:pb-0 md:px-20 mb-20 bg-no-repeat bg-cover md:rounded-2xl"
+        className="landingPagecontainer px-6 mx-auto  text-white lg:grid lg:grid-cols-8 pt-20 pb-14 xl:pb-0 md:px-20 mb-20 bg-no-repeat bg-cover md:rounded-2xl"
         style={{ backgroundImage: `url(${GradientBackground})` }}
       >
         <div className=" lg:col-span-5 justify-between text-center lg:text-start">

@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 const GetStarted = () => {
   return (
     <div className="bg-[#164037] text-white">
-      <div className="max-w-7xl py-10 md:py-24  px-6 lg:px-3 mx-auto">
+      <div className="landingPagecontainer py-10 md:py-24  px-6 lg:px-3 mx-auto">
         <div className="mt-5 mb-12 md:mb-16 ">
           <Typography className="text-center text-medium font-semibold  text-4xl md:text-5xl">
             Get Started in 4 Simple Steps
