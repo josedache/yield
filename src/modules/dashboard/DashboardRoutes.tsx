@@ -4,6 +4,7 @@ import { RouteObject } from "react-router-dom";
 export default [
   {
     index: true,
+    // path: DASHBOARD,
     lazy: () => import("modules/dashboard/pages/DashboardMain"),
   },
   {
