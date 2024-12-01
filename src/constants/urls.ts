@@ -13,3 +13,4 @@ export const SUPPORT = "/support";
 export const SETTINGS = "/settings";
 export const LANDING = "/";
 export const FAQ = "/FAQs";
+export const TERMS ="/terms-and-conditions"
