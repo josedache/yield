@@ -14,7 +14,7 @@ import { useSnackbar } from "notistack";
 
 import CurrencyTypography from "components/CurrencyTypography";
 import useToggle from "hooks/useToggle";
-import { format } from "date-fns";
+import { format, isBefore } from "date-fns";
 import LoadingContent from "components/LoadingContent";
 import FixedStatusChip from "./FixedStatusChip";
 import { savingsApi } from "apis/savings-api";
@@ -146,6 +146,12 @@ export default function FixedPlanDetails(
       variant: "soft",
       onClick: toggleIsRenamePlan,
       status: [SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE],
+      disabled: getSavingsQuery?.data?.data?.submitted_date
+        ? isBefore(
+            new Date(getSavingsQuery?.data?.data?.submitted_date),
+            new Date(2024, 10, 30)
+          )
+        : true,
     },
     {
       name: "Fund Plan",
