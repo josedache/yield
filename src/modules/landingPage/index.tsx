@@ -7,7 +7,6 @@ function LandingPage() {
     <>
       <Header />
       <Outlet />
-
       <Footer />
     </>
   );
