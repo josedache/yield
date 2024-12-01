@@ -12,4 +12,3 @@ export const CDL_IAGREE_INLINE_BASE_URL = import.meta.env
 
 export const FLEX_PRODUCT_ID = Number(import.meta.env.VITE_FLEX_PRODUCT_ID);
 export const FIXED_PRODUCT_ID =  Number(import.meta.env.VITE_FIXED_PRODUCT_ID);
-export const LANDING_PAGE_CALCULATOR_PRODUCT_ID = Number(import.meta.env.VITE_LANDING_PAGE_CALCULATOR_PRODUCT_ID)
