@@ -1,10 +1,11 @@
 import AppErrorBoundary from "./AppErrorBoundary";
-import { DASHBOARD, ENTRY, FIXED, FLEX, PROFILE } from "constants/urls";
+import { DASHBOARD, ENTRY, FIXED, FLEX, PROFILE, TERMS } from "constants/urls";
 import AuthRoutes from "modules/auth/AuthRoutes";
 import DashboardRoutes from "modules/dashboard/DashboardRoutes";
 import FixedRoutes from "modules/fixed/FixedRoutes";
 import FlexRoutes from "modules/flex/FlexRoutes";
 import LandingPageRoutes from "modules/landingPage/LandingPageRoutes";
+import TermsPageRoutes from "modules/termsAndConditions/TermsPageRoute";
 import { createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -23,6 +24,11 @@ const router = createBrowserRouter([
           {
             lazy: () => import("./modules/landingPage/index"),
             children: LandingPageRoutes,
+          },
+          {
+            path: TERMS,
+            lazy: () => import("./modules/termsAndConditions/index"),
+            children: TermsPageRoutes,
           },
         ],
       },
