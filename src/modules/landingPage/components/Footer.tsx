@@ -21,9 +21,7 @@ const Footer = () => {
                 <ul role="list" className="mt-4 space-y-2 lg:text-right">
                   {navigation.ContactUs.map((item) => (
                     <li key={item.name}>
-                      <p
-                        className=" text-gray-600 hover:text-gray-900 "
-                      >
+                      <p className=" text-gray-600 hover:text-gray-900 ">
                         {item.name}
                       </p>
                     </li>
@@ -39,9 +37,7 @@ const Footer = () => {
                 <ul role="list" className="mt-4 space-y-2 lg:text-right">
                   {navigation.ContactUs.map((item) => (
                     <li key={item.name}>
-                      <p
-                        className=" text-gray-600 hover:text-gray-900 "
-                      >
+                      <p className=" text-gray-600 hover:text-gray-900 ">
                         {item.name}
                       </p>
                     </li>
@@ -107,9 +103,12 @@ const navigation = {
   ],
   company: [
     { name: "About", href: "https://www.creditdirect.ng/about-us/" },
-    { name: "Legal", href: "#" },
-    { name: "Privacy policy", href: "https://www.creditdirect.ng/privacy-policy/" },
-    { name: "Terms & Conditions", href: "https://yield.creditdirect.ng/terms-and-conditions" },
+    { name: "Legal", href: "/terms-and-conditions" },
+    {
+      name: "Privacy policy",
+      href: "https://www.creditdirect.ng/privacy-policy/",
+    },
+    { name: "Terms & Conditions", href: "/terms-and-conditions" },
   ],
   social: [
     {
