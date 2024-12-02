@@ -43,12 +43,14 @@ export default function Header(props: Props) {
         {navItems.map((item) => (
           <ListItem key={item.displayText} disablePadding>
             <div className="text-primary-main border w-full rounded-md border-primary-main font-semibold text-center text-sm hover:bg-primary-main hover:text-white mb-2">
-              <ListItemText primary={item.displayText} />
+              <Link to={item.href}>
+                <ListItemText primary={item.displayText} />
+              </Link>
             </div>
           </ListItem>
         ))}
 
-        <Button  href="/signup" fullWidth size="small">
+        <Button href="/signup" fullWidth size="small">
           Get Started
         </Button>
       </List>
@@ -64,7 +66,7 @@ export default function Header(props: Props) {
       <AppBar elevation={0} component="nav" className="bg-white ">
         <Toolbar>
           <div className=" flex flex-wrap justify-between items-center mx-auto py-2 sm:py-4  w-full landingPagecontainer ">
-            <Link to="/" >
+            <Link to="/">
               <Logo variant="3" />
             </Link>
 
@@ -74,7 +76,10 @@ export default function Header(props: Props) {
               onClick={handleDrawerToggle}
               className="block sm:hidden ml-auto"
             >
-               <Iconify icon="ci:menu-alt-01" className="text-neutral-900 size-7"/>
+              <Iconify
+                icon="ci:menu-alt-01"
+                className="text-neutral-900 size-7"
+              />
             </IconButton>
 
             <Box className="hidden sm:flex items-center ml-auto gap-4">
@@ -90,7 +95,10 @@ export default function Header(props: Props) {
                 ))}
               </div>
 
-              <Button  href="/signup" className="bg-primary-main text-white rounded-md px-5 py-2 text-base font-medium">
+              <Button
+                href="/signup"
+                className="bg-primary-main text-white rounded-md px-5 py-2 text-base font-medium"
+              >
                 Get Started
               </Button>
             </Box>
