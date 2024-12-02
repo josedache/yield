@@ -22,10 +22,7 @@ import useStepper from "hooks/useStepper";
 import { Icon as Iconify } from "@iconify-icon/react";
 import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
 import PaymentGatewayInline from "libs/payment-gateway-inline/inline";
-import {
-  PaymentGatewayInlineChannel,
-  PaymentGatewayInlineProvider,
-} from "libs/payment-gateway-inline";
+import { PaymentGatewayInlineProvider } from "libs/payment-gateway-inline";
 import { PAYSTACK_PUBLIC_KEY } from "constants/env";
 import { savingsApi } from "apis/savings-api";
 
