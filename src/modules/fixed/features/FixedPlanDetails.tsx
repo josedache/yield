@@ -119,7 +119,7 @@ export default function FixedPlanDetails(
         formatNumberToCurrency(
           `${
             getSavingsQuery?.data?.data?.maturity_amount -
-            Number(getSavingsQuery?.data?.data?.available_balance)
+            Number(getSavingsQuery?.data?.data?.principal)
           }`
         ) || "0"
       }`,
