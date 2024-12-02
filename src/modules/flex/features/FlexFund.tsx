@@ -149,6 +149,7 @@ function FlexFund(props: FlexFundProps) {
         name: authUser?.displayName,
         email: authUser?.email,
         amount: formik.values.amount,
+        channels: [],
         // channels: [PaymentGatewayInlineChannel.CARD],
         currency: "NGN",
         metadata: {},
@@ -159,6 +160,7 @@ function FlexFund(props: FlexFundProps) {
         onClose() {},
       });
     } catch (error) {
+      console.error("error", error);
       enqueueSnackbar(
         error?.data?.message ??
           error?.data?.message?.[0] ??

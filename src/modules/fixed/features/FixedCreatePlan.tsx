@@ -234,6 +234,7 @@ export default function FixedCreatePlan(
         name: authUser?.displayName,
         email: authUser?.email,
         amount: formik.values.depositAmount,
+        channels: [],
         // channels: [PaymentGatewayInlineChannel.CARD],
         currency: "NGN",
         metadata: {},

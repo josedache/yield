@@ -42,7 +42,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     /* height: 100%; */
-    overflow: auto;
+    /* overflow: auto; */
   }
 }
 
@@ -113,3 +113,32 @@ body {
   border-radius: 10px;
 }
 /* End Slick dot customize */
+
+.landingPagecontainer {
+  width: 100%;
+}
+@media (min-width: 640px) {
+  .landingPagecontainer  {
+    max-width: 640px;
+  }
+}
+@media (min-width: 768px) {
+  .landingPagecontainer  {
+    max-width: 768px;
+  }
+}
+@media (min-width: 1024px) {
+  .landingPagecontainer {
+    max-width: 1024px;
+  }
+}
+@media (min-width: 1280px) {
+  .landingPagecontainer {
+    max-width: 1280px;
+  }
+}
+@media (min-width: 1536px) {
+  .landingPagecontainer {
+    max-width: 1440px;
+  }
+}

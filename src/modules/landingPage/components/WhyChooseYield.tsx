@@ -54,7 +54,7 @@ const WhyChooseYield = () => {
 
   return (
    <div className=" bg-yellow-50/50 "  style={{ backgroundImage: `url(${SpiralBackground})` }}>
-     <div className="max-w-7xl mx-auto pt-20 pb-14 md:pb-24 px-6 md:px-8 lg:px-3 xl:px-0" >
+     <div className="landingPagecontainer mx-auto pt-20 pb-14 md:pb-24 px-6 md:px-8 lg:px-3 xl:px-0" >
       <Typography className=" pb-4 font-semibold text-3xl md:text-5xl text-center">
         Why Choose Yield?
       </Typography>

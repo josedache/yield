@@ -3,7 +3,7 @@ import Logo from "components/Logo";
 const Footer = () => {
   return (
     <footer className="bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-5 lg:px-8 lg:py-16">
+      <div className="mx-auto landingPagecontainer px-6 py-5 lg:px-8 lg:py-16">
         <div className=" lg:grid lg:grid-cols-3  ">
           <div className="space-y-8">
             <Logo variant="3" width="212px" height="105px" />
@@ -21,13 +21,9 @@ const Footer = () => {
                 <ul role="list" className="mt-4 space-y-2 lg:text-right">
                   {navigation.ContactUs.map((item) => (
                     <li key={item.name}>
-                      <a
-                        target="_blank"
-                        href={item.href}
-                        className=" text-gray-600 hover:text-gray-900 "
-                      >
+                      <p className=" text-gray-600 hover:text-gray-900 ">
                         {item.name}
-                      </a>
+                      </p>
                     </li>
                   ))}
                 </ul>
@@ -41,13 +37,9 @@ const Footer = () => {
                 <ul role="list" className="mt-4 space-y-2 lg:text-right">
                   {navigation.ContactUs.map((item) => (
                     <li key={item.name}>
-                      <a
-                        target="_blank"
-                        href={item.href}
-                        className=" text-gray-600 hover:text-gray-900 "
-                      >
+                      <p className=" text-gray-600 hover:text-gray-900 ">
                         {item.name}
-                      </a>
+                      </p>
                     </li>
                   ))}
                 </ul>
@@ -110,15 +102,18 @@ const navigation = {
     { name: "Whatsapp: 09070309430", href: "#" },
   ],
   company: [
-    { name: "About", href: "#" },
-    { name: "Legal", href: "#" },
-    { name: "Privacy policy", href: "#" },
-    { name: "Terms & Conditions", href: "#" },
+    { name: "About", href: "https://www.creditdirect.ng/about-us/" },
+    { name: "Legal", href: "/terms-and-conditions" },
+    {
+      name: "Privacy policy",
+      href: "https://www.creditdirect.ng/privacy-policy/",
+    },
+    { name: "Terms & Conditions", href: "/terms-and-conditions" },
   ],
   social: [
     {
       name: "Facebook",
-      href: "#",
+      href: "https://www.facebook.com/creditdirectltd/",
       icon: (props) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path
@@ -131,7 +126,7 @@ const navigation = {
     },
     {
       name: "X",
-      href: "#",
+      href: "https://www.twitter.com/creditdirectltd",
       icon: (props) => (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +144,7 @@ const navigation = {
     },
     {
       name: "Instagram",
-      href: "#",
+      href: "https://www.instagram.com/yieldbycreditdirect/",
       icon: (props) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path
@@ -162,7 +157,7 @@ const navigation = {
     },
     {
       name: "LinkedIn",
-      href: "#",
+      href: "https://www.linkedin.com/company/11500510",
       icon: (props) => (
         <svg
           xmlns="http://www.w3.org/2000/svg"
