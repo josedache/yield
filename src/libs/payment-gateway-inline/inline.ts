@@ -23,19 +23,25 @@ function PaymentGatewayInlineInline(config: PaymentGatewayInlineOptions) {
         email: config.email,
         currency: config.currency,
         amount: currencyjs(config?.amount).multiply(100).value,
-        channels: config.channels
-          ?.map(
-            (channel) =>
-              ({
-                [PaymentGatewayInlineChannel.CARD]: "card",
-                [PaymentGatewayInlineChannel.BANK]: "bank",
-                [PaymentGatewayInlineChannel.BANK_TRANSFER]: "bank_transfer",
-                [PaymentGatewayInlineChannel.USSD]: "ussd",
-                [PaymentGatewayInlineChannel.MOBILE_MONEY]: "mobile_money",
-                [PaymentGatewayInlineChannel.QR]: "qr",
-              }[channel])
-          )
-          ?.filter((channel) => !!channel),
+        ...(config.channels?.length
+          ? {
+              channels: config.channels
+                ?.map(
+                  (channel) =>
+                    ({
+                      [PaymentGatewayInlineChannel.CARD]: "card",
+                      [PaymentGatewayInlineChannel.BANK]: "bank",
+                      [PaymentGatewayInlineChannel.BANK_TRANSFER]:
+                        "bank_transfer",
+                      [PaymentGatewayInlineChannel.USSD]: "ussd",
+                      [PaymentGatewayInlineChannel.MOBILE_MONEY]:
+                        "mobile_money",
+                      [PaymentGatewayInlineChannel.QR]: "qr",
+                    }[channel])
+                )
+                ?.filter((channel) => !!channel),
+            }
+          : {}),
         metadata: config?.metadata,
         onSuccess: config?.onSuccess,
         onCancel: config?.onClose,
