@@ -95,7 +95,8 @@ function FlexFund(props: FlexFundProps) {
       name: "Joseph Edache",
       email: "josedache@tmpbox.net",
       amount: formik.values.amount,
-      channels: [PaymentGatewayInlineChannel.CARD],
+      channels: [],
+      // channels: [PaymentGatewayInlineChannel.CARD],
       currency: "NGN",
       metadata: {},
       async onSuccess() {
