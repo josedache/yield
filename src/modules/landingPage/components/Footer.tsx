@@ -2,9 +2,9 @@ import Logo from "components/Logo";
 
 const Footer = () => {
   return (
-    <footer className="bg-white">
+    <footer>
       <div className="mx-auto landingPagecontainer px-6 py-5 lg:px-8 lg:py-16">
-        <div className=" lg:grid lg:grid-cols-3  ">
+        <div className=" lg:grid lg:grid-cols-2  ">
           <div className="space-y-8">
             <Logo variant="3" width="212px" height="105px" />
             <p className="text-balance text-sm/6 ">
@@ -12,60 +12,39 @@ const Footer = () => {
             </p>
           </div>
 
-          <div className="mt-16 grid sm:grid-cols-2 gap-8 lg:gap-4 lg:col-span-2 lg:mt-0  ">
-            <div className="lg:grid lg:grid-cols-2 ">
-              <div className="col-span-1 lg:col-span-2 block xl:hidden ">
-                <h3 className="text-lg font-semibold text-gray-950 lg:text-right">
-                  Contact Us
-                </h3>
-                <ul role="list" className="mt-4 space-y-2 lg:text-right">
-                  {navigation.ContactUs.map((item) => (
-                    <li key={item.name}>
-                      <p
-                        className=" text-gray-600 hover:text-gray-900 "
-                      >
-                        {item.name}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <div className="flex flex-col md:flex-row lg:flex-row-reverse gap-6 mt-14 ">
+            <div >
+              <h3 className="text-lg font-semibold text-gray-950 lg:text-right">
+                Company
+              </h3>
+              <ul role="list" className="mt-4 space-y-2 lg:text-right">
+                {navigation.company.map((item) => (
+                  <li key={item.name}>
+                    <a
+                      target="_blank"
+                      href={item.href}
+                      className=" text-gray-600 hover:text-gray-900"
+                    >
+                      {item.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="lg:grid lg:grid-cols-2">
-              <div className="hidden xl:block ">
-                <h3 className="text-lg font-semibold text-gray-950 lg:text-right">
-                  Contact Us
-                </h3>
-                <ul role="list" className="mt-4 space-y-2 lg:text-right">
-                  {navigation.ContactUs.map((item) => (
-                    <li key={item.name}>
-                      <p
-                        className=" text-gray-600 hover:text-gray-900 "
-                      >
-                        {item.name}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="col-span-1 lg:col-span-2 xl:col-auto">
-                <h3 className="text-lg font-semibold text-gray-950 lg:text-right">
-                  Company
-                </h3>
-                <ul role="list" className="mt-4 space-y-2 lg:text-right">
-                  {navigation.company.map((item) => (
-                    <li key={item.name}>
-                      <a
-                        target="_blank"
-                        href={item.href}
-                        className=" text-gray-600 hover:text-gray-900"
-                      >
-                        {item.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+
+            <div className=" max-w-64">
+              <h3 className="text-lg font-semibold text-gray-950 lg:text-right">
+                Contact Us
+              </h3>
+              <ul role="list" className="mt-4 space-y-2 lg:text-right">
+                {navigation.ContactUs.map((item) => (
+                  <li key={item.name}>
+                    <p className=" text-gray-600 hover:text-gray-900 ">
+                      {item.name}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
@@ -108,8 +87,14 @@ const navigation = {
   company: [
     { name: "About", href: "https://www.creditdirect.ng/about-us/" },
     { name: "Legal", href: "#" },
-    { name: "Privacy policy", href: "https://www.creditdirect.ng/privacy-policy/" },
-    { name: "Terms & Conditions", href: "https://yield.creditdirect.ng/terms-and-conditions" },
+    {
+      name: "Privacy policy",
+      href: "https://www.creditdirect.ng/privacy-policy/",
+    },
+    {
+      name: "Terms & Conditions",
+      href: "https://yield.creditdirect.ng/terms-and-conditions",
+    },
   ],
   social: [
     {

@@ -58,7 +58,7 @@ type CardType = {
 function MoreOnYield() {
   return (
     <div className="landingPagecontainer px-6 md:px-8 lg:px-3 xl:px-0 mx-auto mb-16 lg:mb-36 ">
-    <Typography className="text-center font-semibold text-4xl my-6 lg:my-20 max-w-xs md:max-w-[540px] mx-auto leading-title ">
+    <Typography className="text-center font-semibold text-4xl lg:text-[44px] my-6 lg:my-20 max-w-xs md:max-w-[540px] mx-auto leading-title ">
       More on Yield
     </Typography>
     <div className="flex flex-col gap-6">
@@ -73,7 +73,7 @@ function MoreOnYield() {
               <img
                 src={card.icon}
                 alt={card.iconAlt}
-                className="rounded-full p-4"
+                className="rounded-full p-3 sm:p-4 flex items-center justify-center size-14 sm:size-20"
                 style={{ backgroundColor: `${card.stackColor}` }}
               />
               <div className="mb-6 md:mb-14 mt-3 md:mt-8">
@@ -95,7 +95,7 @@ function MoreOnYield() {
                     <Typography className="text-lg sm:text-3xl font-semibold">
                       {card.stackTitle}
                     </Typography>
-                    <Typography className="text-xs sm:text-base ">
+                    <Typography className={` text-xs sm:text-base  ${card.id === 1 ? 'w-3/4 sm:w-full text-[#04476B] ' : 'w-full'}`} >
                       {card.stackDescription}
                     </Typography>
                   </div>
