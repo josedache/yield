@@ -19,7 +19,7 @@ import { formatNumberToCurrency } from "utils/number";
 import { landingPageApi } from "apis/landingpage-api";
 import { useEffect } from "react";
 import { isEmpty } from "utils/object";
-import { LANDING_PAGE_CALCULATOR_PRODUCT_ID } from "constants/env";
+import { FIXED_PRODUCT_ID } from "constants/env";
 
 
 const YieldCalculator = () => {
@@ -34,7 +34,7 @@ const YieldCalculator = () => {
       depositAmount: "140000",
       depositPeriod: 1,
       depositPeriodFrequencyId: "2",
-      productId: LANDING_PAGE_CALCULATOR_PRODUCT_ID,
+      productId: FIXED_PRODUCT_ID,
     },
     validateOnChange: true,
     validationSchema: Yup.object({

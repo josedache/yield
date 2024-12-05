@@ -86,15 +86,12 @@ const navigation = {
   ],
   company: [
     { name: "About", href: "https://www.creditdirect.ng/about-us/" },
-    { name: "Legal", href: "#" },
+    { name: "Legal", href: "/terms-and-conditions" },
     {
       name: "Privacy policy",
       href: "https://www.creditdirect.ng/privacy-policy/",
     },
-    {
-      name: "Terms & Conditions",
-      href: "https://yield.creditdirect.ng/terms-and-conditions",
-    },
+    { name: "Terms & Conditions", href: "/terms-and-conditions" },
   ],
   social: [
     {
