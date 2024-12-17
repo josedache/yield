@@ -6,20 +6,20 @@ import Graph from "../../../assets/svgs/Graph.svg";
 const Hero = () => {
   return (
     <>
-      <div className=" lg:bg-gradient-to-r from-[#F2F6EE] via-[#D8E5CB] to-[#7DA851] border-none pb-48">
+      <div className=" lg:bg-gradient-to-r from-[#F2F6EE] via-[#D8E5CB] to-[#7DA851] pb-48 -mt-5">
         <div className="landingPagecontainer mx-auto px-6 lg:px-8 xl:px-4 ">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between pt-16 md:pt-40 lg:pt-52 mt-5  ">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between pt-10 md:pt-20 xl:pt-48 mt-5  ">
             <div className="w-full  ">
               <div>
                 <Typography
                   variant="h1"
-                  className="lg:text-7xl font-bold lg:tracking-tighter text-gray-700"
+                  className="text-[52px] lg:text-7xl font-bold lg:tracking-tighter text-gray-700"
                 >
                   Grow your <br /> money with{" "}
                   <span className="text-primary-main"> Yield </span>
                 </Typography>
-                <Typography className=" mt-4 text-base md:text-lg">
-                  An easier way to earn more from your funds
+                <Typography className=" mt-4 text-lg xl:text-xl w-4/5 sm:w-full">
+                  An easier way to earn more on your funds
                 </Typography>
               </div>
               <div className="flex mt-6 flex-col md:flex-row md:items-center lg:w-[434px]">
@@ -33,7 +33,7 @@ const Hero = () => {
               </div>
               <div className="flex items-center gap-2 mt-8">
                 <img src={CBNLogo} alt="CBN Logo" />
-                <Typography className=" text-sm ">
+                <Typography className=" text-base ">
                   Licensed by Central Bank of Nigeria
                 </Typography>
               </div>
@@ -44,8 +44,8 @@ const Hero = () => {
           </div>
         </div>
       </div>
-      <div className="landingPagecontainer mx-auto -mt-36 lg:-mt-48 px-4 lg:px-3 ">
-        <div className="flex flex-col lg:flex-row z-30 rounded-3xl bg-[#F0FDF4] sm:py-10 lg:py-24 lg:px-10 xl:px-20 ">
+      <div className="landingPagecontainer mx-auto -mt-36  lg:-mt-48 px-4 lg:px-3 ">
+        <div className="flex flex-col lg:flex-row z-30 rounded-3xl bg-[#F0FDF4] pb-8 sm:py-10 lg:py-24 lg:px-10 xl:px-20 ">
           <div className="lg:w-[60%] mt-11 lg:mt-7 px-4 sm:pl-5 ">
             <Typography className="font-bold text-[#033650] text-4xl sm:text-[44px]  sm:leading-[48px]">
               Growing <span className=" text-primary-main ">your money</span>{" "}

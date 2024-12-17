@@ -52,10 +52,10 @@ const FaqSection = () => {
       <div className="mx-auto landingPagecontainer px-6 py-14 sm:pt-16 lg:px-4 xl:px-0 lg:py-24">
         <div className="lg:grid lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-6 lg:px-6 text-center md:text-start">
-            <h2 className="text-pretty text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+            <h2 className="text-pretty text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl w-full xl:w-4/5">
               Frequently Asked Questions
             </h2>
-            <p className="mt-4 text-pretty text-base/7 text-gray-600">
+            <p className="mt-4 text-pretty text-xl text-gray-600 hidden lg:block">
               Everything you need to know about Yield.
             </p>
             <Button
@@ -65,7 +65,7 @@ const FaqSection = () => {
               View All FAQs
             </Button>
           </div>
-          <div className="mt-10 lg:col-span-6 lg:mt-0 ">
+          <div className="mt-4 sm:mt-10 lg:col-span-6 lg:mt-0 ">
             <dl className="space-y-3 sm:space-y-6 border-none xl:ml-10">
               {faqs.map((faq, index) => (
                 <Accordion

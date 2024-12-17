@@ -30,16 +30,6 @@ const Growing = () => {
     },
     {
       id: 2,
-      icon: Lock,
-      alt: "lock icon",
-      title: "Enhanced Security ",
-      subtitle:
-        " Your peace of mind is our priority with bank-level security measures",
-      backgroundColor: " #F3F4F6",
-      iconBackgroundColor: " #E5E7EB",
-    },
-    {
-      id: 3,
       icon: Send,
       alt: "send icon",
       title: "Effortless Experience",
@@ -47,7 +37,16 @@ const Growing = () => {
       backgroundColor: "#077DBB0B",
       iconBackgroundColor: "#077DBB1C",
     },
-
+    {
+      id: 3,
+      icon: Lock,
+      alt: "lock icon",
+      title: "Enhanced Security ",
+      subtitle:
+        " Your peace of mind is our priority with bank-grade security measures",
+      backgroundColor: " #F3F4F6",
+      iconBackgroundColor: " #E5E7EB",
+    },
     {
       id: 4,
       icon: Growth,
@@ -63,7 +62,7 @@ const Growing = () => {
     <>
       <div className="landingPagecontainer mx-auto px-4 lg:px-4 xl:px-2 ">
         <div>
-          <div className="justify-between gap-5 mt-12 lg:mt-[80px] grid lg:grid-rows-2 lg:grid-flow-col">
+          <div className="justify-between gap-6 mt-12 lg:mt-[80px] grid lg:grid-rows-2 lg:grid-flow-col">
             {cards.map((card) => (
               <div
                 key={card.id}
@@ -77,7 +76,7 @@ const Growing = () => {
                   <img
                     src={card.icon}
                     alt={card.alt}
-                    className="w-14 h-14 md:w-10 md:h-10"
+                    className="w-8 h-9 md:w-7 md:h-7"
                   />
                 </div>
                 <div>
@@ -94,13 +93,13 @@ const Growing = () => {
         </div>
       </div>
 
-      <div className="bg-[#FAF8F8CC] ">
+      <div className="bg-[#FAF8F8] ">
         <div className="flex flex-col lg:flex-row items-center justify-between landingPagecontainer mx-auto px-6 md:px-0 lg:px-2 xl:px-0 py-10 md:py-20 mt-5 md:mt-20 gap-1 lg:gap-4 xl:gap-10 ">
-          <div className="w-11/12 md:w-4/6 lg:w-4/6 xl:w-4/5 mx-auto text-center xl:text-start text-gray-800 " >
-            <Typography className=" text-3xl sm:text-[40px] font-semibold  leading-[48px]">
+          <div className="w-full md:w-5/6 lg:w-4/6 xl:w-4/5 mx-auto text-center xl:text-start text-gray-800 " >
+            <Typography className=" text-[32px] sm:text-[40px] font-semibold  leading-[48px]">
               Discover the simple, secure way to grow with Yield
             </Typography>
-            <Typography className=" text-3xl sm:text-[40px] font-semibold leading-[48px] ">
+            <Typography className=" text-[32px] sm:text-[40px] font-semibold leading-[48px] ">
               ...with as little as ₦50,000
             </Typography>
             <div className="w-fit xl:w-auto mx-auto xl:mr-28">

@@ -1,5 +1,4 @@
 import * as React from "react";
-import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Drawer from "@mui/material/Drawer";
@@ -63,7 +62,7 @@ export default function Header(props: Props) {
   return (
     <header className="inset-x-0 top-0 z-50 sticky">
       <CssBaseline />
-      <AppBar elevation={0} component="nav" className="bg-white ">
+      <div  className="bg-white shadow">
         <Toolbar>
           <div className=" flex flex-wrap justify-between items-center mx-auto py-2 sm:py-4  w-full landingPagecontainer ">
             <Link to="/">
@@ -104,7 +103,7 @@ export default function Header(props: Props) {
             </Box>
           </div>
         </Toolbar>
-      </AppBar>
+      </div>
       <nav>
         <Drawer
           container={container}
