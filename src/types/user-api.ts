@@ -13,6 +13,7 @@ export type UserLoginApiResponse = ApiResponse<{
   user: any;
   token: string;
   is_new_device: boolean;
+  profile: UserClientKycApiResponse["data"];
 }>;
 
 export type UserClientKycApiResponse = ApiResponse<{

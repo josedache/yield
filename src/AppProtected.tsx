@@ -29,17 +29,15 @@ function AppProtected() {
         userClientKycQueryResult.isLoading ||
         userSelfieFileQueryResult.isLoading
       }
-      error={
-        userClientKycQueryResult.isError || userClientKycQueryResult.isError
-      }
+      error={userClientKycQueryResult.isError}
       onRetry={() => {
         if (userClientKycQueryResult.isError) {
           userClientKycQueryResult.refetch();
         }
 
-        if (userClientKycQueryResult.isError) {
-          userClientKycQueryResult.refetch();
-        }
+        // if (userClientKycQueryResult.isError) {
+        //   userClientKycQueryResult.refetch();
+        // }
       }}
     >
       {() => (

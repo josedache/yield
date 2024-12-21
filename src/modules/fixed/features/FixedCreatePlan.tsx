@@ -372,7 +372,7 @@ export default function FixedCreatePlan(
     {
       title: "Transfer to CDL Account",
       description:
-        "Add money to your Flex Yield Wallet by transferring to the bank details below.",
+        "Add money to your Fixed Yield Wallet by transferring to the bank details below.",
       content: (
         <div className="max-w-md flex flex-col items-center justify-center">
           <LoadingContent
