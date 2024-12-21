@@ -58,6 +58,7 @@ export const slice = createSlice({
           state.authUser = {
             // kyc_validation: getKyc(payload.data?.user),
             ...payload.data?.user,
+            ...payload.data?.profile,
             token: payload?.data?.token,
             isAuthenticated: true,
           } as User;
