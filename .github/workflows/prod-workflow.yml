@@ -72,21 +72,21 @@ jobs:
          id: login-ecr
          uses: aws-actions/amazon-ecr-login@v2
 
-    #   - name: Build and push Images
-    #     run: |
-    #        export IMAGE_TAG=${{ secrets.ECR_SERVER }}/${{ secrets.ECR_REPOSITORY }}:${{ vars.ENV }}-${{ env.DATE }}-${{ env.SHORT_SHA }}-${{ env.RUN_NUMBER }}
-    #        docker build -t $IMAGE_TAG -f Dockerfile .
-    #        docker push $IMAGE_TAG
+      - name: Build and push Images
+        run: |
+           export IMAGE_TAG=${{ secrets.ECR_SERVER }}/${{ secrets.ECR_REPOSITORY }}:${{ vars.ENV }}-${{ env.DATE }}-${{ env.SHORT_SHA }}-${{ env.RUN_NUMBER }}
+           docker build -t $IMAGE_TAG -f Dockerfile .
+           docker push $IMAGE_TAG
       
-    #   - name: Setup kubectl
-    #     uses: azure/setup-kubectl@v3
-    #     with:
-    #       version: 'v1.30.2'
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.30.2'
   
-    #   - name: Authenticate to CDL-AWS-PROD
-    #     id: eks-auth
-    #     run: |
-    #       aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+      - name: Authenticate to CDL-AWS-PROD
+        id: eks-auth
+        run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
 
     #   - name: Update deployment with new image
     #     run: |
