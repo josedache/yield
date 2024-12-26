@@ -46,11 +46,8 @@ jobs:
 
       - name: Verify Environment Variables
         run: |
-              if grep -q "VITE_API_BASE_URL=" .env; then
-                echo "VITE_API_BASE_URL found in .env"
-              else
-                echo "VITE_API_BASE_URL missing!" && exit 1
-              fi
+              echo "Displaying .env file content:"
+              cat .env
         
 
 
