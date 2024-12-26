@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yield-app
+  namespace: zeus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yield-app
+  template:
+    metadata:
+      labels:
+        app: yield-app
+    spec:
+      serviceAccount: application-sa
+      containers:
+      - name: yield-container
+        image: {{IMAGE_TAG}}
+        ports:
+        - containerPort: 3001
