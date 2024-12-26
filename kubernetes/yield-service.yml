@@ -10,5 +10,5 @@ spec:
     - protocol: TCP
       port: 80
       name: http
-      targetPort: 3001
+      targetPort: 80
   type: ClusterIP # Can be changed to NodePort or ClusterIP based on requirements

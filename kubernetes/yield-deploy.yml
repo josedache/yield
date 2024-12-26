@@ -18,4 +18,4 @@ spec:
       - name: yield-container
         image: {{IMAGE_TAG}}
         ports:
-        - containerPort: 3001
+        - containerPort: 80
