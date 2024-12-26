@@ -21,4 +21,4 @@ spec:
           service:
             name: yield-service  # Replace with your service name
             port:
-              number: 443  # Replace with your service port
+              number: 80  # Replace with your service port
