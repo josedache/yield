@@ -19,3 +19,10 @@ spec:
         image: {{IMAGE_TAG}}
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            memory: "2Gi"  # Ensure memory requests are at least 2GB
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"  # Allow up to 4GB memory
+            cpu: "2000m"
