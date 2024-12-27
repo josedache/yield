@@ -1,6 +1,6 @@
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import { Button, Typography } from "@mui/material";
-import SpiralBackground from "../../../assets/svgs/spiarl.svg";
+import "../LandingPage.css"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -53,12 +53,12 @@ const WhyChooseYield = () => {
   ];
 
   return (
-   <div className=" bg-yellow-50/50 "  style={{ backgroundImage: `url(${SpiralBackground})` }}>
-     <div className="landingPagecontainer mx-auto pt-20 pb-14 md:pb-24 px-6 md:px-8 lg:px-3 xl:px-0" >
-      <Typography className=" pb-4 font-semibold text-3xl md:text-5xl text-center">
+   <div className=" bg-[#F2F6EE]  spralBackground"  >
+     <div className="landingPagecontainer mx-auto pt-10 sm:pt-20 pb-14 md:pb-24 px-6 md:px-8 lg:px-3 xl:px-0" >
+      <Typography className="font-semibold text-[28px] md:text-5xl text-center ">
         Why Choose Yield?
       </Typography>
-      <div className="isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+      <div className="isolate mx-auto mt-14 grid max-w-md grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
         {tiers.map((tier, index) => (
           <div
             key={tier.id}

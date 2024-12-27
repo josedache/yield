@@ -1,3 +1,7 @@
+.spralBackground {
+  background-image: url(../../assets/svgs/spiral.svg)
+}
+
 
 /* hiding scrolling feature for number input */
 input::-webkit-outer-spin-button,
