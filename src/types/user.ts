@@ -22,7 +22,7 @@ export type User = {
   gender: string;
   clientId: number;
   displayName: string;
-  genderId: string;
+  genderId: number;
   login_expiry: string;
   alternate_number: string;
   address_details: {
@@ -48,7 +48,7 @@ export type User = {
     bank: boolean;
   };
   bank_details: {
-    bankId: string;
+    bankId: number;
     accountnumber: string;
     accountname: string;
     active: boolean;
