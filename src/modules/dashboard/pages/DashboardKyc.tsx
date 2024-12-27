@@ -53,7 +53,7 @@ function DashboardKyc() {
   const [sendOtpMutation, sendOtpMutationResult] =
     userApi.useSendUserOtpMutation();
   const [verifyOtpMutation] = userApi.useVerifyUserOtpMutation();
-  const [countdownDate, setCountdownDate] = useState();
+  const [countdownDate, setCountdownDate] = useState<Date>(null);
 
   const banks = transactionOutwardBankListQueryResult.data?.data;
 
