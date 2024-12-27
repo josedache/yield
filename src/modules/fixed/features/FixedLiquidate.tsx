@@ -170,19 +170,24 @@ export default function FixedLiquidate(
             {info?.available_balance}
           </CurrencyTypography>
 
-          <div className="flex gap-1 items-start mt-6">
-            <Iconify
-              icon="ep:warning-filled"
-              className="text-error-500 text-3xl h-5 p-0 leading-none"
-            />
-            <Typography
-              variant="body2"
-              className="text-left block text-neutral-500"
-            >
-              Note: Early liquidation will result in a 30% fine on your accrued
-              interest. Are you sure you want to liquidate this plan?
-            </Typography>
-          </div>
+          {info?.maturity_date &&
+            new Date(info?.maturity_date) >= new Date() && (
+              <div className="flex gap-1 items-start mt-6">
+                <Iconify
+                  icon="ep:warning-filled"
+                  className="text-error-500 text-3xl h-5 p-0 leading-none"
+                />
+
+                <Typography
+                  variant="body2"
+                  className="text-left block text-neutral-500"
+                >
+                  Note: Early liquidation will result in a 30% fine on your
+                  accrued interest. Are you sure you want to liquidate this
+                  plan?
+                </Typography>
+              </div>
+            )}
         </div>
       ),
     },

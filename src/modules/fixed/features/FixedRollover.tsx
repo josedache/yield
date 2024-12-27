@@ -21,6 +21,8 @@ import useStepper from "hooks/useStepper";
 import { savingsApi } from "apis/savings-api";
 import BackIconButton from "components/BackIconButton";
 import { LoadingButton } from "@mui/lab";
+import useToggle from "hooks/useToggle";
+import FixedCreatePlan from "./FixedCreatePlan";
 
 const ROLLOVER_WITH_CAPITAL = 400;
 const ROLLOVER_WITH_INTEREST = 300;
@@ -33,6 +35,8 @@ export default function FixedRollover(
 
   const stepper = useStepper();
 
+  const [isFixedCreatePlan, toggleFixedCreatePlan] = useToggle();
+
   const [liquidateSavingsMutation, liquidateSavingsMutationResult] =
     savingsApi.useLiquidateSavingsMutation();
 
@@ -41,6 +45,9 @@ export default function FixedRollover(
       savingsId: String(info?.id),
       note: "others",
       onAccountClosureId: null,
+      newPlanName: "",
+      depositPeriod: "",
+      depositPeriodFrequencyId: "",
     },
     enableReinitialize: true,
     validationSchema: yup.object({
@@ -53,18 +60,26 @@ export default function FixedRollover(
     onSubmit: async (values) => {
       try {
         if (stepper.step === 1 || stepper.step === 2) {
-          await liquidateSavingsMutation({
-            body: {
-              savingsId: values?.savingsId,
-              note: values?.note,
-              onAccountClosureId: values?.onAccountClosureId,
-            },
-          }).unwrap();
-          enqueueSnackbar("Rollover Successfully", {
-            variant: "success",
-          });
-          onClose();
-          stepper.next();
+          if (!isFixedCreatePlan) {
+            toggleFixedCreatePlan();
+          } else {
+            await liquidateSavingsMutation({
+              body: {
+                savingsId: values?.savingsId,
+                note: values?.note,
+                onAccountClosureId: values?.onAccountClosureId,
+                newPlanName: formik.values.newPlanName,
+                deposit_period: formik.values.depositPeriod,
+                deposit_period_frequency_id:
+                  formik.values.depositPeriodFrequencyId,
+              },
+            }).unwrap();
+            enqueueSnackbar("Rollover Successfully", {
+              variant: "success",
+            });
+            toggleFixedCreatePlan();
+            stepper.go(3);
+          }
         }
       } catch (error) {
         enqueueSnackbar(
@@ -225,7 +240,24 @@ export default function FixedRollover(
     },
   ];
 
-  return (
+  return isFixedCreatePlan ? (
+    <FixedCreatePlan
+      onClose={toggleFixedCreatePlan}
+      open={isFixedCreatePlan}
+      savingsId={formik?.values?.savingsId}
+      isLoading={liquidateSavingsMutationResult?.isLoading}
+      onHandleSubmit={(values) => {
+        formik.setValues({
+          ...formik.values,
+          newPlanName: values.name,
+          depositPeriod: String(values.depositPeriod),
+          depositPeriodFrequencyId: String(values.depositPeriodFrequencyId),
+        });
+        formik.handleSubmit();
+      }}
+      proceedLabel="Rollover"
+    />
+  ) : (
     <Dialog
       PaperProps={{
         sx: {
@@ -237,10 +269,10 @@ export default function FixedRollover(
     >
       <DialogTitleXCloseButton onClose={onClose}>
         <Typography variant="h6" className="text-center font-semibold pt-5">
-          {tabs[stepper.step].title}
+          {tabs[stepper.step]?.title}
         </Typography>
         <Typography variant="body2" className="text-center text-neutral-500">
-          {tabs[stepper.step].description}
+          {tabs[stepper.step]?.description}
         </Typography>
       </DialogTitleXCloseButton>
 

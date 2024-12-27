@@ -1,7 +1,10 @@
 import {
   Avatar,
+  FormControlLabel,
   IconButton,
   Paper,
+  Radio,
+  RadioGroup,
   Skeleton,
   TextField,
   Typography,
@@ -15,7 +18,7 @@ import { useSnackbar } from "notistack";
 import Dropzone from "react-dropzone";
 import { LoadingButton } from "@mui/lab";
 import { transactionApi } from "apis/transaction-api";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 function Profile() {
   const authUser = useAuthUser();
@@ -23,6 +26,9 @@ function Profile() {
   const clipboard = useClipboard();
 
   const { enqueueSnackbar } = useSnackbar();
+  const [preferredOtpMode, setPreferredOtpMode] = useState(
+    authUser.preffered_notification_channel || "bvn_phone"
+  );
 
   const [uploadUserFileMutation, uploadUserFileMutationResult] =
     userApi.useUploadUserFileMutation();
@@ -31,6 +37,9 @@ function Profile() {
     transactionApi.useGetTransactionOutwardBankListQuery(undefined, {
       skip: !authUser.bank_details.bankId,
     });
+
+  const [preferredOtpModeMutation, preferredOtpModeMutationResult] =
+    userApi.usePreferredUserOtpNumberMutation();
 
   const banks = transactionOutwardBankListQueryResult.data?.data;
 
@@ -42,6 +51,32 @@ function Profile() {
       }, {} as Record<string, (typeof banks)[0]>),
     [banks]
   );
+
+  const handleChangePreferredOtpMode = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    try {
+      const data = await preferredOtpModeMutation({
+        body: {
+          channel: event.target.value as any,
+        },
+      }).unwrap();
+      setPreferredOtpMode((event.target as HTMLInputElement).value);
+      enqueueSnackbar(
+        data?.message || "Preferred OTP mode updated successfully!",
+        {
+          variant: "success",
+        }
+      );
+    } catch (error) {
+      const message = Array.isArray(error?.data?.message)
+        ? error?.data?.message?.[0]
+        : error?.data?.message;
+      enqueueSnackbar(message || "Failed to update Preferred OTP mode", {
+        variant: "error",
+      });
+    }
+  };
 
   async function handleSelfieUpdate(file: File) {
     try {
@@ -104,6 +139,12 @@ function Profile() {
                 disabled
                 label="Email Address"
                 value={authUser.email}
+              />
+
+              <TextField
+                disabled
+                label="Alternative Phone Number"
+                value={authUser.alternate_number}
               />
             </div>
           </Paper>
@@ -180,6 +221,34 @@ function Profile() {
                   </div>
                 </div>
               </Paper>
+            </div>
+          </Paper>
+
+          <Paper variant="outlined">
+            <div className="px-6 p-4 border-b">
+              <Typography variant="h6" className="font-medium">
+                Preferred OTP mode
+              </Typography>
+            </div>
+            <div className="p-6">
+              <RadioGroup
+                row
+                value={preferredOtpMode}
+                onChange={handleChangePreferredOtpMode}
+              >
+                <FormControlLabel
+                  disabled={preferredOtpModeMutationResult.isLoading}
+                  value="alternate_number"
+                  control={<Radio />}
+                  label="Alternate Phone Number"
+                />
+                <FormControlLabel
+                  value="bvn_phone"
+                  control={<Radio />}
+                  disabled={preferredOtpModeMutationResult.isLoading}
+                  label="BVN Phone Number"
+                />
+              </RadioGroup>
             </div>
           </Paper>
         </div>

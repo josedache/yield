@@ -12,28 +12,142 @@ export type UserLoginApiResponse = ApiResponse<{
   userId: number;
   user: any;
   token: string;
+  expiresIn: string;
+  refreshToken: string;
   is_new_device: boolean;
+  login_expiry: number;
   profile: UserClientKycApiResponse["data"];
 }>;
 
 export type UserClientKycApiResponse = ApiResponse<{
-  nin: string;
-  //"is_bvn_validated": true,
-  //"firstname": "tetw",
-  // "lastname": "testwer",
-  // "middlename": "uwtube",
-  // "mobileNo": "004333430",
+  clientId: number;
+  clientType: string;
+  clientTypeId: number;
+  title: string;
+  titleId: number;
+  firstname: string;
+  middlename: string;
+  lastname: string;
+  displayName: string;
+  mobileNo: string;
   email: string;
-  // "is_selfie_validated": boolean,
-  // "bvn" : "223174432321",
-  dateOfBirth: string;
-  typeId: 38;
-  addressLine1: string;
-  stateProvinceId: string;
-  //"lastname": "drey",
-  // "is_email_validated": true,
-  accountnumber: string;
+  genderId: number;
   gender: string;
+  kycLevel: number;
+  savingsAccountId: number;
+  maritalStatus: string;
+  maritalStatusId: number;
+  alternateMobileNo: string;
+  dateOfBirth: string;
+  bvn: string;
+  nin: string;
+  active: boolean;
+  account_status: number;
+  employer_details: Array<{
+    resourceId: number;
+    country: number;
+    state: string;
+    stateId: number;
+    lga: string;
+    lgaId: number;
+    staff_id: string;
+    office_address: string;
+    nearest_land_mark: string;
+    job_grade: string;
+    employment_status: string;
+    employment_status_id: number;
+    salary_range: string;
+    salary_rangeId: number;
+    employment_date: string;
+    next_month_salary_payment_date: string;
+    payroll_dob: string;
+    active: boolean;
+    work_email_verified: boolean;
+    work_email: string;
+    work_phone: string;
+    employer: {
+      id: number;
+      name: string;
+      rc_number: number;
+      sector: string;
+      active: boolean;
+      mobile_number: string;
+      email_address: string;
+    };
+  }>;
+  address_details: Array<{
+    clientID: number;
+    addressType: string;
+    isActive: boolean;
+    street: string;
+    townVillage: string;
+    countyDistrict: string;
+    lgaId: number;
+    stateProvinceId: number;
+    countryName: string;
+    lga: string;
+    stateName: string;
+    countryId: number;
+    postalCode: string;
+    createdBy: string;
+    updatedBy: string;
+    residentStatusId: number;
+    addressLine1: string;
+    addressLine2: string;
+    addressLine3: string;
+    city: string;
+    nearestLandMark: string;
+  }>;
+  family_member_details: Array<{
+    familyId: number;
+    relationship: string;
+    relationshipId: number;
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    genderId: number;
+    gender: string;
+    age: number;
+    mobileNumber: string;
+    dateOfBirth: string;
+    maritalStatus: string;
+    maritalStatusId: number;
+    isDependent: boolean;
+    qualification: string;
+    profession: string;
+    professionId: number;
+  }>;
+  document_details: {
+    passport: boolean;
+    drivers_license: boolean;
+    voters_card: boolean;
+    id_card: boolean;
+    bank_statement: boolean;
+    rent_agreement: boolean;
+    utility_bill: boolean;
+    others: boolean;
+  };
+  kyc_validation_details: {
+    is_bvn_validated: boolean;
+    is_nin_validated: boolean;
+    is_client_identifier_validated: boolean;
+    is_mobile_no_validated: boolean;
+    is_adddress_validated: boolean;
+    is_selfie_validated: boolean;
+    is_email_validated: boolean;
+  };
+  bank_details: {
+    bankId: number;
+    accountnumber: string;
+    accountname: string;
+    active: boolean;
+    account_type: string | null;
+    sort_code: string;
+    bank_classification: string | null;
+    resourceId: number;
+  };
+  zeusKycLevel: number;
+  preffered_notification_channel: string;
 }>;
 
 export type UserClientKycVerifyApiRequest = ApiRequest<{
@@ -114,8 +228,18 @@ export type UserSignupYieldApiResponse = ApiResponse<{
 }>;
 
 export type UserVerifyOtpApiRequest = ApiRequest<{
-  channel: "email" | "phone";
+  channel: "email" | "phone" | "alternate_number";
   otp: string;
+}>;
+
+export type UserSendOtpApiRequest = ApiRequest<{
+  channel: "alternate_number" | "bvn_phone";
+  user_id: string;
+  alternate_number: string;
+}>;
+
+export type UserPreferredOtpNumberRequest = ApiRequest<{
+  channel: "bvn_phone" | "alternate_number";
 }>;
 
 export type UserVerifyOtpApiResponse = ApiResponse<{
@@ -202,4 +326,15 @@ export type UserResponseVoiceOtp = ApiResponse<{
   };
   statusCode: string;
   referenence: string;
+}>;
+
+export type UserRefreshTokenRequest = ApiRequest<{
+  user_id: number;
+  token: string;
+}>;
+
+export type UserRefreshTokenResponse = ApiResponse<{
+  token: string;
+  refreshToken: string;
+  login_expiry: number;
 }>;

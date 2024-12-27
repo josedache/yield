@@ -3,6 +3,7 @@ import { logout } from "./store-actions";
 import { userApi } from "apis/user-api";
 import { User } from "src/types/user";
 import { isBase64DataURL } from "utils/file";
+import { addSeconds } from "date-fns";
 
 type InitialState = {
   authUser: User;
@@ -60,8 +61,31 @@ export const slice = createSlice({
             ...payload.data?.user,
             ...payload.data?.profile,
             token: payload?.data?.token,
+            expiresIn: String(
+              addSeconds(new Date(), payload?.data?.login_expiry)
+            ),
+            refreshToken: payload?.data?.refreshToken,
             isAuthenticated: true,
           } as User;
+        }
+      )
+      .addMatcher(
+        userApi.endpoints.verifyUserClientKyc.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser = Object.assign(state.authUser, payload.data, {
+            alternate_number: payload?.data?.alternateMobileNo,
+          });
+        }
+      )
+
+      .addMatcher(
+        userApi.endpoints.userRefreshToken.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser.token = payload.data.token;
+          state.authUser.refreshToken = payload.data.refreshToken;
+          state.authUser.expiresIn = String(
+            addSeconds(new Date(), payload?.data?.login_expiry)
+          );
         }
       )
       .addMatcher(

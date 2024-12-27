@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import useStepper from "hooks/useStepper";
@@ -7,6 +8,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
+  ButtonBase,
   CircularProgress,
   Dialog,
   DialogContent,
@@ -15,23 +17,24 @@ import {
   MenuItem,
   TextField,
   Typography,
+  Link as MuiLink,
+  FormHelperText,
 } from "@mui/material";
-import { getFormikTextFieldProps } from "utils/formik";
-import NumberTextField from "components/NumberTextField";
-// import Dropzone from "react-dropzone";
 import { Icon as Iconify } from "@iconify/react";
-import clsx from "clsx";
 import { Link } from "react-router-dom";
+import clsx from "clsx";
+import { LoadingButton } from "@mui/lab";
+
+import NumberTextField from "components/NumberTextField";
 import { DASHBOARD } from "constants/urls";
 import useAuthUser from "hooks/useAuthUser";
 import { DashboardKycStep } from "../enums/DashboardKycStep";
 import { userApi } from "apis/user-api";
-// import { getAssetInfo } from "utils/file";
-import { LoadingButton } from "@mui/lab";
 import { transactionApi } from "apis/transaction-api";
-import { useMemo } from "react";
+import { getFormikTextFieldProps } from "utils/formik";
 import useRtkQueryStatusCallbacks from "hooks/useRtkQueryStatusCallbacks";
 import { removeEmptyProperties } from "utils/object";
+import Countdown from "components/Countdown";
 
 function DashboardKyc() {
   const { enqueueSnackbar } = useSnackbar();
@@ -40,10 +43,17 @@ function DashboardKyc() {
 
   const [verifyUserClientKycMutation] =
     userApi.useVerifyUserClientKycMutation();
-  // const [uploadUserFileMutation] = userApi.useUploadUserFileMutation();
 
   const transactionOutwardBankListQueryResult =
     transactionApi.useGetTransactionOutwardBankListQuery(undefined);
+
+  const [requestUserVoiceOtpMutation, requestUserVoiceOtpMutationResult] =
+    userApi.useLazyRequestUserVoiceOtpQuery(undefined);
+
+  const [sendOtpMutation, sendOtpMutationResult] =
+    userApi.useSendUserOtpMutation();
+  const [verifyOtpMutation] = userApi.useVerifyUserOtpMutation();
+  const [countdownDate, setCountdownDate] = useState();
 
   const banks = transactionOutwardBankListQueryResult.data?.data;
 
@@ -64,6 +74,7 @@ function DashboardKyc() {
     authUser?.email;
 
   const isIdentificationCompleted = authUser?.nin;
+  const isAlternateNumberCompleted = authUser?.alternate_number;
 
   const isAccountDetailsCompleted =
     authUser?.bank_details?.accountnumber &&
@@ -75,6 +86,8 @@ function DashboardKyc() {
         ? DashboardKycStep.BASIC_INFORMATION
         : !isIdentificationCompleted
         ? DashboardKycStep.IDENTIFICATION
+        : !isAlternateNumberCompleted
+        ? DashboardKycStep.ALTERNATE_PHONE_NUMBER
         : !isAccountDetailsCompleted
         ? DashboardKycStep.ACCOUNT_DETAILS
         : DashboardKycStep.SUCCESS
@@ -87,39 +100,19 @@ function DashboardKyc() {
     initialValues: {
       bvn: authUser.bvn ?? "",
       nin: authUser?.nin ?? "",
-      // dateOfBirth: "",
-      // gender: "",
       mobileNo: authUser?.mobileNo ?? "",
       emailAddress: authUser.email ?? "",
       firstname: authUser.firstname ?? "",
       lastname: authUser.lastname ?? "",
-      // middlename: "",
-      // addressId: "",
-      // typeId: 36,
-      // addressLine1: "",
-      // addressLine2: "",
-      // addressLine3: "",
-      // stateProvinceId: "",
-      // stateName: "",
-      // city: "",
-      // countryId: "",
-      // countryName: "",
+      alternateMobileNo: authUser.alternate_number ?? "",
+      alternateMobileNoOtp: "",
       accountnumber: authUser.bank_details?.accountnumber ?? "",
       accountname: authUser.bank_details?.accountname ?? "",
       bankId: authUser.bank_details?.bankId ?? "",
-      // is_bvn_validated: true,
-      // is_mobile_no_validated: true,
-      // is_email_validated: true,
-      // is_nin_validated: true,
-      // is_client_identifier_validated: "",
-      // isActive: true,
       document: {
         file: null as File,
         type: "nin_slip",
         id_number: authUser?.nin ?? "",
-        // date_of_issue: '',
-        // country_of_issue: '',
-        // expiry_date: ''
       },
     },
     enableReinitialize: true,
@@ -144,6 +137,13 @@ function DashboardKyc() {
             //   .required(),
             id_number: yup.string().label("NIN").length(11).required(),
           }),
+        },
+        [DashboardKycStep.ALTERNATE_PHONE_NUMBER]: {
+          alternateMobileNo: yup
+            .string()
+            .label("Alternate Phone Number")
+            .length(11),
+          alternateMobileNoOtp: yup.string().label("Otp"),
         },
         [DashboardKycStep.ACCOUNT_DETAILS]: {
           accountnumber: yup
@@ -187,21 +187,6 @@ function DashboardKyc() {
             break;
           }
           case DashboardKycStep.IDENTIFICATION: {
-            // const assetInfo = getAssetInfo(values.document.file);
-
-            // const data = await uploadUserFileMutation({
-            //   body: {
-            //     file: values.document.file,
-            //     tier_level: authUser.kycLevel,
-            //     title: values.document.file.name,
-            //     type: values.document.type,
-            //     fileExtension: assetInfo.type,
-            //     mimeType: assetInfo.mimeType,
-            //     details: {
-            //       id_number: values.document.id_number,
-            //     },
-            //   },
-            // }).unwrap();
             const data = await verifyUserClientKycMutation({
               body: removeEmptyProperties({
                 nin: values.document.id_number,
@@ -213,6 +198,22 @@ function DashboardKyc() {
                 variant: "success",
               }
             );
+            break;
+          }
+          case DashboardKycStep.ALTERNATE_PHONE_NUMBER: {
+            const data = await verifyOtpMutation({
+              body: {
+                channel: "alternate_number",
+                otp: formik.values.alternateMobileNoOtp,
+              },
+            }).unwrap();
+            enqueueSnackbar(
+              data?.message || "Alternate Phone Number updated Successfully!",
+              {
+                variant: "success",
+              }
+            );
+
             break;
           }
           case DashboardKycStep.ACCOUNT_DETAILS: {
@@ -279,32 +280,73 @@ function DashboardKyc() {
     },
   });
 
-  // if (
-  //   isBasicInformationCompleted &&
-  //   isIdentificationCompleted &&
-  //   isAccountDetailsCompleted
-  // ) {
-  //   return <Navigate to={DASHBOARD} replace />;
-  // }
+  const handleSendOtp = async () => {
+    try {
+      const data = await sendOtpMutation({
+        body: {
+          channel: "alternate_number",
+          user_id: String(authUser?.id),
+          alternate_number: String(formik.values.alternateMobileNo),
+        },
+      }).unwrap();
+      setCountdownDate(getCountdownDate());
+      enqueueSnackbar(data?.message || "Verification Otp Sent", {
+        variant: "success",
+      });
+    } catch (error) {
+      enqueueSnackbar(
+        error?.data?.errors?.[0]?.defaultUserMessage || `OTP failed to send!`,
+        {
+          variant: "error",
+        }
+      );
+    }
+  };
+
+  async function handleRequestVoiceOtp() {
+    try {
+      if (requestUserVoiceOtpMutationResult.isFetching) {
+        return;
+      }
+
+      const data = await requestUserVoiceOtpMutation({
+        params: { phone: formik.values.alternateMobileNo },
+      }).unwrap();
+      enqueueSnackbar(data?.message || "Voice Otp successfully sent", {
+        variant: "success",
+      });
+    } catch (error) {
+      enqueueSnackbar(error?.data?.message || "Failed to send Voice Otp", {
+        variant: "success",
+      });
+    }
+  }
 
   const actionButtons = (
     <div className="flex justify-end gap-2">
-      {/* <Button
-        variant="outlined"
-        size="large"
-        onClick={() => {
-          if (!stepper.step) {
-          } else {
-            stepper.previous();
-          }
-        }}
-      >
-        {stepper.step ? "Previous" : "Edit"}
-      </Button> */}
+      {[DashboardKycStep.ALTERNATE_PHONE_NUMBER].includes(enumStep) && (
+        <LoadingButton
+          fullWidth
+          variant="outlined"
+          className="max-w-[132px]"
+          loading={formik.isSubmitting}
+          loadingPosition="start"
+          startIcon={<></>}
+          onClick={() => {
+            stepper.next();
+          }}
+        >
+          Skip
+        </LoadingButton>
+      )}
+
       <LoadingButton
         fullWidth
         className="max-w-[132px]"
-        disabled={!formik.isValid || !formik.dirty}
+        disabled={
+          enumStep !== DashboardKycStep.ALTERNATE_PHONE_NUMBER &&
+          (!formik.isValid || !formik.dirty)
+        }
         loading={formik.isSubmitting}
         loadingPosition="start"
         startIcon={<></>}
@@ -520,6 +562,123 @@ function DashboardKyc() {
               ),
             },
             {
+              title: "Alternate Number (Optional)",
+              completed: isAlternateNumberCompleted,
+              content: (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <NumberTextField
+                    freeSolo
+                    fullWidth
+                    label="Alternate Phone Number"
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <Button
+                            // variant="outlined"
+                            size="small"
+                            onClick={handleSendOtp}
+                            disabled={sendOtpMutationResult.isLoading}
+                          >
+                            Verify
+                          </Button>
+                        ),
+                      },
+                    }}
+                    placeholder="Alternate Phone Number"
+                    {...getFormikTextFieldProps(formik, "alternateMobileNo")}
+                  />
+
+                  <NumberTextField
+                    freeSolo
+                    fullWidth
+                    label="Verification Code"
+                    placeholder="848399"
+                    disabled={!formik.values.alternateMobileNo}
+                    {...getFormikTextFieldProps(formik, "alternateMobileNoOtp")}
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <Countdown date={countdownDate}>
+                            {(countdown) => {
+                              const isCodeSent =
+                                countdown.days ||
+                                countdown.minutes ||
+                                countdown.seconds ||
+                                countdown.seconds;
+
+                              return (
+                                <>
+                                  {isCodeSent ? (
+                                    <Typography
+                                      variant="body2"
+                                      color="textSecondary"
+                                      className="text-center"
+                                    >
+                                      <Typography
+                                        component="span"
+                                        color="primary"
+                                        className="font-semibold"
+                                      >
+                                        {countdown.minutes}:
+                                        {countdown.seconds < 10
+                                          ? `0${countdown.seconds}`
+                                          : countdown.seconds}
+                                      </Typography>
+                                    </Typography>
+                                  ) : (
+                                    <div className="flex items-center justify-center">
+                                      <Typography className="text-center">
+                                        <ButtonBase
+                                          disableRipple
+                                          disabled={
+                                            sendOtpMutationResult.isLoading
+                                          }
+                                          component={MuiLink}
+                                          onClick={handleSendOtp as any}
+                                          className="text-text-primary font-bold"
+                                        >
+                                          Resend
+                                        </ButtonBase>
+                                      </Typography>
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            }}
+                          </Countdown>
+                        ),
+                      },
+                    }}
+                  />
+
+                  <div className="col-span-2">
+                    <FormHelperText className="text-center">
+                      Dial{" "}
+                      <MuiLink className="font-semibold cursor-pointer">
+                        *5120*11#
+                      </MuiLink>{" "}
+                      on your number to get your OTP, or{" "}
+                      <MuiLink
+                        className="font-semibold cursor-pointer"
+                        onClick={handleRequestVoiceOtp}
+                      >
+                        request a call
+                      </MuiLink>
+                      {requestUserVoiceOtpMutationResult.isFetching ? (
+                        <CircularProgress size={10} className="ml-1" />
+                      ) : null}
+                      .
+                    </FormHelperText>
+                  </div>
+
+                  <div />
+                  <div className="flex items-end mt-4">
+                    <div className="flex-1">{actionButtons}</div>
+                  </div>
+                </div>
+              ),
+            },
+            {
               title: "Account Details",
               completed: isAccountDetailsCompleted,
               content: (
@@ -671,6 +830,13 @@ function getEnumStepIndex(enumStep: DashboardKycStep) {
 const STEPS_INDEX = [
   DashboardKycStep.BASIC_INFORMATION,
   DashboardKycStep.IDENTIFICATION,
+  DashboardKycStep.ALTERNATE_PHONE_NUMBER,
   DashboardKycStep.ACCOUNT_DETAILS,
   DashboardKycStep.SUCCESS,
 ];
+
+function getCountdownDate() {
+  const date = new Date();
+  date.setSeconds(date.getSeconds() + 60);
+  return date;
+}

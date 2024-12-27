@@ -220,6 +220,7 @@ function WalletTransfer(props: WalletTransferProps) {
             <LoadingButton
               size="large"
               fullWidth
+              loading={formik.isSubmitting}
               disabled={!formik.isValid || !formik.dirty}
               onClick={formik.handleSubmit as any}
             >

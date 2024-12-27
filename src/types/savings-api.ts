@@ -38,6 +38,9 @@ export type LiquidateSavingsAPiRequest = ApiRequest<{
   note: string;
   otp?: number;
   onAccountClosureId?: number;
+  newPlanName?: string;
+  deposit_period?: string;
+  deposit_period_frequency_id?: string;
 }>;
 
 export type SendSavingsOtpAPiRequest = ApiRequest<{
@@ -222,14 +225,16 @@ export type SavingsTransferApiResponse = ApiResponse<{
   resourceId: number;
 }>;
 
-export type SavingsRecentActivitiesApiResponse = ApiResponse<{
-  transactionId: number;
-  accountNo: string;
-  title: string;
-  type: string;
-  transaction_type: string;
-  transaction_type_code: 1;
-  amount: string;
-  transaction_date: string;
-  transaction_status: string;
-}[]>;
+export type SavingsRecentActivitiesApiResponse = ApiResponse<
+  {
+    transactionId: number;
+    accountNo: string;
+    title: string;
+    type: string;
+    transaction_type: string;
+    transaction_type_code: 1;
+    amount: string;
+    transaction_date: string;
+    transaction_status: string;
+  }[]
+>;

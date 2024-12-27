@@ -12,6 +12,9 @@ import {
   UserLoginApiRequest,
   UserLoginApiResponse,
   UserLogoutApiRequest,
+  UserPreferredOtpNumberRequest,
+  UserRefreshTokenRequest,
+  UserRefreshTokenResponse,
   UserRequestVoiceOtp,
   UserResetPasswordApiRequest,
   UserResetPasswordApiResponse,
@@ -20,6 +23,7 @@ import {
   UserResetPasswordVerifyApiRequest,
   UserResetPasswordVerifyApiResponse,
   UserResponseVoiceOtp,
+  UserSendOtpApiRequest,
   UserSignupYieldApiRequest,
   UserSignupYieldApiResponse,
   UserVerifyOtpApiRequest,
@@ -189,6 +193,26 @@ export const userApi = coreApi.injectEndpoints({
       invalidatesTags: [tags.USER],
     }),
 
+    SendUserOtp: builder.mutation<ApiResponse<string>, UserSendOtpApiRequest>({
+      query: (config) => ({
+        url: BASE_URL + "/send_otp",
+        method: "POST",
+        ...config,
+      }),
+    }),
+
+    preferredUserOtpNumber: builder.mutation<
+      ApiResponse<string>,
+      UserPreferredOtpNumberRequest
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/preffered_number",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.USER],
+    }),
+
     createYieldUserPassword: builder.mutation<
       UserCreatePasswordApiResponse,
       UserCreatePasswordApiRequest
@@ -242,6 +266,18 @@ export const userApi = coreApi.injectEndpoints({
         ...config,
       }),
       providesTags: [tags.USER],
+    }),
+
+    userRefreshToken: builder.mutation<
+      UserRefreshTokenResponse,
+      UserRefreshTokenRequest
+    >({
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/refresh_login_token",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.USER],
     }),
   }),
 });
