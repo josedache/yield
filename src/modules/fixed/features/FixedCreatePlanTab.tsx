@@ -8,7 +8,7 @@ import { getFormikTextFieldProps } from "utils/formik";
 import FixedDurationSlider from "./FixedDurationSlider";
 
 export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
-  const { formik, savingsFixedProductInformation } = props;
+  const { formik, disabledFields, savingsFixedProductInformation } = props;
 
   return (
     <>
@@ -17,6 +17,7 @@ export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
         fullWidth
         placeholder="Enter Plan name"
         label="Plan Name"
+        disabled={disabledFields?.includes("name")}
       />
 
       <div className="mt-4">
@@ -29,6 +30,7 @@ export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
           slotProps={{
             thumb: ({ value }) => ({ value }),
           }}
+          disabled={disabledFields?.includes("depositPeriod")}
           value={formik.values.depositPeriod}
           onChange={(_, value) => {
             formik.setFieldValue("depositPeriod", value);
@@ -62,6 +64,7 @@ export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
         label="Amount"
         placeholder="0.00"
         {...getFormikTextFieldProps(formik, "depositAmount")}
+        disabled={disabledFields?.includes("depositAmount")}
         maskOptions={{ thousandsSeparator: "," }}
       />
       <FormHelperText>

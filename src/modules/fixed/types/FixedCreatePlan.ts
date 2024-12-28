@@ -17,6 +17,7 @@ export type FixedCreatePlanFormikType = Partial<{
 
 export type FixedCreatePlanContentProps = {
   formik: FormikProps<FixedCreatePlanFormikType>;
+  disabledFields?: Array<"depositAmount" | "depositPeriod" | "name">;
   savingsFixedProductInformation: SavingsFixedDepositProductInformationApiResponse;
   savingsDepositCalculator: SavingsCalculatorApiResponse;
 };

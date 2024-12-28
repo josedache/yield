@@ -11,6 +11,7 @@ import {
   Link as MuiLink,
   FormHelperText,
   Skeleton,
+  CircularProgress,
 } from "@mui/material";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import { useFormik } from "formik";
@@ -30,6 +31,7 @@ import Countdown from "components/Countdown";
 import NumberInput from "components/NumberInput";
 import { transactionApi } from "apis/transaction-api";
 import useAuthUser from "hooks/useAuthUser";
+import { userApi } from "apis/user-api";
 
 function WalletTransfer(props: WalletTransferProps) {
   const { children, onClose, ...restProps } = props;
@@ -53,8 +55,8 @@ function WalletTransfer(props: WalletTransferProps) {
     transferSelfOutwardTransactionMutationResult,
   ] = transactionApi.useTransferSelfOutwardTransactionMutation();
 
-  //   const tranactionInitInfo =
-  //     transferSelfOutwardTransactionMutationResult.data?.data;
+  const [requestUserVoiceOtpMutation, requestUserVoiceOtpMutationResult] =
+    userApi.useLazyRequestUserVoiceOtpQuery(undefined);
 
   const [verifyTransferLiquidateOutwardTransactionMutation] =
     transactionApi.useVerifyTransferLiquidateOutwardTransactionMutation();
@@ -181,6 +183,32 @@ function WalletTransfer(props: WalletTransferProps) {
     }
   };
 
+  async function handleRequestVoiceOtp() {
+    try {
+      if (requestUserVoiceOtpMutationResult.isFetching) {
+        return;
+      }
+
+      const data = await requestUserVoiceOtpMutation({
+        params: {
+          phone:
+            authUser.preffered_notification_channel === "alternate_number"
+              ? authUser.alternate_number
+              : authUser.preffered_notification_channel === "bvn_phone"
+              ? authUser.mobileNo
+              : authUser.mobileNo,
+        },
+      }).unwrap();
+      enqueueSnackbar(data?.message || "Voice Otp successfully sent", {
+        variant: "success",
+      });
+    } catch (error) {
+      enqueueSnackbar(error?.data?.message || "Failed to send Voice Otp", {
+        variant: "success",
+      });
+    }
+  }
+
   const stepConfigs = [
     {
       title: "Withdraw",
@@ -306,6 +334,23 @@ function WalletTransfer(props: WalletTransferProps) {
                 );
               }}
             </Countdown>
+            <FormHelperText className="text-center">
+              Dial{" "}
+              <MuiLink className="font-semibold cursor-pointer">
+                *5120*11#
+              </MuiLink>{" "}
+              on your number to get your OTP, or{" "}
+              <MuiLink
+                className="font-semibold cursor-pointer"
+                onClick={handleRequestVoiceOtp}
+              >
+                request a call
+              </MuiLink>
+              {requestUserVoiceOtpMutationResult.isFetching ? (
+                <CircularProgress size={10} className="ml-1" />
+              ) : null}
+              .
+            </FormHelperText>
           </div>
           <LoadingButton
             fullWidth
@@ -321,34 +366,6 @@ function WalletTransfer(props: WalletTransferProps) {
         </div>
       ),
     },
-    // {
-    //   content: (
-    //     <div className="space-y-8 max-w-md mx-auto">
-    //       <div className="flex justify-center text-6xl">
-    //         <Icon
-    //           fontSize="inherit"
-    //           color="success"
-    //           className="material-symbols-outlined-fill "
-    //         >
-    //           check_circle
-    //         </Icon>
-    //       </div>
-    //       <Typography variant="h4" className="text-center mb-4 font-bold">
-    //         Success!
-    //       </Typography>
-    //       <Typography className="text-center text-text-secondary">
-    //         You’ve successfully transfered{" "}
-    //         <CurrencyTypography component="b">
-    //           {Number(formik.values.amount)}
-    //         </CurrencyTypography>{" "}
-    //         to your account.
-    //       </Typography>
-    //       <Button size="large" fullWidth onClick={handleClose}>
-    //         Okay
-    //       </Button>
-    //     </div>
-    //   ),
-    // },
     {
       content: (
         <div className="space-y-8 max-w-md mx-auto">

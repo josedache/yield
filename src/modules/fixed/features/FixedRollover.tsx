@@ -255,6 +255,7 @@ export default function FixedRollover(
         });
         formik.handleSubmit();
       }}
+      disabledFields={["depositAmount"]}
       proceedLabel="Rollover"
     />
   ) : (

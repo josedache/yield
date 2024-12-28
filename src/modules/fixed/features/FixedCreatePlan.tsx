@@ -16,16 +16,16 @@ import { useSnackbar } from "notistack";
 import { Icon as Iconify } from "@iconify-icon/react";
 import clsx from "clsx";
 import { useEffect } from "react";
+import { LoadingButton } from "@mui/lab";
+
 import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
 import PaymentGatewayInline from "libs/payment-gateway-inline/inline";
-import {
-  // PaymentGatewayInlineChannel,
-  PaymentGatewayInlineProvider,
-} from "libs/payment-gateway-inline";
+import { PaymentGatewayInlineProvider } from "libs/payment-gateway-inline";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
+import FixedCreatePlanCalculatorTab from "./FixedCreatePlanCalculatorTab";
+import { FIXED_PRODUCT_ID, PAYSTACK_PUBLIC_KEY } from "constants/env";
 import useStepper from "hooks/useStepper";
 import BackIconButton from "components/BackIconButton";
-import FixedCreatePlanCalculatorTab from "./FixedCreatePlanCalculatorTab";
 import FixedCreatePlanTab from "./FixedCreatePlanTab";
 import { FixedCreatePlanFormikType } from "../types/FixedCreatePlan";
 import { savingsApi } from "apis/savings-api";
@@ -34,10 +34,8 @@ import CdlLogo from "assets/imgs/cdl-logo.png";
 import { walletApi } from "apis/wallet-api";
 import { formatNumberToCurrency } from "utils/number";
 import useClipboard from "hooks/useClipboard";
-import { LoadingButton } from "@mui/lab";
-import { FIXED_PRODUCT_ID, PAYSTACK_PUBLIC_KEY } from "constants/env";
-import useAuthUser from "hooks/useAuthUser";
 import { transactionApi } from "apis/transaction-api";
+import useAuthUser from "hooks/useAuthUser";
 
 export default function FixedCreatePlan(
   props: DialogProps & {
@@ -45,10 +43,11 @@ export default function FixedCreatePlan(
     savingsId?: string;
     isEdit?: boolean;
     isLoading?: boolean;
-    onHandleSubmit?: (val: any) => void;
+    onHandleSubmit?: (val: FixedCreatePlanFormikType) => void;
     isPayment?: boolean;
     onSuccess?: () => void;
     proceedLabel?: string;
+    disabledFields?: Array<"depositAmount" | "depositPeriod" | "name">;
   }
 ) {
   const {
@@ -60,6 +59,7 @@ export default function FixedCreatePlan(
     isEdit,
     isPayment,
     proceedLabel,
+    disabledFields,
     ...rest
   } = props;
 
@@ -105,9 +105,6 @@ export default function FixedCreatePlan(
     savingsFixedDepositCreateMutation,
     savingsFixedDepositCreateMutationResult,
   ] = savingsApi.useSavingsFixedDepositCreatePlanMutation();
-
-  // const resolvedSavingsId =
-  //   savingsId || savingsFixedDepositCreateMutationResult?.data?.data?.savingsId;
 
   const [savingsActivateAccountMutation, savingsActivateAccountMutationResult] =
     savingsApi.useSavingsActivateAccountMutation();
@@ -226,6 +223,7 @@ export default function FixedCreatePlan(
 
   const contentProps = {
     formik,
+    disabledFields,
     savingsFixedProductInformation: getSavingsProductInformationQuery.data,
     savingsDepositCalculator: savingsFixedDepositCalculationMutationResult.data,
   };

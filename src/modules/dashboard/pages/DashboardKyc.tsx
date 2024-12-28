@@ -53,7 +53,9 @@ function DashboardKyc() {
   const [sendOtpMutation, sendOtpMutationResult] =
     userApi.useSendUserOtpMutation();
   const [verifyOtpMutation] = userApi.useVerifyUserOtpMutation();
-  const [countdownDate, setCountdownDate] = useState();
+  const [countdownDate, setCountdownDate] = useState<Date | undefined>(
+    undefined
+  );
 
   const banks = transactionOutwardBankListQueryResult.data?.data;
 
@@ -289,7 +291,7 @@ function DashboardKyc() {
           alternate_number: String(formik.values.alternateMobileNo),
         },
       }).unwrap();
-      setCountdownDate(getCountdownDate());
+      setCountdownDate(() => getCountdownDate());
       enqueueSnackbar(data?.message || "Verification Otp Sent", {
         variant: "success",
       });
@@ -574,17 +576,19 @@ function DashboardKyc() {
                       input: {
                         endAdornment: (
                           <Button
-                            // variant="outlined"
                             size="small"
                             onClick={handleSendOtp}
-                            disabled={sendOtpMutationResult.isLoading}
+                            disabled={
+                              sendOtpMutationResult.isLoading ||
+                              formik.values.alternateMobileNo.length < 11
+                            }
                           >
                             Verify
                           </Button>
                         ),
                       },
                     }}
-                    placeholder="Alternate Phone Number"
+                    placeholder="Phone Number"
                     {...getFormikTextFieldProps(formik, "alternateMobileNo")}
                   />
 

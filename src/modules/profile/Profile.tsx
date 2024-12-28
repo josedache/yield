@@ -1,24 +1,23 @@
+import { useMemo, useState } from "react";
 import {
   Avatar,
-  FormControlLabel,
   IconButton,
+  MenuItem,
   Paper,
-  Radio,
-  RadioGroup,
   Skeleton,
   TextField,
   Typography,
 } from "@mui/material";
-import useAuthUser from "hooks/useAuthUser";
-import useClipboard from "hooks/useClipboard";
 import { Icon as Iconify } from "@iconify/react";
-import { getAssetInfo } from "utils/file";
-import { userApi } from "apis/user-api";
 import { useSnackbar } from "notistack";
 import Dropzone from "react-dropzone";
 import { LoadingButton } from "@mui/lab";
+
+import useAuthUser from "hooks/useAuthUser";
+import useClipboard from "hooks/useClipboard";
+import { getAssetInfo } from "utils/file";
+import { userApi } from "apis/user-api";
 import { transactionApi } from "apis/transaction-api";
-import { useMemo, useState } from "react";
 
 function Profile() {
   const authUser = useAuthUser();
@@ -27,7 +26,7 @@ function Profile() {
 
   const { enqueueSnackbar } = useSnackbar();
   const [preferredOtpMode, setPreferredOtpMode] = useState(
-    authUser.preffered_notification_channel || "bvn_phone"
+    authUser.preffered_notification_channel ?? "bvn_phone"
   );
 
   const [uploadUserFileMutation, uploadUserFileMutationResult] =
@@ -230,25 +229,23 @@ function Profile() {
                 Preferred OTP mode
               </Typography>
             </div>
-            <div className="p-6">
-              <RadioGroup
-                row
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+              <TextField
+                select
+                fullWidth
+                label="Preferred OTP Mode"
                 value={preferredOtpMode}
                 onChange={handleChangePreferredOtpMode}
+                disabled={preferredOtpModeMutationResult.isLoading}
               >
-                <FormControlLabel
-                  disabled={preferredOtpModeMutationResult.isLoading}
+                <MenuItem
+                  disabled={!authUser.alternate_number}
                   value="alternate_number"
-                  control={<Radio />}
-                  label="Alternate Phone Number"
-                />
-                <FormControlLabel
-                  value="bvn_phone"
-                  control={<Radio />}
-                  disabled={preferredOtpModeMutationResult.isLoading}
-                  label="BVN Phone Number"
-                />
-              </RadioGroup>
+                >
+                  Alternate Phone Number
+                </MenuItem>
+                <MenuItem value="bvn_phone">BVN Phone Number</MenuItem>
+              </TextField>
             </div>
           </Paper>
         </div>
