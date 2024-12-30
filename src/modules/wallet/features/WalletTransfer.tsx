@@ -194,7 +194,7 @@ function WalletTransfer(props: WalletTransferProps) {
           phone:
             authUser.preffered_notification_channel === "alternate_number"
               ? authUser.alternate_number
-              : authUser.preffered_notification_channel === "bvn_phone"
+              : authUser.preffered_notification_channel === "bvn_number"
               ? authUser.mobileNo
               : authUser.mobileNo,
         },

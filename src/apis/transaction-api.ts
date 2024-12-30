@@ -1,4 +1,5 @@
 import { coreApi } from "configs/store-query";
+import { WALLET } from "constants/tags";
 import { ApiRequest, ApiResponse } from "src/types/api";
 
 export const BASE_URL = "/transaction";
@@ -68,6 +69,7 @@ export const transactionApi = coreApi.injectEndpoints({
         method: "POST",
         ...config,
       }),
+      invalidatesTags: [WALLET],
     }),
 
     verifyTransferLiquidateOutwardTransaction: builder.mutation<
@@ -82,6 +84,7 @@ export const transactionApi = coreApi.injectEndpoints({
         method: "POST",
         ...config,
       }),
+      invalidatesTags: [WALLET],
     }),
   }),
 });

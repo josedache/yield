@@ -233,13 +233,13 @@ export type UserVerifyOtpApiRequest = ApiRequest<{
 }>;
 
 export type UserSendOtpApiRequest = ApiRequest<{
-  channel: "alternate_number" | "bvn_phone";
+  channel: "alternate_number" | "bvn_number";
   user_id: string;
   alternate_number: string;
 }>;
 
 export type UserPreferredOtpNumberRequest = ApiRequest<{
-  channel: "bvn_phone" | "alternate_number";
+  channel: "bvn_number" | "alternate_number";
 }>;
 
 export type UserVerifyOtpApiResponse = ApiResponse<{

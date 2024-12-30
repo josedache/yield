@@ -69,14 +69,6 @@ export const slice = createSlice({
           } as User;
         }
       )
-      .addMatcher(
-        userApi.endpoints.verifyUserClientKyc.matchFulfilled,
-        (state, { payload }) => {
-          state.authUser = Object.assign(state.authUser, payload.data, {
-            alternate_number: payload?.data?.alternateMobileNo,
-          });
-        }
-      )
 
       .addMatcher(
         userApi.endpoints.userRefreshToken.matchFulfilled,
@@ -106,6 +98,16 @@ export const slice = createSlice({
       .addMatcher(
         userApi.endpoints.getUserClientKyc.matchFulfilled,
         (state, { payload }) => {
+          state.authUser.alternate_number = payload?.data?.alternateMobileNo;
+          state.authUser = Object.assign(state.authUser, payload.data, {
+            kyc_validation: getKyc(payload.data),
+          });
+        }
+      )
+      .addMatcher(
+        userApi.endpoints.verifyUserClientKyc.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser.alternate_number = payload?.data?.alternateMobileNo;
           state.authUser = Object.assign(state.authUser, payload.data, {
             kyc_validation: getKyc(payload.data),
           });

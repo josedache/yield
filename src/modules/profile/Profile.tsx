@@ -244,7 +244,7 @@ function Profile() {
                 >
                   Alternate Phone Number
                 </MenuItem>
-                <MenuItem value="bvn_phone">BVN Phone Number</MenuItem>
+                <MenuItem value="bvn_number">BVN Phone Number</MenuItem>
               </TextField>
             </div>
           </Paper>
