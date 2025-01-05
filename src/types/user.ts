@@ -1,4 +1,5 @@
 export type User = {
+  id: number;
   isAuthenticated: boolean;
   avatar: string;
   token: string;
@@ -15,11 +16,15 @@ export type User = {
   typeId: 38;
   addressLine1: string;
   stateProvinceId: string;
+  preferred_number: string;
+  preffered_notification_channel: string;
   kycLevel: number;
   gender: string;
   clientId: number;
   displayName: string;
-  genderId: string;
+  genderId: number;
+  login_expiry: string;
+  alternate_number: string;
   address_details: {
     addressType: string;
     isActive: boolean;
@@ -43,11 +48,13 @@ export type User = {
     bank: boolean;
   };
   bank_details: {
-    bankId: string;
+    bankId: number;
     accountnumber: string;
     accountname: string;
     active: boolean;
     account_type: string;
     bank_classification: string;
   };
+  expiresIn: string;
+  refreshToken: string;
 };
