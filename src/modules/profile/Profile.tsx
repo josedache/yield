@@ -1,21 +1,23 @@
+import { useMemo, useState } from "react";
 import {
   Avatar,
   IconButton,
+  MenuItem,
   Paper,
   Skeleton,
   TextField,
   Typography,
 } from "@mui/material";
-import useAuthUser from "hooks/useAuthUser";
-import useClipboard from "hooks/useClipboard";
 import { Icon as Iconify } from "@iconify/react";
-import { getAssetInfo } from "utils/file";
-import { userApi } from "apis/user-api";
 import { useSnackbar } from "notistack";
 import Dropzone from "react-dropzone";
 import { LoadingButton } from "@mui/lab";
+
+import useAuthUser from "hooks/useAuthUser";
+import useClipboard from "hooks/useClipboard";
+import { getAssetInfo } from "utils/file";
+import { userApi } from "apis/user-api";
 import { transactionApi } from "apis/transaction-api";
-import { useMemo } from "react";
 
 function Profile() {
   const authUser = useAuthUser();
@@ -23,6 +25,9 @@ function Profile() {
   const clipboard = useClipboard();
 
   const { enqueueSnackbar } = useSnackbar();
+  const [preferredOtpMode, setPreferredOtpMode] = useState(
+    authUser.preffered_notification_channel ?? "bvn_phone"
+  );
 
   const [uploadUserFileMutation, uploadUserFileMutationResult] =
     userApi.useUploadUserFileMutation();
@@ -31,6 +36,9 @@ function Profile() {
     transactionApi.useGetTransactionOutwardBankListQuery(undefined, {
       skip: !authUser.bank_details.bankId,
     });
+
+  const [preferredOtpModeMutation, preferredOtpModeMutationResult] =
+    userApi.usePreferredUserOtpNumberMutation();
 
   const banks = transactionOutwardBankListQueryResult.data?.data;
 
@@ -42,6 +50,32 @@ function Profile() {
       }, {} as Record<string, (typeof banks)[0]>),
     [banks]
   );
+
+  const handleChangePreferredOtpMode = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    try {
+      const data = await preferredOtpModeMutation({
+        body: {
+          channel: event.target.value as any,
+        },
+      }).unwrap();
+      setPreferredOtpMode((event.target as HTMLInputElement).value);
+      enqueueSnackbar(
+        data?.message || "Preferred OTP mode updated successfully!",
+        {
+          variant: "success",
+        }
+      );
+    } catch (error) {
+      const message = Array.isArray(error?.data?.message)
+        ? error?.data?.message?.[0]
+        : error?.data?.message;
+      enqueueSnackbar(message || "Failed to update Preferred OTP mode", {
+        variant: "error",
+      });
+    }
+  };
 
   async function handleSelfieUpdate(file: File) {
     try {
@@ -104,6 +138,12 @@ function Profile() {
                 disabled
                 label="Email Address"
                 value={authUser.email}
+              />
+
+              <TextField
+                disabled
+                label="Alternative Phone Number"
+                value={authUser.alternate_number}
               />
             </div>
           </Paper>
@@ -180,6 +220,32 @@ function Profile() {
                   </div>
                 </div>
               </Paper>
+            </div>
+          </Paper>
+
+          <Paper variant="outlined">
+            <div className="px-6 p-4 border-b">
+              <Typography variant="h6" className="font-medium">
+                Preferred OTP mode
+              </Typography>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+              <TextField
+                select
+                fullWidth
+                label="Preferred OTP Mode"
+                value={preferredOtpMode}
+                onChange={handleChangePreferredOtpMode}
+                disabled={preferredOtpModeMutationResult.isLoading}
+              >
+                <MenuItem
+                  disabled={!authUser.alternate_number}
+                  value="alternate_number"
+                >
+                  Alternate Phone Number
+                </MenuItem>
+                <MenuItem value="bvn_number">BVN Phone Number</MenuItem>
+              </TextField>
             </div>
           </Paper>
         </div>

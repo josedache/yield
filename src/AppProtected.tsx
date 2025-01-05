@@ -8,11 +8,24 @@ import { Container } from "@mui/material";
 import { userApi } from "apis/user-api";
 import LoadingContent from "components/LoadingContent";
 import useAuthUser from "hooks/useAuthUser";
+import AuthRefreshTokenDialog from "modules/auth/features/AuthRefreshTokenDialog";
+import { useEffect } from "react";
+import { differenceInSeconds } from "date-fns";
+import useToggle from "hooks/useToggle";
+import useLogout from "hooks/useLogout";
 
 function AppProtected() {
+  const { logout } = useLogout();
+
   const userClientKycQueryResult = userApi.useGetUserClientKycQuery(undefined);
   const userSelfieFileQueryResult =
     userApi.useGetUserSelfieFileQuery(undefined);
+
+  const [
+    isRefreshTokenDialog,
+    toggleRefreshTokenDialog,
+    setRefreshTokenDialog,
+  ] = useToggle();
 
   const authUser = useAuthUser();
 
@@ -20,6 +33,27 @@ function AppProtected() {
     authUser?.kyc_validation?.basic &&
     authUser?.kyc_validation?.nin &&
     authUser?.kyc_validation?.bank;
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (authUser?.expiresIn) {
+        const differenceInExpiration = differenceInSeconds(
+          new Date(authUser?.expiresIn),
+          new Date()
+        );
+
+        if (differenceInExpiration <= 30) {
+          setRefreshTokenDialog(true);
+        }
+
+        if (differenceInExpiration <= 0) {
+          logout();
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  });
 
   const dashboardKycMatch = useMatch({ path: DASHBOARD_KYC, end: true });
 
@@ -47,6 +81,12 @@ function AppProtected() {
           <div className="lg:ml-[270px]">
             <Container className="p-4 md:p-8">{<Outlet />}</Container>
           </div>
+          {isRefreshTokenDialog && (
+            <AuthRefreshTokenDialog
+              open={isRefreshTokenDialog}
+              onClose={toggleRefreshTokenDialog}
+            />
+          )}
           {!isKycCompleted && !dashboardKycMatch ? (
             <Navigate to={DASHBOARD_KYC} />
           ) : null}
