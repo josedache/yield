@@ -12,17 +12,17 @@ import MuiDatePickerProvider from "providers/MuiDatePickerProvider";
 import MuiSnackbarProvider from "providers/MuiSnackbarProvider";
 import ReduxStoreProvider from "providers/ReduxStoreProvider";
 import * as Sentry from "@sentry/browser";
+import { SENTRY_DSN_TOKEN } from "constants/env";
 
 Sentry.init({
-  dsn: "https://94b24310bc649060f4f2ece29182e797@o4504095760711680.ingest.sentry.io/4506076965699584",
-  // Alternatively, use `process.env.npm_package_version` for a dynamic release version
-  release: "my-project-name@2.3.12",
+  dsn: SENTRY_DSN_TOKEN,
+  release: "Yield",
   integrations: [
     Sentry.browserTracingIntegration(),
     Sentry.replayIntegration(),
   ],
   tracesSampleRate: 1.0,
-  tracePropagationTargets: ["localhost",  /^https:\/\/40\.113\.169\.208:9010\/api/],
+  tracePropagationTargets: ["localhost",  /^https:\/\/zeusapi\.creditdirect\.ng/ ],
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
 });
