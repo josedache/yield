@@ -11,6 +11,24 @@ import MuiThemeProvider from "providers/MuiThemeProvider";
 import MuiDatePickerProvider from "providers/MuiDatePickerProvider";
 import MuiSnackbarProvider from "providers/MuiSnackbarProvider";
 import ReduxStoreProvider from "providers/ReduxStoreProvider";
+import * as Sentry from "@sentry/browser";
+import {
+  SENTRY_DSN_TOKEN,
+  SENTRY_PROPAGATION_TARGETS_URLS,
+} from "constants/env";
+
+Sentry.init({
+  dsn: SENTRY_DSN_TOKEN,
+  release: "Yield",
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration(),
+  ],
+  tracesSampleRate: 1.0,
+  tracePropagationTargets: ["localhost", ...SENTRY_PROPAGATION_TARGETS_URLS],
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+});
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
