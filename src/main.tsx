@@ -12,7 +12,7 @@ import MuiDatePickerProvider from "providers/MuiDatePickerProvider";
 import MuiSnackbarProvider from "providers/MuiSnackbarProvider";
 import ReduxStoreProvider from "providers/ReduxStoreProvider";
 import * as Sentry from "@sentry/browser";
-import { SENTRY_DSN_TOKEN } from "constants/env";
+import { SENTRY_DSN_TOKEN , SENTRY_PROPAGATION_TARGETS_URL_ONE , SENTRY_PROPAGATION_TARGETS_URL_TWO} from "constants/env";
 
 Sentry.init({
   dsn: SENTRY_DSN_TOKEN,
@@ -22,7 +22,7 @@ Sentry.init({
     Sentry.replayIntegration(),
   ],
   tracesSampleRate: 1.0,
-  tracePropagationTargets: ["localhost",  /^https:\/\/zeusapi\.creditdirect\.ng/ ],
+  tracePropagationTargets: ["localhost", SENTRY_PROPAGATION_TARGETS_URL_ONE, SENTRY_PROPAGATION_TARGETS_URL_TWO],
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
 });
