@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - yieldprodtest.creditdirect.ng
+    - yield.creditdirect.ng
     secretName: zeus-tls-secret  # The name of your TLS secret
   rules:
-  - host: yieldprodtest.creditdirect.ng
+  - host: yield.creditdirect.ng
     http:
       paths:
       - path: /
