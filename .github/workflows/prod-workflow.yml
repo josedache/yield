@@ -2,8 +2,8 @@ name: Build and deploy Yield Production
 
 on:
   workflow_dispatch:
-#   repository_dispatch:
-#     types: [trigger-dev-workflow]
+  repository_dispatch:
+    types: [trigger-prod-workflow]
     
     
 
