@@ -42,6 +42,11 @@ jobs:
 
             echo "VITE_FLEX_PRODUCT_ID=${{ secrets.VITE_FLEX_PRODUCT_ID }}" >> .env
             echo "VITE_FIXED_PRODUCT_ID=${{ secrets.VITE_FIXED_PRODUCT_ID }}" >> .env
+            echo "VITE_SENTRY_AUTH_TOKEN=${{ secrets.VITE_SENTRY_AUTH_TOKEN }}" >> .env
+            echo "VITE_SENTRY_DSN_TOKEN=${{ secrets.VITE_SENTRY_DSN_TOKEN }}" >> .env
+            echo "VITE_SENTRY_PROPAGATION_TARGETS_URLS=${{ secrets.VITE_SENTRY_PROPAGATION_TARGETS_URLS }}" >> .env
+            
+            
 
 
       - name: Verify Environment Variables
