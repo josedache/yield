@@ -568,92 +568,94 @@ function DashboardKyc() {
               completed: isAlternateNumberCompleted,
               content: (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <NumberTextField
-                    freeSolo
-                    fullWidth
-                    label="Alternate Phone Number"
-                    slotProps={{
-                      input: {
-                        endAdornment: (
-                          <Button
-                            size="small"
-                            onClick={handleSendOtp}
-                            disabled={
-                              sendOtpMutationResult.isLoading ||
-                              formik.values.alternateMobileNo.length < 11
-                            }
-                          >
-                            Verify
-                          </Button>
-                        ),
-                      },
-                    }}
-                    placeholder="Phone Number"
-                    {...getFormikTextFieldProps(formik, "alternateMobileNo")}
-                  />
+                  <div className="w-full col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <NumberTextField
+                      freeSolo
+                      fullWidth
+                      label="Alternate Phone Number"
+                      slotProps={{
+                        input: {
+                          endAdornment: (
+                            <Button
+                              size="small"
+                              onClick={handleSendOtp}
+                              disabled={
+                                sendOtpMutationResult.isLoading ||
+                                formik.values.alternateMobileNo.length < 11
+                              }
+                            >
+                              Verify
+                            </Button>
+                          ),
+                        },
+                      }}
+                      placeholder="Phone Number"
+                      {...getFormikTextFieldProps(formik, "alternateMobileNo")}
+                    />
 
-                  <NumberTextField
-                    freeSolo
-                    fullWidth
-                    label="Verification Code"
-                    placeholder="848399"
-                    disabled={!formik.values.alternateMobileNo}
-                    {...getFormikTextFieldProps(formik, "alternateMobileNoOtp")}
-                    slotProps={{
-                      input: {
-                        endAdornment: (
-                          <Countdown date={countdownDate}>
-                            {(countdown) => {
-                              const isCodeSent =
-                                countdown.days ||
-                                countdown.minutes ||
-                                countdown.seconds ||
-                                countdown.seconds;
+                    <NumberTextField
+                      freeSolo
+                      fullWidth
+                      label="Verification Code"
+                      placeholder="848399"
+                      disabled={!formik.values.alternateMobileNo}
+                      {...getFormikTextFieldProps(formik, "alternateMobileNoOtp")}
+                      slotProps={{
+                        input: {
+                          endAdornment: (
+                            <Countdown date={countdownDate}>
+                              {(countdown) => {
+                                const isCodeSent =
+                                  countdown.days ||
+                                  countdown.minutes ||
+                                  countdown.seconds ||
+                                  countdown.seconds;
 
-                              return (
-                                <>
-                                  {isCodeSent ? (
-                                    <Typography
-                                      variant="body2"
-                                      color="textSecondary"
-                                      className="text-center"
-                                    >
+                                return (
+                                  <>
+                                    {isCodeSent ? (
                                       <Typography
-                                        component="span"
-                                        color="primary"
-                                        className="font-semibold"
+                                        variant="body2"
+                                        color="textSecondary"
+                                        className="text-center"
                                       >
-                                        {countdown.minutes}:
-                                        {countdown.seconds < 10
-                                          ? `0${countdown.seconds}`
-                                          : countdown.seconds}
-                                      </Typography>
-                                    </Typography>
-                                  ) : (
-                                    <div className="flex items-center justify-center">
-                                      <Typography className="text-center">
-                                        <ButtonBase
-                                          disableRipple
-                                          disabled={
-                                            sendOtpMutationResult.isLoading
-                                          }
-                                          component={MuiLink}
-                                          onClick={handleSendOtp as any}
-                                          className="text-text-primary font-bold"
+                                        <Typography
+                                          component="span"
+                                          color="primary"
+                                          className="font-semibold"
                                         >
-                                          Resend
-                                        </ButtonBase>
+                                          {countdown.minutes}:
+                                          {countdown.seconds < 10
+                                            ? `0${countdown.seconds}`
+                                            : countdown.seconds}
+                                        </Typography>
                                       </Typography>
-                                    </div>
-                                  )}
-                                </>
-                              );
-                            }}
-                          </Countdown>
-                        ),
-                      },
-                    }}
-                  />
+                                    ) : (
+                                      <div className="flex items-center justify-center">
+                                        <Typography className="text-center">
+                                          <ButtonBase
+                                            disableRipple
+                                            disabled={
+                                              sendOtpMutationResult.isLoading
+                                            }
+                                            component={MuiLink}
+                                            onClick={handleSendOtp as any}
+                                            className="text-text-primary font-bold"
+                                          >
+                                            Resend
+                                          </ButtonBase>
+                                        </Typography>
+                                      </div>
+                                    )}
+                                  </>
+                                );
+                              }}
+                            </Countdown>
+                          ),
+                        },
+                      }}
+                    />
+                  </div>
 
                   <div className="col-span-2">
                     <FormHelperText className="text-center">
