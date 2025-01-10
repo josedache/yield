@@ -1,11 +1,15 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv  } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import tsconfigPaths from "vite-tsconfig-paths";
 import viteSvgr from "vite-plugin-svgr";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+
+  return {
   resolve: {
     alias: {
       apis: path.resolve(__dirname, "src/apis"),
@@ -21,5 +25,12 @@ export default defineConfig({
       utils: path.resolve(__dirname, "src/utils"),
     },
   },
-  plugins: [react(), tsconfigPaths(), viteSvgr()],
-});
+  plugins: [react(), tsconfigPaths(), viteSvgr(),  
+    sentryVitePlugin({
+    org: "creditdirect",
+    project: "savings_yield",
+    authToken: env.VITE_SENTRY_AUTH_TOKEN,
+    telemetry: false,
+  }),],
+
+}});
