@@ -45,6 +45,7 @@ jobs:
             echo "VITE_SENTRY_AUTH_TOKEN=${{ secrets.VITE_SENTRY_AUTH_TOKEN }}" >> .env
             echo "VITE_SENTRY_DSN_TOKEN=${{ secrets.VITE_SENTRY_DSN_TOKEN }}" >> .env
             echo "VITE_SENTRY_PROPAGATION_TARGETS_URLS=${{ secrets.VITE_SENTRY_PROPAGATION_TARGETS_URLS }}" >> .env
+            echo "VITE_MIXPANEL_TOKEN=${{ secrets.VITE_MIXPANEL_TOKEN }}" >> .env
             
             
 
