@@ -13,7 +13,6 @@ import { useSearchParams } from "react-router-dom";
 import { format, isValid as dfnsIsValid } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
-
 import CurrencyTypography from "components/CurrencyTypography";
 import useToggle from "hooks/useToggle";
 import SavedCardSvg from "assets/svgs/saved-card.svg?react";

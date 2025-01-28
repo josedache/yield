@@ -40,6 +40,7 @@ import WalletTransfer from "modules/wallet/features/WalletTransfer";
 function DashboardMain() {
   const authUser = useAuthUser();
   const navigate = useNavigate();
+  
 
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
   const [isFixedYieldVisible, toggleFixedYieldVisible] = useToggle();
@@ -119,6 +120,8 @@ function DashboardMain() {
   ) {
     return <Navigate to={DASHBOARD_KYC} replace />;
   }
+ 
+  
 
   return (
     <div className="space-y-8">

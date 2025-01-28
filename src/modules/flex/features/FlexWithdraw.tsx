@@ -130,7 +130,6 @@ function FlexWithdraw(props: FlexWithdrawProps) {
                   // transferDescription: "",
                 },
               }).unwrap();
-
               enqueueSnackbar(data?.message || "Withdrawal Successful", {
                 variant: "success",
               });

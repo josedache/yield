@@ -20,6 +20,7 @@ import { landingPageApi } from "apis/landingpage-api";
 import { useEffect } from "react";
 import { isEmpty } from "utils/object";
 import { FIXED_PRODUCT_ID } from "constants/env";
+import { trackUserUponSelectingTheNumberOfMonthsForYield, trackUserUponSelectingYieldAmount } from "configs/analytics";
 
 
 const YieldCalculator = () => {
@@ -54,6 +55,8 @@ const YieldCalculator = () => {
             productId: String(values.productId),
           },
         }).unwrap();
+        trackUserUponSelectingTheNumberOfMonthsForYield({ months: formik.values.depositPeriod });
+        trackUserUponSelectingYieldAmount({ formik: formik.values.depositAmount });
       } catch (error) {
         console.error("API Error:", error);
       }

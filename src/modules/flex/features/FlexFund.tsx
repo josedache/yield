@@ -39,6 +39,7 @@ import { transactionApi } from "apis/transaction-api";
 import { formatNumberToCurrency } from "utils/number";
 import { walletApi } from "apis/wallet-api";
 import clsx from "clsx";
+import { trackUserPaystack, trackUserUponSelectingYieldAmount } from "configs/analytics";
 
 function FlexFund(props: FlexFundProps) {
   const { onSuccess, children, onClose, ...restProps } = props;
@@ -112,6 +113,7 @@ function FlexFund(props: FlexFundProps) {
       }[enumStep],
     }),
     onSubmit: async () => {
+      trackUserUponSelectingYieldAmount({ depositAmount: formik.values.amount });
       try {
         stepper.next();
       } catch (error) {
@@ -130,6 +132,11 @@ function FlexFund(props: FlexFundProps) {
   }
 
   async function handlePaystack() {
+    trackUserPaystack({
+      depositamount: formik.values.amount,
+      userName: authUser.displayName,
+      transactionId: authUser.clientId
+    })
     try {
       const transactionRef =
         await generateTransactionOutwardPaymentReferenceMutation({
@@ -141,7 +148,7 @@ function FlexFund(props: FlexFundProps) {
             yieldType: "flex",
           },
         }).unwrap();
-
+      
       PaymentGatewayInline({
         provider: PaymentGatewayInlineProvider.PAYSTACK,
         key: PAYSTACK_PUBLIC_KEY,
