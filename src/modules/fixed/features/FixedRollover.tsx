@@ -23,6 +23,7 @@ import BackIconButton from "components/BackIconButton";
 import { LoadingButton } from "@mui/lab";
 import useToggle from "hooks/useToggle";
 import FixedCreatePlan from "./FixedCreatePlan";
+import { trackUserOnSelectingRollover } from "configs/analytics";
 
 const ROLLOVER_WITH_CAPITAL = 400;
 const ROLLOVER_WITH_INTEREST = 300;
@@ -58,6 +59,11 @@ export default function FixedRollover(
         .required("Required"),
     }),
     onSubmit: async (values) => {
+      trackUserOnSelectingRollover({
+        deposit_period: formik.values.depositPeriod,
+        deposit_period_frequency_id: formik.values.depositPeriodFrequencyId,
+        newPlanName: formik.values.newPlanName,
+      });
       try {
         if (stepper.step === 1 || stepper.step === 2) {
           if (!isFixedCreatePlan) {
@@ -77,6 +83,15 @@ export default function FixedRollover(
             enqueueSnackbar("Rollover Successfully", {
               variant: "success",
             });
+            trackUserOnSelectingRollover({
+              savingsId: values.savingsId,
+              newPlanName: values.newPlanName,
+              rolloverType:
+                values.onAccountClosureId === ROLLOVER_WITH_CAPITAL
+                  ? "Capital Only"
+                  : "Capital + Interest",
+            });
+
             toggleFixedCreatePlan();
             stepper.go(3);
           }

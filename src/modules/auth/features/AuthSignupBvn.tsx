@@ -86,7 +86,6 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
       if (requestUserVoiceOtpMutationResult.isFetching) {
         return;
       }
-
       const data = await requestUserVoiceOtpMutation({
         params: { phone: formik.values.phone },
       }).unwrap();
@@ -220,8 +219,11 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
               </Typography>
               <Divider>OR</Divider>
               <Typography className="text-center">
-                Dial <MuiLink className="font-semibold cursor-pointer">*5120*11#</MuiLink> on your
-                number to get your OTP, <br />
+                Dial{" "}
+                <MuiLink className="font-semibold cursor-pointer">
+                  *5120*11#
+                </MuiLink>{" "}
+                on your number to get your OTP, <br />
                 or{" "}
                 <MuiLink
                   className="font-semibold cursor-pointer"

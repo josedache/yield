@@ -46,7 +46,6 @@ function WalletFund(props: WalletFundProps) {
       try {
         if (stepper.step == 1) {
         }
-
         stepper.next();
       } catch (error) {
         enqueueSnackbar(error?.data?.message || "Failed to process funding", {
