@@ -35,8 +35,6 @@ import { getFormikTextFieldProps } from "utils/formik";
 import useRtkQueryStatusCallbacks from "hooks/useRtkQueryStatusCallbacks";
 import { removeEmptyProperties } from "utils/object";
 import Countdown from "components/Countdown";
-import { trackUserDocumentVerification } from "configs/analytics";
-
 
 function DashboardKyc() {
   const { enqueueSnackbar } = useSnackbar();
@@ -161,7 +159,6 @@ function DashboardKyc() {
       }[enumStep],
     }),
     onSubmit: async (values) => {
-      trackUserDocumentVerification({NIN: formik.values.nin});
       try {
         switch (enumStep) {
           case DashboardKycStep.BASIC_INFORMATION: {
@@ -361,7 +358,6 @@ function DashboardKyc() {
       </LoadingButton>
     </div>
   );
-
 
   return (
     <>

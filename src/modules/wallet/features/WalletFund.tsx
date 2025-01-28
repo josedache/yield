@@ -19,7 +19,6 @@ import useAuthUser from "hooks/useAuthUser";
 import useClipboard from "hooks/useClipboard";
 import LoadingContent from "components/LoadingContent";
 
-
 function WalletFund(props: WalletFundProps) {
   const { children, onClose, ...restProps } = props;
 
@@ -47,6 +46,7 @@ function WalletFund(props: WalletFundProps) {
       try {
         if (stepper.step == 1) {
         }
+
         stepper.next();
       } catch (error) {
         enqueueSnackbar(error?.data?.message || "Failed to process funding", {

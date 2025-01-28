@@ -30,7 +30,6 @@ import useToggle from "hooks/useToggle";
 import { useMemo } from "react";
 import useAuthUser from "hooks/useAuthUser";
 import usePopover from "hooks/usePopover";
-import { trackUserClickOnContactUs } from "configs/analytics";
 
 function AppProtectedDrawer() {
   const islg = useMediaQuery(MediaBreakpoint.LG);
@@ -165,19 +164,9 @@ function AppProtectedDrawer() {
         </List>
       </Drawer>
 
-      <Dialog
-        open={isSupport}
-        maxWidth="xs"
-        fullWidth
-      >
+      <Dialog open={isSupport} maxWidth="xs" fullWidth>
         <DialogTitleXCloseButton
-          onClose={() => {
-            toggleSupport();
-            trackUserClickOnContactUs({
-              onClose: true,
-            });
-          }}
-          // onClose={toggleSupport}
+          onClose={toggleSupport}
           className="text-center"
         >
           Customer Support

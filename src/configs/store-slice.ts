@@ -5,7 +5,6 @@ import { User } from "src/types/user";
 import { isBase64DataURL } from "utils/file";
 import { addSeconds } from "date-fns";
 
-
 type InitialState = {
   authUser: User;
   isSideNavigation: boolean;
@@ -149,8 +148,6 @@ function getKyc(authUser: Partial<User>) {
 
   return { basic, nin, bank };
 }
-
-
 
 // export interface MyObjectType {
 //   id: string;
