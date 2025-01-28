@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: yield-service
+  namespace: zeus
+spec:
+  selector:
+    app: yield-app
+  ports:
+    - protocol: TCP
+      port: 80
+      name: http
+      targetPort: 80
+  type: ClusterIP # Can be changed to NodePort or ClusterIP based on requirements
