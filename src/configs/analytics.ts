@@ -1,4 +1,6 @@
-import trackUser, { mixpanelEvents } from "./mixpanel";
+import trackUser, { initMixpanel, mixpanelEvents } from "./mixpanel";
+
+initMixpanel();
 
 export function trackUserSignUp(payload: Record<string, any>) {
   try {
