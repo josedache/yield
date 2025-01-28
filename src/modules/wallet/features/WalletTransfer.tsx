@@ -32,6 +32,7 @@ import NumberInput from "components/NumberInput";
 import { transactionApi } from "apis/transaction-api";
 import useAuthUser from "hooks/useAuthUser";
 import { userApi } from "apis/user-api";
+import { trackUserClickOnAnExistingYield } from "configs/analytics";
 
 function WalletTransfer(props: WalletTransferProps) {
   const { children, onClose, ...restProps } = props;
@@ -107,6 +108,7 @@ function WalletTransfer(props: WalletTransferProps) {
       }[enumStep],
     }),
     onSubmit: async (values, helper) => {
+      trackUserClickOnAnExistingYield({amount: formik.values.amount});
       try {
         switch (enumStep) {
           case WalletTransferStep.AMOUNT: {

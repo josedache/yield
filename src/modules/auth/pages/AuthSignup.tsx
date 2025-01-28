@@ -18,6 +18,8 @@ import {
   CDL_IAGREE_INLINE_MODE,
 } from "constants/env";
 import useToggle from "hooks/useToggle";
+import { trackUserInputBasicInfo, trackUserInputBVN, trackUserOTP } from "configs/analytics";
+
 
 function AuthSignup() {
   const { enqueueSnackbar } = useSnackbar();
@@ -119,6 +121,7 @@ function AuthSignup() {
       try {
         switch (enumStep) {
           case AuthSignupStep.BVN: {
+            trackUserInputBVN({ bvn: values.bvn });
             await signupYieldUserMutation({
               body: { bvn: values.bvn },
             }).unwrap();
@@ -129,6 +132,7 @@ function AuthSignup() {
             break;
           }
           case AuthSignupStep.BVN_VERIFICATION: {
+            trackUserOTP({ otp: formik.values.otp });
             await verifyUserOtpMutation({
               body: {
                 otp: values.otp,
@@ -137,10 +141,11 @@ function AuthSignup() {
             }).unwrap();
             enqueueSnackbar("OTP verified successfully!", {
               variant: "success",
-            });
+            }); 
             break;
           }
           case AuthSignupStep.BASIC_INFORMATION: {
+            trackUserInputBasicInfo({event: "Accept the terms and conditions."});
             if (!values.igree) {
               enqueueSnackbar(`Read and accept terms and conditions`, {
                 variant: "warning",

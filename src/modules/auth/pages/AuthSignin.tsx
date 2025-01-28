@@ -9,6 +9,9 @@ import PasswordTextField from "components/PasswordTextField";
 import { getFormikTextFieldProps } from "utils/formik";
 import NumberTextField from "components/NumberTextField";
 import { userApi } from "apis/user-api";
+import { identifyUser } from "configs/mixpanel";
+import { trackUserSignIn } from "configs/analytics";
+
 
 function AuthSignin() {
   const navigate = useNavigate();
@@ -30,11 +33,14 @@ function AuthSignin() {
       password: yup.string().label("Password").required("${path} is required"),
     }),
     onSubmit: async (values) => {
+      trackUserSignIn({ Phone: values.phone});
       try {
         const data = await loginUserMutation({ body: values }).unwrap();
         enqueueSnackbar(data.message || "Login Successful", {
           variant: "success",
         });
+        identifyUser(data.data.user.id, data.data.user)
+
         navigate(DASHBOARD);
       } catch (error: any) {
         enqueueSnackbar(

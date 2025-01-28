@@ -18,6 +18,7 @@ import useClipboard from "hooks/useClipboard";
 import { getAssetInfo } from "utils/file";
 import { userApi } from "apis/user-api";
 import { transactionApi } from "apis/transaction-api";
+import { trackUserProfileUpdate } from "configs/analytics";
 
 function Profile() {
   const authUser = useAuthUser();
@@ -78,6 +79,12 @@ function Profile() {
   };
 
   async function handleSelfieUpdate(file: File) {
+    trackUserProfileUpdate({
+      event: "Selfie Update Initiated",
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+    });
     try {
       const assetInfo = getAssetInfo(file);
 
@@ -94,6 +101,14 @@ function Profile() {
       enqueueSnackbar(data?.message || "Selfied updated successfully!", {
         variant: "success",
       });
+    trackUserProfileUpdate({
+      event: "Selfie Update Success",
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+      responseMessage: data?.message,
+      status: 200,
+    });
     } catch (error) {
       const message = Array.isArray(error?.data?.message)
         ? error?.data?.message?.[0]
@@ -102,6 +117,17 @@ function Profile() {
       enqueueSnackbar(message || "Failed to update selfie", {
         variant: "error",
       });
+
+      trackUserProfileUpdate({
+        event: "Selfie Update failed",
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        responseMessage: data?.error,
+        status: 700
+        
+      });
+
     }
   }
 
