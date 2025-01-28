@@ -2,7 +2,7 @@ import { EnvVarEnum } from "constants/global";
 import mixpanel from "mixpanel-browser";
 import { User } from "src/types/user";
 
-export function init() {
+export function initMixpanel() {
   if (EnvVarEnum.VITE_MIXPANEL_TOKEN) {
     mixpanel.init(EnvVarEnum.VITE_MIXPANEL_TOKEN, {
       debug: false,
