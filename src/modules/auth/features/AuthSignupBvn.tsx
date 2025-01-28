@@ -22,7 +22,6 @@ import Countdown from "components/Countdown";
 import { userApi } from "apis/user-api";
 import { useSnackbar } from "notistack";
 
-
 function AuthSignupBvn(props: AuthSignupStepContentProps) {
   const { formik } = props;
 
@@ -87,6 +86,7 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
       if (requestUserVoiceOtpMutationResult.isFetching) {
         return;
       }
+
       const data = await requestUserVoiceOtpMutation({
         params: { phone: formik.values.phone },
       }).unwrap();
@@ -99,7 +99,6 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
       });
     }
   }
-
 
   useEffect(() => {
     if (!open) {

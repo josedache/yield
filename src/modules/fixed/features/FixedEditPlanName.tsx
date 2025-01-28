@@ -12,7 +12,6 @@ import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import { getFormikTextFieldProps } from "utils/formik";
 import { savingsApi } from "apis/savings-api";
-import { trackUserUponNamingYield } from "configs/analytics";
 
 export default function FixedEditPlanName(
   props: DialogProps & {
@@ -35,7 +34,6 @@ export default function FixedEditPlanName(
       name: yup.string().label("Plan Name").required("Required"),
     }),
     onSubmit: async (values) => {
-      trackUserUponNamingYield({name: values.name});
       try {
         await renameMutation({
           body: {
@@ -46,7 +44,6 @@ export default function FixedEditPlanName(
         enqueueSnackbar("Plan renamed successfully", {
           variant: "success",
         });
-        trackUserUponNamingYield({name: values.name, status: 200});
         onClose();
       } catch (error) {
         enqueueSnackbar(

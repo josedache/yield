@@ -17,8 +17,6 @@ import {
   SENTRY_PROPAGATION_TARGETS_URLS,
 } from "constants/env";
 
-
-
 Sentry.init({
   dsn: SENTRY_DSN_TOKEN,
   release: "Yield",
