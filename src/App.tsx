@@ -21,6 +21,18 @@ const TrackPageView = () => {
   return null;
 };
 
+const TrackPageView = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    // const pagePath = location.pathname;
+    // Send page view event to Mixpanel
+    // trackUserAllPageLoads({ page: pagePath });
+  }, [location]);
+
+  return null;
+};
+
 function App() {
   const navigation = useNavigation();
 
