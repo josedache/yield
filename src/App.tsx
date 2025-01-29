@@ -7,15 +7,14 @@ import {
   useNavigation,
 } from "react-router-dom";
 import { useEffect } from "react";
-import { trackUserAllPageLoads } from "configs/analytics";
 
 const TrackPageView = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const pagePath = location.pathname;
+    // const pagePath = location.pathname;
     // Send page view event to Mixpanel
-    trackUserAllPageLoads({ page: pagePath });
+    // trackUserAllPageLoads({ page: pagePath });
   }, [location]);
 
   return null;
