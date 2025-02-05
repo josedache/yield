@@ -10,14 +10,9 @@ import {
   Typography,
 } from "@mui/material";
 import NumberTextField from "components/NumberTextField";
-import trackUser, { mixpanelEvents } from "configs/mixpanel";
 
 function AuthSignupBasicInformation(props: AuthSignupStepContentProps) {
   const { formik } = props;
-
-  trackUser(mixpanelEvents.profile_update, {
-    event: "Agreed to Terms and Conditions",
-  });
 
   return (
     <div>

@@ -36,6 +36,7 @@ export default function FixedEditPlanName(
     }),
     onSubmit: async (values) => {
       trackUserUponNamingYield({ name: values.name });
+   
       try {
         await renameMutation({
           body: {
@@ -43,6 +44,7 @@ export default function FixedEditPlanName(
             name: values.name,
           },
         }).unwrap();
+
         enqueueSnackbar("Plan renamed successfully", {
           variant: "success",
         });

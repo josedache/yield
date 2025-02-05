@@ -230,3 +230,29 @@ export function trackUserDocumentVerification(payload: Record<string, any>) {
     console.error("Error tracking user document upload", error);
   }
 }
+
+
+export function trackUserOnClickingFundPlan(payload: Record<string, any>) {
+  try {
+    trackUser(mixpanelEvents.on_clicking_fund_plan, { ...payload });
+  } catch (error) {
+    console.error("Error tracking user on clicking fund plan", error);
+  }
+}
+
+
+export function trackUserOnSelectingTransfer(payload: Record<string, any>) {
+  try {
+    trackUser(mixpanelEvents.on_selecting_transfer, { ...payload });
+  } catch (error) {
+    console.error("Error tracking user on clicking fund plan", error);
+  }
+}
+
+export function trackUserOnSelectingFundWithWallet(payload: Record<string, any>) {
+  try {
+    trackUser(mixpanelEvents.on_selecting_fundwithwallet, { ...payload });
+  } catch (error) {
+    console.error("Error tracking user on clicking fund plan", error);
+  }
+}

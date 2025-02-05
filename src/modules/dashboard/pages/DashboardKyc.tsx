@@ -35,8 +35,10 @@ import { getFormikTextFieldProps } from "utils/formik";
 import useRtkQueryStatusCallbacks from "hooks/useRtkQueryStatusCallbacks";
 import { removeEmptyProperties } from "utils/object";
 import Countdown from "components/Countdown";
-import { trackUserDocumentVerification } from "configs/analytics";
-
+import {
+  trackUserAddBankAccount,
+  trackUserDocumentVerification,
+} from "configs/analytics";
 
 function DashboardKyc() {
   const { enqueueSnackbar } = useSnackbar();
@@ -222,6 +224,10 @@ function DashboardKyc() {
             break;
           }
           case DashboardKycStep.ACCOUNT_DETAILS: {
+            trackUserAddBankAccount({
+              accountNumber: formik.values.accountnumber,
+              nin: formik.values.document.id_number,
+            });
             const data = await verifyUserClientKycMutation({
               body: removeEmptyProperties({
                 ...values,
@@ -230,12 +236,21 @@ function DashboardKyc() {
                 document: undefined,
               }),
             }).unwrap();
+            trackUserAddBankAccount({
+              accountNumber: formik.values.accountnumber,
+              nin: formik.values.document.id_number,
+            });
             enqueueSnackbar(
               data?.message || "Account details updated Successfully!",
               {
                 variant: "success",
               }
             );
+            trackUserAddBankAccount({
+              accountNumber: formik.values.accountnumber,
+              nin: formik.values.document.id_number,
+              status: 200,
+            });
 
             break;
           }

@@ -254,7 +254,7 @@ function DashboardMain() {
               <div className="grid grid-cols-2 md:grid-cols-1 gap-2 w-full md:w-[25%]">
                 <WalletFund>
                   {({ toggleOpen }) => (
-                    <Button onClick={toggleOpen} fullWidth>
+                    <Button onClick={toggleOpen}  fullWidth>
                       Fund Wallet
                     </Button>
                   )}
