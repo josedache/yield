@@ -189,6 +189,7 @@ function FlexFund(props: FlexFundProps) {
   }
 
   const handleFundYield = async () => {
+
     try {
       await transferSavingsMutation({
         body: {

@@ -144,7 +144,7 @@ function AuthSignup() {
             }).unwrap();
             enqueueSnackbar("OTP verified successfully!", {
               variant: "success",
-            });
+            }); 
             break;
           }
           case AuthSignupStep.BASIC_INFORMATION: {

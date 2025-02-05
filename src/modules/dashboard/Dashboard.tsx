@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 
-function Dashboard() {
+function Dashboard() { 
   return (
     <>
       <Outlet />

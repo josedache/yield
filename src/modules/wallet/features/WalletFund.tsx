@@ -19,6 +19,7 @@ import useAuthUser from "hooks/useAuthUser";
 import useClipboard from "hooks/useClipboard";
 import LoadingContent from "components/LoadingContent";
 
+
 function WalletFund(props: WalletFundProps) {
   const { children, onClose, ...restProps } = props;
 

@@ -16,6 +16,8 @@ import {
   SENTRY_DSN_TOKEN,
   SENTRY_PROPAGATION_TARGETS_URLS,
 } from "constants/env";
+import { initMixpanel } from "configs/mixpanel";
+
 
 Sentry.init({
   dsn: SENTRY_DSN_TOKEN,
@@ -29,6 +31,8 @@ Sentry.init({
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
 });
+
+initMixpanel()
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

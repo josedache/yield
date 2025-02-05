@@ -119,6 +119,8 @@ function DashboardMain() {
   ) {
     return <Navigate to={DASHBOARD_KYC} replace />;
   }
+ 
+  
 
   return (
     <div className="space-y-8">
