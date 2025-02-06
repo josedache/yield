@@ -80,7 +80,7 @@ const navigation = {
       name: "Address: 48/50 Isaac John Street, GRA, Ikeja, Lagos, Nigeria.",
       href: "#",
     },
-    { name: "Email: yieldsupport@creditdirect.ng", href: "#" },
+    { name: "Email: yieldsupport@creditdirect.ng", href: "mailto:yieldsupport@creditdirect.ng" },
     { name: "Phone: 0700CREDITDIRECT, 02014482225, 02017005120", href: "#" },
     { name: "Whatsapp: 09070309430", href: "#" },
   ],
