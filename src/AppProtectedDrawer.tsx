@@ -188,8 +188,8 @@ function AppProtectedDrawer() {
               {
                 label: "Email Address",
                 icon: "lucide:mail",
-                href: "mailto:contact@creditdirect.ng",
-                hrefText: "contact@creditdirect.ng",
+                href: "mailto:yieldsupport@creditdirect.ng",
+                hrefText: "yieldsupport@creditdirect.ng",
               },
               {
                 label: "Support Line 1",
