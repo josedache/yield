@@ -32,6 +32,8 @@ import FixedDeleteDraft from "./FixedDeleteDraft";
 import FixedEditPlanName from "./FixedEditPlanName";
 import FixedRollover from "./FixedRollover";
 import { SAVINGS_ACCOUNT_STATUS_TYPE } from "constants/savings";
+import { trackUserOnClickingFundPlan } from "configs/analytics";
+
 
 export default function FixedPlanDetails(
   props: DrawerProps & { onClose: () => void; info: any }
@@ -159,7 +161,12 @@ export default function FixedPlanDetails(
       color: "primary",
       variant: "soft",
       status: [SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL],
-      onClick: toggleCompletePayment,
+      onClick: () => {
+        trackUserOnClickingFundPlan({event: "user clicked on fund plan button"
+        });
+        toggleCompletePayment();
+        // toggleCompletePayment,
+      },
       disabled: getSavingsQuery?.isLoading,
     },
     {
