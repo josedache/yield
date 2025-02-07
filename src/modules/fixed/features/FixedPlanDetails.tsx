@@ -165,7 +165,6 @@ export default function FixedPlanDetails(
         trackUserOnClickingFundPlan({event: "user clicked on fund plan button"
         });
         toggleCompletePayment();
-        // toggleCompletePayment,
       },
       disabled: getSavingsQuery?.isLoading,
     },
