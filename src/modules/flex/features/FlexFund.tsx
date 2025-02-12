@@ -40,6 +40,7 @@ import { formatNumberToCurrency } from "utils/number";
 import { walletApi } from "apis/wallet-api";
 import clsx from "clsx";
 import {
+  trackUserOnSelectingFundWithWallet,
   trackUserPaystack,
   trackUserUponSelectingYieldAmount,
 } from "configs/analytics";
@@ -189,6 +190,8 @@ function FlexFund(props: FlexFundProps) {
   }
 
   const handleFundYield = async () => {
+    trackUserOnSelectingFundWithWallet({transferAmount: formik.values.amount, savingId: savingsAccount.id});
+
     try {
       await transferSavingsMutation({
         body: {
@@ -197,6 +200,8 @@ function FlexFund(props: FlexFundProps) {
           type: "transfer",
         },
       }).unwrap();
+      trackUserOnSelectingFundWithWallet({transferAmount: formik.values.amount, savingId: savingsAccount.id, status: 200});
+
       stepper.go(getEnumStepIndex(FlexFundStep.SUCCESS));
     } catch (error) {
       enqueueSnackbar(
@@ -207,6 +212,8 @@ function FlexFund(props: FlexFundProps) {
           variant: "error",
         }
       );
+      trackUserOnSelectingFundWithWallet({transferAmount: formik.values.amount, savingId: savingsAccount.id, status: 700});
+
     }
   };
 

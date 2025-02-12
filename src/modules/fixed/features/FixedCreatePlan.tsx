@@ -36,6 +36,7 @@ import { formatNumberToCurrency } from "utils/number";
 import useClipboard from "hooks/useClipboard";
 import { transactionApi } from "apis/transaction-api";
 import useAuthUser from "hooks/useAuthUser";
+import { trackUserClickOnCreateNewYield, trackUserOnSelectingTransfer, trackUserPaystack } from "configs/analytics";
 
 export default function FixedCreatePlan(
   props: DialogProps & {
@@ -154,6 +155,10 @@ export default function FixedCreatePlan(
       name: yup.string().label("Plan Name").required("Required"),
     }),
     onSubmit: async (values) => {
+      trackUserClickOnCreateNewYield({
+        depositAmount: formik.values.depositAmount,
+        depositPeriod: formik.values.depositPeriod,
+      });
       try {
         switch (stepper.step) {
           case 0:
@@ -229,6 +234,7 @@ export default function FixedCreatePlan(
   };
 
   async function handlePaystack() {
+    trackUserPaystack({amount: formik.values.depositAmount, status: 200})
     try {
       const transactionRef =
         await generateTransactionOutwardPaymentReferenceMutation({
@@ -320,6 +326,7 @@ export default function FixedCreatePlan(
               icon: <img src={CdlLogo} width={32} height={32} />,
               label: "Pay with transfer (recommended)",
               onClick: () => {
+                trackUserOnSelectingTransfer({event: "User Clicked on pay with transfer"});
                 handleFundYield("transfer");
               },
               disabled: savingsActivateAccountMutationResult.isLoading,
@@ -424,6 +431,7 @@ export default function FixedCreatePlan(
                 className="mt-6 max-auto"
                 variant="soft"
                 onClick={() => {
+                  trackUserOnSelectingTransfer({event: "User clicked on i have sent the money"});
                   enqueueSnackbar(
                     "Upon Confirmation, your plan will be activated",
                     {
