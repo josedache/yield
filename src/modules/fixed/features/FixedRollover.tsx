@@ -83,9 +83,6 @@ export default function FixedRollover(
                   formik.values.depositPeriodFrequencyId,
               },
             }).unwrap();
-            enqueueSnackbar("Rollover Successfully", {
-              variant: "success",
-            });
             trackUserOnSelectingRollover({
               savingsId: values.savingsId,
               newPlanName: values.newPlanName,
@@ -96,7 +93,9 @@ export default function FixedRollover(
               action: "Completed Rollover",
               status: 200,
             });
-
+            enqueueSnackbar("Rollover Successfully", {
+              variant: "success",
+            });
             toggleFixedCreatePlan();
             stepper.go(3);
           }
@@ -110,6 +109,11 @@ export default function FixedRollover(
             variant: "error",
           }
         );
+        trackUserOnSelectingRollover({
+          status: 700,
+          savingsId: values.savingsId,
+          newPlanName: values.newPlanName,
+        });
       }
     },
   });
