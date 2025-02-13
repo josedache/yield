@@ -36,7 +36,7 @@ import { formatNumberToCurrency } from "utils/number";
 import useClipboard from "hooks/useClipboard";
 import { transactionApi } from "apis/transaction-api";
 import useAuthUser from "hooks/useAuthUser";
-import { trackUserClickOnCreateNewYield, trackUserOnSelectingTransfer, trackUserPaystack } from "configs/analytics";
+import { trackUserClickOnCreateNewYield, trackUserOnSelectingRollover, trackUserOnSelectingTransfer, trackUserPaystack } from "configs/analytics";
 
 export default function FixedCreatePlan(
   props: DialogProps & {
@@ -472,7 +472,9 @@ export default function FixedCreatePlan(
           <Button
             className="max-w-[255px]"
             fullWidth
-            onClick={() => {
+            onClick={() => { 
+              trackUserOnSelectingRollover({event: "I have successfully clicked on Okay"
+              });
               onClose();
             }}
           >
