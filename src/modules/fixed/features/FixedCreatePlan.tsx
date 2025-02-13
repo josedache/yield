@@ -473,7 +473,7 @@ export default function FixedCreatePlan(
             className="max-w-[255px]"
             fullWidth
             onClick={() => { 
-              trackUserOnSelectingRollover({event: "I have successfully clicked on Okay"
+              trackUserOnSelectingRollover({event: "I have clicked on  Okay for a Successfull rollover"
               });
               onClose();
             }}
