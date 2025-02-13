@@ -60,9 +60,12 @@ export default function FixedRollover(
     }),
     onSubmit: async (values) => {
       trackUserOnSelectingRollover({
-        deposit_period: formik.values.depositPeriod,
-        deposit_period_frequency_id: formik.values.depositPeriodFrequencyId,
-        newPlanName: formik.values.newPlanName,
+        savingsId: values.savingsId,
+        newPlanName: values.newPlanName,
+        rolloverType:
+          values.onAccountClosureId === ROLLOVER_WITH_CAPITAL
+            ? "Capital Only"
+            : "Capital + Interest",
       });
       try {
         if (stepper.step === 1 || stepper.step === 2) {
@@ -90,6 +93,8 @@ export default function FixedRollover(
                 values.onAccountClosureId === ROLLOVER_WITH_CAPITAL
                   ? "Capital Only"
                   : "Capital + Interest",
+              action: "Completed Rollover",
+              status: 200,
             });
 
             toggleFixedCreatePlan();
@@ -128,6 +133,11 @@ export default function FixedRollover(
                     "onAccountClosureId",
                     ROLLOVER_WITH_CAPITAL
                   );
+                  trackUserOnSelectingRollover({
+                    event: "Selected Rollover capital only",
+                    savingsId: formik.values.savingsId,
+                  });
+
                   stepper.go(1);
                 },
                 disabled: false,
@@ -140,6 +150,10 @@ export default function FixedRollover(
                     "onAccountClosureId",
                     ROLLOVER_WITH_INTEREST
                   );
+                  trackUserOnSelectingRollover({
+                    event: "Selected Rollover interest only",
+                    savingsId: formik.values.savingsId,
+                  });
                   stepper.go(2);
                 },
                 disabled: false,

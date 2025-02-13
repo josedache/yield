@@ -64,4 +64,8 @@ export const enum mixpanelEvents {
   on_selecting_inerest = "ON_SELECTING_INTEREST",
   on_selecting_reinvest_yield = "ON_SELECTING_REINVEST_YIELD",
   on_selecting_claim = "ON_SELECTING_CLAIM",
+  on_clicking_fund_plan = "ON_CLICKING_FUND_PLAN",
+  on_selecting_transfer = "ON_SELECTING_TRANSFER",
+  on_selecting_fundwithwallet = "ON_SELECTING_FUNDWITHWALLET",
+  
 }

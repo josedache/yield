@@ -22,6 +22,7 @@ import Countdown from "components/Countdown";
 import { userApi } from "apis/user-api";
 import { useSnackbar } from "notistack";
 
+
 function AuthSignupBvn(props: AuthSignupStepContentProps) {
   const { formik } = props;
 
@@ -98,6 +99,7 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
       });
     }
   }
+
 
   useEffect(() => {
     if (!open) {
