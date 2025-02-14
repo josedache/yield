@@ -61,11 +61,11 @@ export default function FixedRollover(
     onSubmit: async (values) => {
       trackUserOnSelectingRollover({
         savingsId: values.savingsId,
-        newPlanName: values.newPlanName,
         rolloverType:
           values.onAccountClosureId === ROLLOVER_WITH_CAPITAL
             ? "Capital Only"
             : "Capital + Interest",
+            status: 200,
       });
       try {
         if (stepper.step === 1 || stepper.step === 2) {
@@ -83,12 +83,8 @@ export default function FixedRollover(
                   formik.values.depositPeriodFrequencyId,
               },
             }).unwrap();
-            enqueueSnackbar("Rollover Successfully", {
-              variant: "success",
-            });
             trackUserOnSelectingRollover({
               savingsId: values.savingsId,
-              newPlanName: values.newPlanName,
               rolloverType:
                 values.onAccountClosureId === ROLLOVER_WITH_CAPITAL
                   ? "Capital Only"
@@ -96,6 +92,10 @@ export default function FixedRollover(
               action: "Completed Rollover",
               status: 200,
             });
+            enqueueSnackbar("Rollover Successfully", {
+              variant: "success",
+            });
+          
             toggleFixedCreatePlan();
             stepper.go(3);
           }
@@ -129,14 +129,14 @@ export default function FixedRollover(
                 ),
                 label: "Rollover Capital only",
                 onClick: () => {
-                  formik.setFieldValue(
-                    "onAccountClosureId",
-                    ROLLOVER_WITH_CAPITAL
-                  );
                   trackUserOnSelectingRollover({
                     event: "Selected Rollover capital only",
                     savingsId: formik.values.savingsId,
                   });
+                  formik.setFieldValue(
+                    "onAccountClosureId",
+                    ROLLOVER_WITH_CAPITAL
+                  );
 
                   stepper.go(1);
                 },
@@ -146,14 +146,14 @@ export default function FixedRollover(
                 icon: <Iconify icon="uil:percentage" className="text-2xl" />,
                 label: `Rollover Capital with Interest`,
                 onClick: () => {
+                  trackUserOnSelectingRollover({
+                    event: "Selected Rollover capital with interest",
+                    savingsId: formik.values.savingsId,
+                  });
                   formik.setFieldValue(
                     "onAccountClosureId",
                     ROLLOVER_WITH_INTEREST
                   );
-                  trackUserOnSelectingRollover({
-                    event: "Selected Rollover interest only",
-                    savingsId: formik.values.savingsId,
-                  });
                   stepper.go(2);
                 },
                 disabled: false,
