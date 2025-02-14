@@ -61,6 +61,7 @@ export default function FixedRollover(
     onSubmit: async (values) => {
       trackUserOnSelectingRollover({
         savingsId: values.savingsId,
+        newPlanName: formik.values.newPlanName,
         rolloverType:
           values.onAccountClosureId === ROLLOVER_WITH_CAPITAL
             ? "Capital Only"
@@ -85,6 +86,7 @@ export default function FixedRollover(
             }).unwrap();
             trackUserOnSelectingRollover({
               savingsId: values.savingsId,
+              newPlanName: formik.values.newPlanName,
               rolloverType:
                 values.onAccountClosureId === ROLLOVER_WITH_CAPITAL
                   ? "Capital Only"
