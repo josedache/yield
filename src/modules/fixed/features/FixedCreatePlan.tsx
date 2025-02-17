@@ -36,7 +36,12 @@ import { formatNumberToCurrency } from "utils/number";
 import useClipboard from "hooks/useClipboard";
 import { transactionApi } from "apis/transaction-api";
 import useAuthUser from "hooks/useAuthUser";
-import { trackUserClickOnCreateNewYield, trackUserOnSelectingTransfer, trackUserPaystack } from "configs/analytics";
+import {
+  trackUserClickOnCreateNewYield,
+  trackUserOnSelectingRollover,
+  trackUserOnSelectingTransfer,
+  trackUserPaystack,
+} from "configs/analytics";
 
 export default function FixedCreatePlan(
   props: DialogProps & {
@@ -194,6 +199,9 @@ export default function FixedCreatePlan(
                     name: values.name,
                   },
                 }).unwrap();
+                trackUserOnSelectingRollover({
+                  event: "Clicked on proceed to rollover.",
+                });
               } else {
                 await savingsFixedDepositCreateMutation({
                   body: {
@@ -234,7 +242,7 @@ export default function FixedCreatePlan(
   };
 
   async function handlePaystack() {
-    trackUserPaystack({amount: formik.values.depositAmount, status: 200})
+    trackUserPaystack({ amount: formik.values.depositAmount, status: 200 });
     try {
       const transactionRef =
         await generateTransactionOutwardPaymentReferenceMutation({
@@ -326,7 +334,9 @@ export default function FixedCreatePlan(
               icon: <img src={CdlLogo} width={32} height={32} />,
               label: "Pay with transfer (recommended)",
               onClick: () => {
-                trackUserOnSelectingTransfer({event: "User Clicked on pay with transfer"});
+                trackUserOnSelectingTransfer({
+                  event: "User Clicked on pay with transfer",
+                });
                 handleFundYield("transfer");
               },
               disabled: savingsActivateAccountMutationResult.isLoading,
@@ -431,7 +441,9 @@ export default function FixedCreatePlan(
                 className="mt-6 max-auto"
                 variant="soft"
                 onClick={() => {
-                  trackUserOnSelectingTransfer({event: "User clicked on i have sent the money"});
+                  trackUserOnSelectingTransfer({
+                    event: "User clicked on i have sent the money",
+                  });
                   enqueueSnackbar(
                     "Upon Confirmation, your plan will be activated",
                     {
@@ -473,6 +485,9 @@ export default function FixedCreatePlan(
             className="max-w-[255px]"
             fullWidth
             onClick={() => {
+              trackUserOnSelectingRollover({
+                event: "Clicked on  Okay for a Successfull rollover",
+              });
               onClose();
             }}
           >
