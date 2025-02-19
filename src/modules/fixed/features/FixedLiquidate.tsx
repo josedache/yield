@@ -302,7 +302,7 @@ export default function FixedLiquidate(
             containerStyle={{ justifyContent: "center" }}
             value={formik.values.otp}
             onChange={(token) => {
-              trackUserOnSelectingClaim({event: "otp sent to the user", otp: formik.values.otp})
+              trackUserOnSelectingClaim({event: "otp sent to the user"})
               formik.setFieldValue("otp", token);
             }}
             placeholder=""
