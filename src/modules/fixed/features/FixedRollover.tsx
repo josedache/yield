@@ -274,7 +274,7 @@ export default function FixedRollover(
     <FixedCreatePlan
       onClose={toggleFixedCreatePlan}
       open={isFixedCreatePlan}
-      accountClosureId={formik.values?.onAccountClosureId}
+      accountClosureId={formik?.values?.onAccountClosureId}
       savingsId={formik?.values?.savingsId}
       isLoading={liquidateSavingsMutationResult?.isLoading}
       onHandleSubmit={(values) => {
