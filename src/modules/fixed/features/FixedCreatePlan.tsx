@@ -43,6 +43,9 @@ import {
   trackUserPaystack,
 } from "configs/analytics";
 
+const ROLLOVER_WITH_CAPITAL = 400;
+const ROLLOVER_WITH_INTEREST = 300;
+
 export default function FixedCreatePlan(
   props: DialogProps & {
     onClose: () => void;
@@ -54,6 +57,7 @@ export default function FixedCreatePlan(
     onSuccess?: () => void;
     proceedLabel?: string;
     disabledFields?: Array<"depositAmount" | "depositPeriod" | "name">;
+    accountClosureId?: number;
   }
 ) {
   const {
@@ -66,6 +70,7 @@ export default function FixedCreatePlan(
     isPayment,
     proceedLabel,
     disabledFields,
+    accountClosureId,
     ...rest
   } = props;
 
@@ -134,8 +139,11 @@ export default function FixedCreatePlan(
           }
         : {}),
       name: getSavingsQuery?.data?.data?.plan_name ?? "",
-      depositAmount:
-        Number(getSavingsQuery?.data?.data?.principal || 0) || null,
+      depositAmount: accountClosureId === ROLLOVER_WITH_CAPITAL
+          ? Number(getSavingsQuery?.data?.data?.principal || 0) || null
+          : accountClosureId === ROLLOVER_WITH_INTEREST
+          ? Number(getSavingsQuery?.data?.data?.maturity_amount || 0) || null
+          : null,
       lockinPeriodFrequency: 0,
       lockinPeriodFrequencyType: 0,
       fundSource: "",
