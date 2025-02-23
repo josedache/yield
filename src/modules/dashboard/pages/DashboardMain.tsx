@@ -119,6 +119,8 @@ function DashboardMain() {
   ) {
     return <Navigate to={DASHBOARD_KYC} replace />;
   }
+ 
+  
 
   return (
     <div className="space-y-8">
@@ -207,11 +209,52 @@ function DashboardMain() {
                     </div>
                   )}
                 </LoadingContent>
+
+                <LoadingContent
+                  loading={
+                    walletQueryResult.isLoading || walletQueryResult.isFetching
+                  }
+                  error={walletQueryResult.isError}
+                  onRetry={walletQueryResult.refetch}
+                  className="w-full max-w-48 mt-1"
+                  renderError={() => (
+                    <div className="flex items-center gap-2">
+                      <Typography className="font-semibold">
+                        Something went wrong
+                      </Typography>
+                      <IconButton>
+                        <Iconify icon="mdi:reload" />
+                      </IconButton>
+                    </div>
+                  )}
+                  renderLoading={() => (
+                    <Skeleton
+                      variant="rectangular"
+                      height={20}
+                      width="100%"
+                      className="rounded-lg"
+                    />
+                  )}
+                >
+                  {() => (
+                    <div className="flex items-center mt-1 text-gray-500">
+                      <Typography variant="caption" className="mr-1">
+                        Available Balance:
+                      </Typography>
+                      <CurrencyTypography
+                        variant="caption"
+                        blur={isWalletBalanceVisible}
+                      >
+                        {wallet?.available_balance}
+                      </CurrencyTypography>
+                    </div>
+                  )}
+                </LoadingContent>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-1 gap-2 w-full md:w-[25%]">
                 <WalletFund>
                   {({ toggleOpen }) => (
-                    <Button onClick={toggleOpen} fullWidth>
+                    <Button onClick={toggleOpen}  fullWidth>
                       Fund Wallet
                     </Button>
                   )}

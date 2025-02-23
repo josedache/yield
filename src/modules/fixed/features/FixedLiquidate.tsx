@@ -19,7 +19,6 @@ import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import { Icon as Iconify } from "@iconify/react";
 import clsx from "clsx";
-
 import useStepper from "hooks/useStepper";
 // import CdlLogo from "assets/imgs/cdl-logo.png";
 import BackIconButton from "components/BackIconButton";
@@ -31,6 +30,7 @@ import useAuthUser from "hooks/useAuthUser";
 import { transactionApi } from "apis/transaction-api";
 import { useMemo, useState } from "react";
 import NumberInput from "components/NumberInput";
+import { trackUserOnSelectingClaim } from "configs/analytics";
 
 export default function FixedLiquidate(
   props: DialogProps & { onClose: () => void; info: any }
@@ -133,6 +133,7 @@ export default function FixedLiquidate(
   });
 
   async function handleResendOpt() {
+    trackUserOnSelectingClaim({event: "Resend Otp", })
     try {
       const resp = await sendOtpMutation({
         body: {
@@ -141,6 +142,7 @@ export default function FixedLiquidate(
           amount: 4000,
         },
       }).unwrap();
+      trackUserOnSelectingClaim({event: "Resend Otp", status: 200})
       setOptEmail(resp?.data as any);
       enqueueSnackbar("Otp resent!", {
         variant: "success",
@@ -170,19 +172,24 @@ export default function FixedLiquidate(
             {info?.available_balance}
           </CurrencyTypography>
 
-          <div className="flex gap-1 items-start mt-6">
-            <Iconify
-              icon="ep:warning-filled"
-              className="text-error-500 text-3xl h-5 p-0 leading-none"
-            />
-            <Typography
-              variant="body2"
-              className="text-left block text-neutral-500"
-            >
-              Note: Early liquidation will result in a 30% fine on your accrued
-              interest. Are you sure you want to liquidate this plan?
-            </Typography>
-          </div>
+          {info?.maturity_date &&
+            new Date(info?.maturity_date) >= new Date() && (
+              <div className="flex gap-1 items-start mt-6">
+                <Iconify
+                  icon="ep:warning-filled"
+                  className="text-error-500 text-3xl h-5 p-0 leading-none"
+                />
+
+                <Typography
+                  variant="body2"
+                  className="text-left block text-neutral-500"
+                >
+                  Note: Early liquidation will result in a 30% fine on your
+                  accrued interest. Are you sure you want to liquidate this
+                  plan?
+                </Typography>
+              </div>
+            )}
         </div>
       ),
     },
@@ -238,6 +245,7 @@ export default function FixedLiquidate(
                   normalizedBanks?.[authUser.bank_details.bankId]?.name || "",
                 more: userAuth?.bank_details?.accountnumber || "",
                 onClick: () => {
+                  trackUserOnSelectingClaim({event: "Click on Bank Name"})
                   formik.handleSubmit();
                 },
                 disabled:
@@ -248,6 +256,7 @@ export default function FixedLiquidate(
                 icon: <Iconify icon="ph:wallet-light" className="text-3xl" />,
                 label: `CDL Wallet`,
                 onClick: () => {
+                  trackUserOnSelectingClaim({event: "Clicked on CDL Wallet"});
                   formik.handleSubmit();
                 },
                 disabled:
@@ -293,6 +302,7 @@ export default function FixedLiquidate(
             containerStyle={{ justifyContent: "center" }}
             value={formik.values.otp}
             onChange={(token) => {
+              trackUserOnSelectingClaim({event: "otp sent to the user"})
               formik.setFieldValue("otp", token);
             }}
             placeholder=""
@@ -360,6 +370,7 @@ export default function FixedLiquidate(
   ];
 
   function handleClose(e?: any, reason?: any) {
+    trackUserOnSelectingClaim({event: "Clicked Okay to liquidate my process"});
     formik.resetForm();
     stepper.reset();
     onClose?.(e, reason);

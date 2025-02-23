@@ -1,4 +1,10 @@
-import { ButtonBase, Paper, Typography, Icon } from "@mui/material";
+import {
+  ButtonBase,
+  Paper,
+  Typography,
+  Icon,
+  Link as MuiLink,
+} from "@mui/material";
 import { useFormik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
@@ -16,16 +22,20 @@ import { userApi } from "apis/user-api";
 import PasswordTextField from "components/PasswordTextField";
 import NumberInput from "components/NumberInput";
 import clsx from "clsx";
+import Countdown from "components/Countdown";
+import { useState } from "react";
 
 function AuthResetPassword() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [sendUserResetPasswordMutation] =
+  const [sendUserResetPasswordMutation, sendUserResetPasswordMutationResult] =
     userApi.useSendUserResetPasswordMutation();
 
   const [verifyUserResetPasswordMutation] =
     userApi.useVerifyUserResetPasswordMutation();
+
+  const [countdownDate, setCountdownDate] = useState(getCountdownDate);
 
   const [resetPasswordMutation] = userApi.useResetPasswordMutation();
 
@@ -79,6 +89,7 @@ function AuthResetPassword() {
             const data = await sendUserResetPasswordMutation({
               body: { identifier: values.identifier, device_id: "kdkdkdd" },
             }).unwrap();
+            setCountdownDate(getCountdownDate());
             enqueueSnackbar(data?.message || "Password reset otp sent", {
               variant: "success",
             });
@@ -124,6 +135,25 @@ function AuthResetPassword() {
     },
   });
 
+  const handleResendOtpReset = async () => {
+    try {
+      const data = await sendUserResetPasswordMutation({
+        body: { identifier: formik.values.identifier, device_id: "kdkdkdd" },
+      }).unwrap();
+      setCountdownDate(getCountdownDate());
+      enqueueSnackbar(data?.message || "Password reset otp sent", {
+        variant: "success",
+      });
+    } catch (error: any) {
+      enqueueSnackbar(
+        error?.data?.message || "Failed to resend password reset otp",
+        {
+          variant: "error",
+        }
+      );
+    }
+  };
+
   const contents = [
     {
       title: "Reset Password",
@@ -163,6 +193,57 @@ function AuthResetPassword() {
               },
             }}
           />
+
+          <Countdown date={countdownDate}>
+            {(countdown) => {
+              const isCodeSent =
+                countdown.days ||
+                countdown.minutes ||
+                countdown.seconds ||
+                countdown.seconds;
+
+              return (
+                <>
+                  {isCodeSent ? (
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      className="text-center"
+                    >
+                      Resend OTP in{" "}
+                      <Typography
+                        component="span"
+                        color="primary"
+                        className="font-semibold"
+                      >
+                        {countdown.minutes}:
+                        {countdown.seconds < 10
+                          ? `0${countdown.seconds}`
+                          : countdown.seconds}
+                      </Typography>
+                    </Typography>
+                  ) : (
+                    <div className="flex items-center justify-center">
+                      <Typography className="text-center">
+                        Didn’t receive code?{" "}
+                        <ButtonBase
+                          disableRipple
+                          disabled={
+                            sendUserResetPasswordMutationResult.isLoading
+                          }
+                          component={MuiLink}
+                          onClick={handleResendOtpReset as any}
+                          className="underline text-text-primary font-bold"
+                        >
+                          Resend Code.
+                        </ButtonBase>
+                      </Typography>
+                    </div>
+                  )}
+                </>
+              );
+            }}
+          </Countdown>
         </>
       ),
     },
@@ -305,6 +386,12 @@ export const Component = AuthResetPassword;
 function getEnumStepIndex(enumStep: AuthResetPasswordStep) {
   const index = STEPS_INDEX.indexOf(enumStep);
   return index > -1 ? index : undefined;
+}
+
+function getCountdownDate() {
+  const date = new Date();
+  date.setTime(date.getTime() + 1000 * 60 * 5);
+  return date;
 }
 
 const STEPS_INDEX = [

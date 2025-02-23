@@ -16,16 +16,16 @@ import { useSnackbar } from "notistack";
 import { Icon as Iconify } from "@iconify-icon/react";
 import clsx from "clsx";
 import { useEffect } from "react";
+import { LoadingButton } from "@mui/lab";
+
 import PaystackIconPngUrl from "assets/imgs/paystack-icon.png";
 import PaymentGatewayInline from "libs/payment-gateway-inline/inline";
-import {
-  // PaymentGatewayInlineChannel,
-  PaymentGatewayInlineProvider,
-} from "libs/payment-gateway-inline";
+import { PaymentGatewayInlineProvider } from "libs/payment-gateway-inline";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
+import FixedCreatePlanCalculatorTab from "./FixedCreatePlanCalculatorTab";
+import { FIXED_PRODUCT_ID, PAYSTACK_PUBLIC_KEY } from "constants/env";
 import useStepper from "hooks/useStepper";
 import BackIconButton from "components/BackIconButton";
-import FixedCreatePlanCalculatorTab from "./FixedCreatePlanCalculatorTab";
 import FixedCreatePlanTab from "./FixedCreatePlanTab";
 import { FixedCreatePlanFormikType } from "../types/FixedCreatePlan";
 import { savingsApi } from "apis/savings-api";
@@ -34,21 +34,40 @@ import CdlLogo from "assets/imgs/cdl-logo.png";
 import { walletApi } from "apis/wallet-api";
 import { formatNumberToCurrency } from "utils/number";
 import useClipboard from "hooks/useClipboard";
-import { LoadingButton } from "@mui/lab";
-import { FIXED_PRODUCT_ID, PAYSTACK_PUBLIC_KEY } from "constants/env";
-import useAuthUser from "hooks/useAuthUser";
 import { transactionApi } from "apis/transaction-api";
+import useAuthUser from "hooks/useAuthUser";
+import {
+  trackUserClickOnCreateNewYield,
+  trackUserOnSelectingRollover,
+  trackUserOnSelectingTransfer,
+  trackUserPaystack,
+} from "configs/analytics";
 
 export default function FixedCreatePlan(
   props: DialogProps & {
     onClose: () => void;
     savingsId?: string;
     isEdit?: boolean;
+    isLoading?: boolean;
+    onHandleSubmit?: (val: FixedCreatePlanFormikType) => void;
     isPayment?: boolean;
     onSuccess?: () => void;
+    proceedLabel?: string;
+    disabledFields?: Array<"depositAmount" | "depositPeriod" | "name">;
   }
 ) {
-  const { onSuccess, onClose, savingsId, isEdit, isPayment, ...rest } = props;
+  const {
+    onSuccess,
+    onHandleSubmit,
+    onClose,
+    isLoading,
+    savingsId,
+    isEdit,
+    isPayment,
+    proceedLabel,
+    disabledFields,
+    ...rest
+  } = props;
 
   const stepper = useStepper();
   const { enqueueSnackbar } = useSnackbar();
@@ -92,9 +111,6 @@ export default function FixedCreatePlan(
     savingsFixedDepositCreateMutation,
     savingsFixedDepositCreateMutationResult,
   ] = savingsApi.useSavingsFixedDepositCreatePlanMutation();
-
-  // const resolvedSavingsId =
-  //   savingsId || savingsFixedDepositCreateMutationResult?.data?.data?.savingsId;
 
   const [savingsActivateAccountMutation, savingsActivateAccountMutationResult] =
     savingsApi.useSavingsActivateAccountMutation();
@@ -144,6 +160,10 @@ export default function FixedCreatePlan(
       name: yup.string().label("Plan Name").required("Required"),
     }),
     onSubmit: async (values) => {
+      trackUserClickOnCreateNewYield({
+        depositAmount: formik.values.depositAmount,
+        depositPeriod: formik.values.depositPeriod,
+      });
       try {
         switch (stepper.step) {
           case 0:
@@ -160,37 +180,43 @@ export default function FixedCreatePlan(
             stepper.next();
             break;
           case 1:
-            if (isEdit) {
-              await updateDraftSavingsMutation({
-                body: {
-                  savingsId: Number(savingsId),
-                  productId: values.productId,
-                  depositAmount: Number(values.depositAmount),
-                  depositPeriod: values.depositPeriod,
-                  depositPeriodFrequencyId: values.depositPeriodFrequencyId,
-                },
-              }).unwrap();
-              await renameMutation({
-                body: {
-                  savingsId: String(savingsId),
-                  name: values.name,
-                },
-              }).unwrap();
+            if (onHandleSubmit) {
+              onHandleSubmit?.({ ...values });
             } else {
-              await savingsFixedDepositCreateMutation({
-                body: {
-                  productId: values.productId,
-                  lockinPeriodFrequency: values.lockinPeriodFrequency,
-                  lockinPeriodFrequencyType: values.lockinPeriodFrequencyType,
-                  depositAmount: Number(values.depositAmount),
-                  depositPeriod: values.depositPeriod,
-                  depositPeriodFrequencyId: values.depositPeriodFrequencyId,
-                  name: values.name,
-                },
-              }).unwrap();
+              if (isEdit) {
+                await updateDraftSavingsMutation({
+                  body: {
+                    savingsId: Number(savingsId),
+                    productId: values.productId,
+                    depositAmount: Number(values.depositAmount),
+                    depositPeriod: values.depositPeriod,
+                    depositPeriodFrequencyId: values.depositPeriodFrequencyId,
+                  },
+                }).unwrap();
+                await renameMutation({
+                  body: {
+                    savingsId: String(savingsId),
+                    name: values.name,
+                  },
+                }).unwrap();
+                trackUserOnSelectingRollover({
+                  event: "Clicked on proceed to rollover.",
+                });
+              } else {
+                await savingsFixedDepositCreateMutation({
+                  body: {
+                    productId: values.productId,
+                    lockinPeriodFrequency: values.lockinPeriodFrequency,
+                    lockinPeriodFrequencyType: values.lockinPeriodFrequencyType,
+                    depositAmount: Number(values.depositAmount),
+                    depositPeriod: values.depositPeriod,
+                    depositPeriodFrequencyId: values.depositPeriodFrequencyId,
+                    name: values.name,
+                  },
+                }).unwrap();
+              }
+              stepper.next();
             }
-
-            stepper.next();
             break;
           default:
             break;
@@ -210,11 +236,13 @@ export default function FixedCreatePlan(
 
   const contentProps = {
     formik,
+    disabledFields,
     savingsFixedProductInformation: getSavingsProductInformationQuery.data,
     savingsDepositCalculator: savingsFixedDepositCalculationMutationResult.data,
   };
 
   async function handlePaystack() {
+    trackUserPaystack({ amount: formik.values.depositAmount, status: 200 });
     try {
       const transactionRef =
         await generateTransactionOutwardPaymentReferenceMutation({
@@ -306,6 +334,9 @@ export default function FixedCreatePlan(
               icon: <img src={CdlLogo} width={32} height={32} />,
               label: "Pay with transfer (recommended)",
               onClick: () => {
+                trackUserOnSelectingTransfer({
+                  event: "User Clicked on pay with transfer",
+                });
                 handleFundYield("transfer");
               },
               disabled: savingsActivateAccountMutationResult.isLoading,
@@ -410,6 +441,9 @@ export default function FixedCreatePlan(
                 className="mt-6 max-auto"
                 variant="soft"
                 onClick={() => {
+                  trackUserOnSelectingTransfer({
+                    event: "User clicked on i have sent the money",
+                  });
                   enqueueSnackbar(
                     "Upon Confirmation, your plan will be activated",
                     {
@@ -451,6 +485,9 @@ export default function FixedCreatePlan(
             className="max-w-[255px]"
             fullWidth
             onClick={() => {
+              trackUserOnSelectingRollover({
+                event: "Clicked on  Okay for a Successfull rollover",
+              });
               onClose();
             }}
           >
@@ -582,7 +619,8 @@ export default function FixedCreatePlan(
               }
               loading={
                 getSavingsProductInformationQuery.isLoading ||
-                walletQueryResult?.isLoading
+                walletQueryResult?.isLoading ||
+                getSavingsQuery?.isLoading
               }
               error={getSavingsProductInformationQuery.isError}
               onRetry={getSavingsProductInformationQuery.refetch}
@@ -598,13 +636,14 @@ export default function FixedCreatePlan(
                   savingsActivateAccountMutationResult.isLoading ||
                   walletQueryResult?.isLoading ||
                   updateDraftSavingsMutationResult?.isLoading ||
-                  renameMutationResult?.isLoading
+                  renameMutationResult?.isLoading ||
+                  isLoading
                 }
                 type="submit"
                 className={clsx(["mt-6", "mt-3"][stepper.step])}
                 fullWidth
               >
-                {["Continue", "Proceed to Pay"][stepper.step]}
+                {["Continue", proceedLabel ?? "Proceed to Pay"][stepper.step]}
               </LoadingButton>
             ) : null}
           </form>

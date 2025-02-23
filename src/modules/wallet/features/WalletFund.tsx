@@ -18,6 +18,8 @@ import { walletApi } from "apis/wallet-api";
 import useAuthUser from "hooks/useAuthUser";
 import useClipboard from "hooks/useClipboard";
 import LoadingContent from "components/LoadingContent";
+import { trackUserOnSelectingFundWithWallet } from "configs/analytics";
+
 
 function WalletFund(props: WalletFundProps) {
   const { children, onClose, ...restProps } = props;
@@ -46,7 +48,6 @@ function WalletFund(props: WalletFundProps) {
       try {
         if (stepper.step == 1) {
         }
-
         stepper.next();
       } catch (error) {
         enqueueSnackbar(error?.data?.message || "Failed to process funding", {
@@ -109,6 +110,7 @@ function WalletFund(props: WalletFundProps) {
                   </div>
                   <Button
                     onClick={(e) => {
+                      trackUserOnSelectingFundWithWallet({event: "User Clicks on I have sent the money"})
                       enqueueSnackbar(
                         "Upon reciept of your funds. Your wallet will be credited automatically",
                         {
@@ -116,6 +118,7 @@ function WalletFund(props: WalletFundProps) {
                         }
                       );
                       handleClose(e);
+                     
                     }}
                     size="large"
                     color="primary"
