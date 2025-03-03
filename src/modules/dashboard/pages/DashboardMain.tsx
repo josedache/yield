@@ -41,9 +41,9 @@ function DashboardMain() {
   const authUser = useAuthUser();
   const navigate = useNavigate();
 
-  const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
-  const [isFixedYieldVisible, toggleFixedYieldVisible] = useToggle();
-  const [isFlexYieldVisible, toggleFlexYieldVisible] = useToggle();
+  const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle(true);
+  const [isFixedYieldVisible, toggleFixedYieldVisible] = useToggle(true);
+  const [isFlexYieldVisible, toggleFlexYieldVisible] = useToggle(true);
 
   const recentActivitiesParentRef = useRef(null);
 

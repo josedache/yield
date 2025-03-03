@@ -39,7 +39,7 @@ function Fixed() {
     dialog: "" as FixedUrlDialog,
   });
 
-  const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
+  const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle(true);
   const [isFixedCreatePlan, toggleFixedCreatePlan] = useToggle(
     dialog === FixedUrlDialog.CREATE_PLAN
   );
