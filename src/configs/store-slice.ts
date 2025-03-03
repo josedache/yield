@@ -69,7 +69,6 @@ export const slice = createSlice({
           } as User;
         }
       )
-
       .addMatcher(
         userApi.endpoints.userRefreshToken.matchFulfilled,
         (state, { payload }) => {

@@ -55,6 +55,7 @@ export type User = {
     account_type: string;
     bank_classification: string;
   };
+ 
   expiresIn: string;
   refreshToken: string;
 };

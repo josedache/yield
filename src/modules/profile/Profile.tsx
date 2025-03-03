@@ -26,13 +26,21 @@ function Profile() {
   const clipboard = useClipboard();
 
   const { enqueueSnackbar } = useSnackbar();
+
+
+
+  const useGetUserReferralCodeQueryResult  = userApi.useGetUserReferralCodeQuery({});
+
+  console.log({useGetUserReferralCodeQueryResult});
+
+
   const [preferredOtpMode, setPreferredOtpMode] = useState(
     authUser.preffered_notification_channel ?? "bvn_phone"
   );
 
   const [uploadUserFileMutation, uploadUserFileMutationResult] =
     userApi.useUploadUserFileMutation();
-
+   
   const transactionOutwardBankListQueryResult =
     transactionApi.useGetTransactionOutwardBankListQuery(undefined, {
       skip: !authUser.bank_details.bankId,
@@ -328,6 +336,33 @@ function Profile() {
                     </LoadingButton>
                   )}
                 </Dropzone>
+              </div>
+            </div>
+          </Paper>
+
+          <Paper variant="outlined mt-4">
+            <div className="px-3 py-3 rounded-lg border-b">
+              <h1 className="font-normal text-xs text-gray-600">
+                Refer your friends & family and earn some rewards.
+              </h1>
+              <div className="flex mt-2 ">
+                <Typography className="font-semibold text-[#1F2937] text-base">
+                  Your Referral Code
+                </Typography>
+                <Typography variant="body1">
+                      {authUser?.code}
+                    </Typography>
+                <IconButton
+                  size="small"
+                  color="primary"
+                  onClick={() => clipboard.writeText(String(authUser?.code))}
+                
+                >
+                  
+                    <Iconify icon="material-symbols:file-copy-outline" 
+                    className="cursor-pointer"
+                  />
+                </IconButton>
               </div>
             </div>
           </Paper>
