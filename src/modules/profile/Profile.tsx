@@ -12,7 +12,6 @@ import { Icon as Iconify } from "@iconify/react";
 import { useSnackbar } from "notistack";
 import Dropzone from "react-dropzone";
 import { LoadingButton } from "@mui/lab";
-
 import useAuthUser from "hooks/useAuthUser";
 import useClipboard from "hooks/useClipboard";
 import { getAssetInfo } from "utils/file";
@@ -27,12 +26,8 @@ function Profile() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-
-
-  const useGetUserReferralCodeQueryResult  = userApi.useGetUserReferralCodeQuery({});
-
-  console.log({useGetUserReferralCodeQueryResult});
-
+  const userReferralCodeQueryResult =
+    userApi.useGetUserReferralCodeQuery(undefined);
 
   const [preferredOtpMode, setPreferredOtpMode] = useState(
     authUser.preffered_notification_channel ?? "bvn_phone"
@@ -40,7 +35,7 @@ function Profile() {
 
   const [uploadUserFileMutation, uploadUserFileMutationResult] =
     userApi.useUploadUserFileMutation();
-   
+
   const transactionOutwardBankListQueryResult =
     transactionApi.useGetTransactionOutwardBankListQuery(undefined, {
       skip: !authUser.bank_details.bankId,
@@ -95,7 +90,6 @@ function Profile() {
     });
     try {
       const assetInfo = getAssetInfo(file);
-
       const data = await uploadUserFileMutation({
         body: {
           file: file,
@@ -254,7 +248,6 @@ function Profile() {
               </Paper>
             </div>
           </Paper>
-
           <Paper variant="outlined">
             <div className="px-6 p-4 border-b">
               <Typography variant="h6" className="font-medium">
@@ -339,30 +332,37 @@ function Profile() {
               </div>
             </div>
           </Paper>
-
           <Paper variant="outlined mt-4">
-            <div className="px-3 py-3 rounded-lg border-b">
+            <div className="p-4 rounded-lg border-b">
               <h1 className="font-normal text-xs text-gray-600">
                 Refer your friends & family and earn some rewards.
               </h1>
-              <div className="flex mt-2 ">
+              <div className="mt-3 flex justify-between">
                 <Typography className="font-semibold text-[#1F2937] text-base">
                   Your Referral Code
                 </Typography>
-                <Typography variant="body1">
-                      {authUser?.code}
-                    </Typography>
-                <IconButton
-                  size="small"
-                  color="primary"
-                  onClick={() => clipboard.writeText(String(authUser?.code))}
-                
-                >
-                  
-                    <Iconify icon="material-symbols:file-copy-outline" 
-                    className="cursor-pointer"
-                  />
-                </IconButton>
+                <div className="flex items-center">
+                  <Typography
+                    variant="body1"
+                    className="text-[#111827] font-normal text-base"
+                  >
+                    {userReferralCodeQueryResult?.data?.data?.code}
+                  </Typography>
+                  <IconButton
+                    size="small"
+                    color="primary"
+                    onClick={() =>
+                      clipboard.writeText(
+                        String(userReferralCodeQueryResult?.data?.data?.code)
+                      )
+                    }
+                  >
+                    <Iconify
+                      icon="material-symbols:file-copy-outline"
+                      className="cursor-pointer"
+                    />
+                  </IconButton>
+                </div>
               </div>
             </div>
           </Paper>
