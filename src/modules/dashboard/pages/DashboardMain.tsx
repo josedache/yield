@@ -280,7 +280,7 @@ function DashboardMain() {
                 icon: "material-symbols-light:lock-outline",
                 iconClassName: "bg-[#5EB1BF] text-white",
                 label: "Fixed Yield",
-                value: fixedSavingsAccounts?.totalAvailableBalance ?? 0,
+                value: fixedSavingsAccounts?.totalFixedPrincipal ?? 0,
                 // interestRate: `${
                 //   fixedSavingsProduct?.interest_rate ?? 0
                 // }% P.A.`,
