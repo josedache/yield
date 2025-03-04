@@ -237,12 +237,7 @@ export default function FixedPlanDetails(
                 className="font-bold"
                 blur={isWalletBalanceVisible}
               >
-                {[
-                  SAVINGS_ACCOUNT_STATUS_TYPE.REJECTED,
-                  SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL,
-                ].includes(getSavingsQuery?.data?.data?.account_status_code)
-                  ? getSavingsQuery?.data?.data?.principal
-                  : getSavingsQuery?.data?.data?.available_balance}
+                {getSavingsQuery?.data?.data?.principal ?? getSavingsQuery?.data?.data?.available_balance }
               </CurrencyTypography>
               <IconButton onClick={toggleWalletBalanceVisible}>
                 <Iconify

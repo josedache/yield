@@ -140,6 +140,7 @@ export type SavingsFixedDepositProductInformationApiResponse = ApiResponse<{
 
 export type SavingsAccounts = {
   totalAvailableBalance: string;
+  totalFixedPrincipal:string;
   savingsAccounts: {
     id: number;
     client_name: string;
