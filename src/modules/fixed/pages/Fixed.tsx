@@ -7,6 +7,8 @@ import {
   MenuItem,
   Skeleton,
   ButtonBase,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
 import { useSearchParams } from "react-router-dom";
@@ -46,6 +48,8 @@ function Fixed() {
   const [statusId, setStatusId] = useState<number>(0);
   const [isPlanDetails, togglePlanDetails] = useToggle();
   const [info, setInfo] = useState();
+
+  const [activeTab, setActiveTab] = useState(0);
 
   const getSavingsAccountsQuery = savingsApi.useGetSavingsAccountsQuery(
     useMemo(
@@ -202,9 +206,33 @@ function Fixed() {
             <div>
               <Paper variant="outlined" className="p-0 overflow-hidden">
                 <div className="flex items-center justify-between p-4">
-                  <Typography variant="h6" className="font-medium" gutterBottom>
+                  {/* <Typography variant="h6" className="font-medium" gutterBottom>
                     My Plans
-                  </Typography>
+                  </Typography> */}
+                  <Tabs
+                    className="mb-4"
+                    value={activeTab}
+                    onChange={(_, value) => setActiveTab(value)}
+                  >
+                    {[{ label: "My Plans" }, { label: "Gift Plans" }].map(
+                      (props, index) => (
+                        <Tab
+                          value={index}
+                          {...props}
+                          classes={{ selected: "text-text-primary" }}
+                          label={
+                            <Typography
+                              component="span"
+                              variant="h6"
+                              className="font-medium"
+                            >
+                              {props.label}
+                            </Typography>
+                          }
+                        />
+                      )
+                    )}
+                  </Tabs>
                   <TextField
                     select
                     disabled={getSavingsAccountsQuery?.isFetching}

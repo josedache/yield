@@ -10,6 +10,8 @@ import {
   SavingsActivateAccountResponse,
   SavingsCalculatorApiRequest,
   SavingsCalculatorApiResponse,
+  SavingsCreateGiftYieldApiRequest,
+  SavingsCreateGiftYieldApiResponse,
   SavingsFixedDepositCreateApiRequest,
   SavingsFixedDepositCreateApiResponse,
   SavingsFixedDepositProductInformationApiResponse,
@@ -18,6 +20,7 @@ import {
   SavingsTransactionsApiResponse,
   SavingsTransferApiRequest,
   SavingsTransferApiResponse,
+  SavingsYieldUserDetailsResponse,
   SendSavingsOtpAPiRequest,
   UpdateDraftSavingsApiRequest,
 } from "src/types/savings-api";
@@ -236,6 +239,36 @@ export const savingsApi = coreApi.injectEndpoints({
         ...config,
       }),
       providesTags: [tags.SAVINGS],
+    }),
+
+    getSavingsYieldUserDetails: builder.query<
+      SavingsYieldUserDetailsResponse,
+      ApiRequest<
+        void,
+        void,
+        {
+          mobileNo: string;
+        }
+      >
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/yield_user_details",
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.SAVINGS],
+    }),
+
+    createSavingsGiftYield: builder.mutation<
+      SavingsCreateGiftYieldApiResponse,
+      SavingsCreateGiftYieldApiRequest
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/create_gift_yield",
+        method: "POST",
+        ...config,
+      }),
+      invalidatesTags: [tags.SAVINGS],
     }),
   }),
 });
