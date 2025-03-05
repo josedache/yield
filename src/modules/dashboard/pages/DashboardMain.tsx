@@ -1,4 +1,3 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   Button,
   CardActionArea,
@@ -9,6 +8,8 @@ import {
   Typography,
   Link as MuiLink,
   Card,
+  Chip,
+  ButtonBase,
 } from "@mui/material";
 import clsx from "clsx";
 import CurrencyTypography from "components/CurrencyTypography";
@@ -57,6 +58,23 @@ function DashboardMain() {
 
   const flexSavingsAccounts = flexSavingsAccountsQueryResult.data?.data;
 
+  const flexSavingsAccount = flexSavingsAccounts?.savingsAccounts?.[0];
+
+  const flexSavingsAccountQueryResult = savingsApi.useGetSavingsAccountQuery(
+    useMemo(
+      () => ({
+        params: {
+          savingType: "recurring_deposit",
+          savingsId: flexSavingsAccount?.id,
+        },
+      }),
+      [flexSavingsAccount?.id]
+    ),
+    { skip: !flexSavingsAccount?.id }
+  );
+
+  const flexSavingsAccountExpanded = flexSavingsAccountQueryResult.data?.data;
+
   const flexSavingsProductQueryResult =
     savingsApi.useGetSavingsProductInformationQuery(
       useMemo(() => ({ params: { productId: FLEX_PRODUCT_ID } }), [])
@@ -69,6 +87,23 @@ function DashboardMain() {
   );
 
   const fixedSavingsAccounts = fixedSavingsAccountsQueryResult.data?.data;
+
+  // const fixedSavingsAccount = flexSavingsAccounts?.savingsAccounts?.[0];
+
+  // const fixedSavingsAccountQueryResult = savingsApi.useGetSavingsAccountQuery(
+  //   useMemo(
+  //     () => ({
+  //       params: {
+  //         // savingType: "fixed_deposit",
+  //         savingsId: fixedSavingsAccount?.id,
+  //       },
+  //     }),
+  //     [fixedSavingsAccount?.id]
+  //   ),
+  //   { skip: !fixedSavingsAccount?.id }
+  // );
+
+  // const fixedSavingsAccountExpanded = fixedSavingsAccountQueryResult.data?.data;
 
   const savingsRecentActivitiesQueryResult =
     savingsApi.useGetSavingsRecentActivitiesQuery(
@@ -119,8 +154,6 @@ function DashboardMain() {
   ) {
     return <Navigate to={DASHBOARD_KYC} replace />;
   }
- 
-  
 
   return (
     <div className="space-y-8">
@@ -159,9 +192,16 @@ function DashboardMain() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <Paper className="p-4 md:p-8 flex flex-col md:flex-row gap-2 md:col-span-2">
               <div className="md:w-[75%] w-full">
-                <Typography variant="body2" color="textSecondary" gutterBottom>
-                  Wallet
-                </Typography>
+                <div className="flex items-center gap-2 mb-1">
+                  <Typography variant="body2" color="textSecondary">
+                    Wallet Balance
+                  </Typography>
+                  <Chip
+                    label="10% P.A."
+                    className="bg-[#4920AA1A] text-[#4920AA]"
+                    size="small"
+                  />
+                </div>
                 <LoadingContent
                   loading={
                     walletQueryResult.isLoading || walletQueryResult.isFetching
@@ -198,7 +238,7 @@ function DashboardMain() {
                         {wallet?.balance}
                       </CurrencyTypography>
                       <IconButton onClick={toggleWalletBalanceVisible}>
-                        <Icon
+                        <Iconify
                           icon={
                             !isWalletBalanceVisible
                               ? "cuida:visibility-off-outline"
@@ -238,23 +278,48 @@ function DashboardMain() {
                 >
                   {() => (
                     <div className="flex items-center mt-1 text-gray-500">
-                      <Typography variant="caption" className="mr-1">
-                        Available Balance:
+                      <Typography variant="body1" className="mr-1">
+                        Interest Earned •
                       </Typography>
-                      <CurrencyTypography
-                        variant="caption"
-                        blur={isWalletBalanceVisible}
+                      <Typography
+                        variant="body1"
+                        color="success"
+                        className="font-medium"
                       >
-                        {wallet?.available_balance}
-                      </CurrencyTypography>
+                        +
+                        <CurrencyTypography
+                          component="span"
+                          variant="inherit"
+                          // blur={isWalletBalanceVisible}
+                        >
+                          {wallet?.interest_earned}
+                        </CurrencyTypography>
+                      </Typography>
+                      <ButtonBase className="bg-[#DCFCE7] text-success-main w-3 h-3 rounded-lg flex items-center justify-center ml-1">
+                        <Iconify
+                          icon="iconamoon:arrow-right-2"
+                          className="text-xs"
+                        />
+                      </ButtonBase>
                     </div>
+                    // <div className="flex items-center mt-1 text-gray-500">
+                    //   <Typography variant="caption" className="mr-1">
+                    //     Available Balance:
+                    //   </Typography>
+                    //   <CurrencyTypography
+                    //     variant="caption"
+                    //     blur={isWalletBalanceVisible}
+                    //   >
+                    //     {wallet?.available_balance}
+                    //   </CurrencyTypography>
+                    // </div>
                   )}
                 </LoadingContent>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-1 gap-2 w-full md:w-[25%]">
                 <WalletFund>
                   {({ toggleOpen }) => (
-                    <Button onClick={toggleOpen}  fullWidth>
+                    <Button onClick={toggleOpen} fullWidth>
                       Fund Wallet
                     </Button>
                   )}
@@ -286,6 +351,8 @@ function DashboardMain() {
                 // }% P.A.`,
                 isLoading: fixedSavingsAccountsQueryResult.isFetching,
                 interestRate: `16-21% P.A.`,
+                interestEarned:
+                  flexSavingsAccountExpanded?.total_interest_earned,
                 isValueVisible: isFixedYieldVisible,
                 onValueVisibilityClick: toggleFixedYieldVisible,
                 to: FIXED,
@@ -295,8 +362,12 @@ function DashboardMain() {
                 iconClassName: "bg-[#4920AA] text-white",
                 label: "Flex Yield",
                 value: flexSavingsAccounts?.totalAvailableBalance ?? 0,
-                isLoading: fixedSavingsAccountsQueryResult.isFetching,
+                isLoading:
+                  flexSavingsAccountsQueryResult.isFetching ||
+                  flexSavingsAccountQueryResult.isFetching,
                 interestRate: `${flexSavingsProduct?.interest_rate ?? 0}% P.A.`,
+                interestEarned:
+                  flexSavingsAccountExpanded?.total_interest_earned,
                 isValueVisible: isFlexYieldVisible,
                 onValueVisibilityClick: toggleFlexYieldVisible,
                 to: FLEX,
@@ -308,7 +379,8 @@ function DashboardMain() {
                   iconClassName,
                   label,
                   value,
-                  interestRate,
+                  // interestRate,
+                  interestEarned,
                   isValueVisible,
                   onValueVisibilityClick,
                   to,
@@ -333,7 +405,7 @@ function DashboardMain() {
                             iconClassName
                           )}
                         >
-                          <Icon fontSize={22} icon={icon} />
+                          <Iconify fontSize={22} icon={icon} />
                         </div>
                         <Typography>{label}</Typography>
                       </div>
@@ -361,7 +433,7 @@ function DashboardMain() {
                             onValueVisibilityClick();
                           }}
                         >
-                          <Icon
+                          <Iconify
                             icon={
                               !isValueVisible
                                 ? "cuida:visibility-off-outline"
@@ -371,12 +443,28 @@ function DashboardMain() {
                         </IconButton>
                       </div>
                       <Divider />
-                      <div className="mt-2 flex justify-between gap-2 items-center">
+                      {/* <div className="mt-2 flex justify-between gap-2 items-center">
                         <Typography className="flex items-center gap-2">
                           Interest Rate
                         </Typography>
 
                         <Typography color="success">{interestRate}</Typography>
+                      </div> */}
+                      <div className="mt-2 flex justify-between gap-2 items-center">
+                        <Typography className="flex items-center gap-2">
+                          Interest Earned
+                        </Typography>
+
+                        <Typography color="success" className="font-medium">
+                          +
+                          <CurrencyTypography
+                            component="span"
+                            variant="inherit"
+                            // blur={isWalletBalanceVisible}
+                          >
+                            {interestEarned}
+                          </CurrencyTypography>
+                        </Typography>
                       </div>
                     </CardActionArea>
                   </Card>
@@ -517,7 +605,7 @@ function DashboardMain() {
                 <Paper className={clsx(border, "w-full")} {...restProps}>
                   <CardActionArea className="flex justify-start px-3 py-4  gap-2">
                     <div className="p-2">
-                      <Icon
+                      <Iconify
                         className={clsx(textColor, "text-2xl")}
                         icon={icon}
                       />
