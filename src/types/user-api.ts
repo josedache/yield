@@ -19,6 +19,17 @@ export type UserLoginApiResponse = ApiResponse<{
   profile: UserClientKycApiResponse["data"];
 }>;
 
+export type UserReferralCodeApiResponse = ApiResponse<{
+  id: number;
+  client_id: string;
+  type: string;
+  name: string;
+  code: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}>;
+
 export type UserClientKycApiResponse = ApiResponse<{
   clientId: number;
   clientType: string;
@@ -277,6 +288,7 @@ export type UserCreatePasswordApiResponse = ApiResponse<any>;
 export type UserFileUploadPasswordApiRequest = ApiRequest<any>;
 
 export type UserFileUploadPasswordApiResponse = ApiResponse<any>;
+
 
 export type UserIAgreeApiRequest = ApiRequest<{
   reference: string;

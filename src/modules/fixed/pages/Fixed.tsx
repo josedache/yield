@@ -41,7 +41,7 @@ function Fixed() {
     dialog: "" as FixedUrlDialog,
   });
 
-  const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
+  const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle(true);
   const [isFixedCreatePlan, toggleFixedCreatePlan] = useToggle(
     dialog === FixedUrlDialog.CREATE_PLAN
   );
@@ -137,7 +137,7 @@ function Fixed() {
                     >
                       {
                         savingsAccountsBalanceQueryResult?.data?.data
-                          ?.totalAvailableBalance
+                          ?.totalFixedPrincipal
                       }
                     </CurrencyTypography>
                   )}
@@ -431,12 +431,7 @@ const columns: ColumnDef<any>[] = [
     cell: (info) => {
       return (
         <CurrencyTypography>
-          {[
-            SAVINGS_ACCOUNT_STATUS_TYPE.REJECTED,
-            SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL,
-          ].includes(info.row.original?.account_status_code)
-            ? info.row.original?.principal
-            : info.row.original?.available_balance}
+          {info.row.original?.principal ?? info.row.original?.available_balance ?? 0}
         </CurrencyTypography>
       );
     },

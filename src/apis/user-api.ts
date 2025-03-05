@@ -13,6 +13,7 @@ import {
   UserLoginApiResponse,
   UserLogoutApiRequest,
   UserPreferredOtpNumberRequest,
+  UserReferralCodeApiResponse,
   UserRefreshTokenRequest,
   UserRefreshTokenResponse,
   UserRequestVoiceOtp,
@@ -89,6 +90,15 @@ export const userApi = coreApi.injectEndpoints({
     getUserClientKyc: builder.query<UserClientKycApiResponse, ApiRequest>({
       query: (config) => ({
         url: BASE_URL + "/kyc/client/verify",
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.USER],
+    }),
+
+    getUserReferralCode: builder.query<UserReferralCodeApiResponse, ApiRequest>({
+      query: (config) => ({
+        url: BASE_URL + "/get_ref_code",
         method: "GET",
         ...config,
       }),
