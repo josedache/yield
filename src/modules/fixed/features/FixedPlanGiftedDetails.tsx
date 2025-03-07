@@ -100,30 +100,36 @@ function FixedPlanTransactionDetails(props: FixedPlanTransactionDetailsProps) {
                       //   : "",
                       value: giftedSavingsAccount?.date,
                     },
-                    {
-                      label: "Transaction reference",
-                      value: giftedSavingsAccount?.reference,
-                    },
-                    {
-                      label: "Status",
-                      value: (
-                        <span className="capitalize">
-                          {giftedSavingsAccount?.status}
-                        </span>
-                      ),
-                    },
-                  ].map(({ label, value }) => {
-                    return (
-                      <div className="grid grid-cols-2 gap-2 py-4 font-medium">
-                        <Typography className="text-neutral-500">
-                          {label}
-                        </Typography>
-                        <Typography className="text-right text-neutral-900 break-all">
-                          {value}
-                        </Typography>
-                      </div>
-                    );
-                  })}
+                    giftedSavingsAccount?.reference
+                      ? {
+                          label: "Transaction reference",
+                          value: giftedSavingsAccount?.reference,
+                        }
+                      : null,
+                    giftedSavingsAccount?.status
+                      ? {
+                          label: "Status",
+                          value: (
+                            <span className="capitalize">
+                              {giftedSavingsAccount?.status}
+                            </span>
+                          ),
+                        }
+                      : null,
+                  ]
+                    .filter((o) => !!o)
+                    .map(({ label, value }) => {
+                      return (
+                        <div className="grid grid-cols-2 gap-2 py-4 font-medium">
+                          <Typography className="text-neutral-500">
+                            {label}
+                          </Typography>
+                          <Typography className="text-right text-neutral-900 break-all">
+                            {value}
+                          </Typography>
+                        </div>
+                      );
+                    })}
                 </div>
               </>
             )}

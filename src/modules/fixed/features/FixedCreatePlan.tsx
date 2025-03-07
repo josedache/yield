@@ -243,6 +243,13 @@ export default function FixedCreatePlan(
               );
               return;
             } else {
+              if (values.phone === authUser.mobileNo) {
+                enqueueSnackbar("You can't gift yourself", {
+                  variant: "warning",
+                });
+                return;
+              }
+              
               await recipientUserDetailsQuery({
                 params: { mobileNo: values.phone },
               }).unwrap();
@@ -335,6 +342,7 @@ export default function FixedCreatePlan(
                   stepper.go(
                     getEnumStepIndex(FixedCreatePlanStep.SELECT_PAYMENT_METHOD)
                   );
+                  return;
                 } else {
                   await savingsFixedDepositCreateMutation({
                     body: { ...payload },
@@ -360,7 +368,7 @@ export default function FixedCreatePlan(
         enqueueSnackbar(
           error?.data?.message ??
             error?.data?.message?.[0] ??
-            "Failed to process funding",
+            "Failed to process",
           {
             variant: "error",
           }
