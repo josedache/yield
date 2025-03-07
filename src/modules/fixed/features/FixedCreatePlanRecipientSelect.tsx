@@ -42,7 +42,7 @@ export default function FixedCreatePlanRecipientSelect(
               "phone",
               recipientUserDetailsError
                 ? recipientUserDetailsError?.message
-                : "Phone number must tied to recipient’s Yield account"
+                : "Phone number must be tied to recipient’s Yield account"
             )}
             error={
               getFormikTextFieldError(formik, "phone") ||

@@ -236,7 +236,7 @@ export default function FixedCreatePlan(
               .required(),
             ...(values.type === "gift"
               ? {
-                  note: yup.string().label("Note").trim().max(50).required(),
+                  note: yup.string().label("Note").trim().max(50).optional(),
                 }
               : undefined),
           },
