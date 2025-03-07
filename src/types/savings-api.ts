@@ -45,7 +45,7 @@ export type LiquidateSavingsAPiRequest = ApiRequest<{
 
 export type SendSavingsOtpAPiRequest = ApiRequest<{
   channel: "email" | "phone";
-  action: "liquidate" | "withdraw";
+  action: "liquidate" | "withdraw" | "transfer";
   amount: number;
 }>;
 

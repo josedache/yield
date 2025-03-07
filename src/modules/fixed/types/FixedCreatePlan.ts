@@ -17,6 +17,7 @@ export type FixedCreatePlanFormikType = Partial<{
   note?: string;
   fundSource?: string;
   phone?: string;
+  otp?: string;
 }>;
 
 export type FixedCreatePlanContentProps = {

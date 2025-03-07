@@ -10,6 +10,7 @@ import { ReactNode } from "react";
 import { SavingsWalletPosting } from "src/types/savings-api";
 import { Icon as Iconify } from "@iconify-icon/react";
 import CurrencyTypography from "components/CurrencyTypography";
+import EmptyPlanSvg from "assets/svgs/empty-state.svg?react";
 
 function DashboardWalletInterestPosting(
   props: DashboardWalletInterestPostingProps
@@ -89,30 +90,44 @@ function DashboardWalletInterestPosting(
         <div className="divide-y">
           <Typography className="p-4 py-2 font-bold">Daily Interest</Typography>
 
-          <div className="p-4 space-y-4">
-            {posting?.map((item) => (
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <Typography>Date</Typography>
-                  <Typography className="text-text-secondary">
-                    {item.date}
-                  </Typography>
+          {posting?.length ? (
+            <div className="p-4 space-y-4">
+              {posting?.map((item) => (
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <Typography>Date</Typography>
+                    <Typography className="text-text-secondary">
+                      {item.date}
+                    </Typography>
+                  </div>
+                  <div>
+                    <Typography>Interest</Typography>
+                    <CurrencyTypography className="text-success-main">
+                      {item.daily_interest}
+                    </CurrencyTypography>
+                  </div>
+                  <div>
+                    <Typography>Balance</Typography>
+                    <CurrencyTypography className="text-text-secondary">
+                      {item.balance}
+                    </CurrencyTypography>
+                  </div>
                 </div>
-                <div>
-                  <Typography>Interest</Typography>
-                  <CurrencyTypography className="text-success-main">
-                    {item.daily_interest}
-                  </CurrencyTypography>
-                </div>
-                <div>
-                  <Typography>Balance</Typography>
-                  <CurrencyTypography className="text-text-secondary">
-                    {item.balance}
-                  </CurrencyTypography>
-                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-8 text-center py-20">
+              <EmptyPlanSvg />
+              <div className="space-y-1">
+                <Typography variant="h6" className="font-semibold">
+                  You have no daily interest yet.
+                </Typography>
+                {/* <Typography variant="body1" color="textSecondary">
+                  You have no daily interest yet.
+                </Typography> */}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
       </Drawer>
 

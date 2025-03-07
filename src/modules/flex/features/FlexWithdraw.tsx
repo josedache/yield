@@ -168,12 +168,12 @@ function FlexWithdraw(props: FlexWithdrawProps) {
     setOpen(false);
   }
 
-  const handleResendOtp = async (values: { amount: number }) => {
+  const handleResendOtp = async () => {
     try {
       const data = await sendSavingsOtpMutation({
         body: {
           action: "withdraw",
-          amount: values.amount,
+          amount: Number(formik.values.amount),
           channel: "phone",
         },
       }).unwrap();

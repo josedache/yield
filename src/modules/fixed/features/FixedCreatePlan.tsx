@@ -9,6 +9,7 @@ import {
   Paper,
   Skeleton,
   Typography,
+  Link as MuiLink,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -44,6 +45,10 @@ import {
 import { FixedCreatePlanStep } from "../enums/FixedCreatePlanStep";
 import FixedCreatePlanRecipientSelect from "./FixedCreatePlanRecipientSelect";
 import FixedCreatePlanRecipientInformation from "./FixedCreatePlanRecipientInformation";
+import Countdown from "components/Countdown";
+import NumberInput from "components/NumberInput";
+import OtpInput from "components/OtpInput";
+import { useState } from "react";
 // import { useMemo } from "react";
 
 const ROLLOVER_WITH_CAPITAL = 400;
@@ -57,6 +62,7 @@ export default function FixedCreatePlan(
     isLoading?: boolean;
     onHandleSubmit?: (val: FixedCreatePlanFormikType) => void;
     isPayment?: boolean;
+    isGifted?: boolean;
     onSuccess?: () => void;
     proceedLabel?: string;
     disabledFields?: Array<"depositAmount" | "depositPeriod" | "name">;
@@ -74,6 +80,7 @@ export default function FixedCreatePlan(
     proceedLabel,
     disabledFields,
     accountClosureId,
+    isGifted,
     ...rest
   } = props;
 
@@ -150,9 +157,16 @@ export default function FixedCreatePlan(
   const [recipientUserDetailsQuery, recipientUserDetailsQueryResult] =
     savingsApi.useLazyGetSavingsYieldUserDetailsQuery();
 
+  const [sendSavingsOtpMutation, sendSavingsOtpMutationResult] =
+    savingsApi.useSendSavingsOtpMutation();
+
+  const savingsOtp = sendSavingsOtpMutationResult.data?.data;
+
+  const [countdownDate, setCountdownDate] = useState(getCountdownDate);
+
   const formik = useFormik<FixedCreatePlanFormikType>({
     initialValues: {
-      type: "personal",
+      type: isGifted ? "gift" : "personal",
       productId: FIXED_PRODUCT_ID,
       depositPeriod: getSavingsQuery?.data?.data?.duration || 1,
       ...(getSavingsProductInformationQuery?.data?.data?.max_period_type
@@ -173,6 +187,7 @@ export default function FixedCreatePlan(
       fundSource: "",
       note: "",
       phone: "",
+      otp: "",
     },
     enableReinitialize: true,
     validationSchema: yup.object({
@@ -303,10 +318,33 @@ export default function FixedCreatePlan(
                       phone: recipientUserDetails?.phone,
                     },
                   }).unwrap();
+
+                  // const data = await sendSavingsOtpMutation({
+                  //   body: {
+                  //     action: "withdraw",
+                  //     amount: Number(formik.values.depositAmount),
+                  //     channel: "phone",
+                  //   },
+                  // }).unwrap();
+
+                  // setCountdownDate(getCountdownDate());
+                  // enqueueSnackbar(data?.message || "Otp Sent", {
+                  //   variant: "error",
+                  // });
+
+                  stepper.go(
+                    getEnumStepIndex(FixedCreatePlanStep.SELECT_PAYMENT_METHOD)
+                  );
                 } else {
                   await savingsFixedDepositCreateMutation({
                     body: { ...payload },
                   }).unwrap();
+
+                  stepper.go(
+                    getEnumStepIndex(FixedCreatePlanStep.SELECT_PAYMENT_METHOD)
+                  );
+
+                  return;
                 }
               }
               // stepper.next();
@@ -433,6 +471,29 @@ export default function FixedCreatePlan(
     }
   };
 
+  const handleResendOtp = async () => {
+    try {
+      const data = await sendSavingsOtpMutation({
+        body: {
+          action: "withdraw",
+          amount: Number(formik.values.depositAmount),
+          channel: "phone",
+        },
+      }).unwrap();
+      setCountdownDate(getCountdownDate());
+      enqueueSnackbar(data?.message || "Otp Sent", {
+        variant: "error",
+      });
+    } catch (error) {
+      enqueueSnackbar(
+        error?.data?.errors?.[0]?.defaultUserMessage || `OTP failed to send!`,
+        {
+          variant: "error",
+        }
+      );
+    }
+  };
+
   const tabs = [
     {
       title: `Create Yield Plan`,
@@ -450,6 +511,95 @@ export default function FixedCreatePlan(
     {
       title: "Summary",
       content: <FixedCreatePlanCalculatorTab {...contentProps} />,
+    },
+    {
+      title: "Verify Transaction",
+      description: `Enter the six (6) digit code sent to ${savingsOtp} to complete this transaction.`,
+      content: (
+        <div className="space-y-8">
+          <div className="space-y-4">
+            <OtpInput
+              containerStyle={{ justifyContent: "center" }}
+              value={formik.values.otp}
+              onChange={(otp) => {
+                formik.setFieldValue("otp", otp);
+              }}
+              numInputs={6}
+              shouldAutoFocus
+              // inputType="password"
+              slot={{ input: NumberInput }}
+              slotProps={{
+                input: {
+                  style: { opacity: formik.isSubmitting ? 0.5 : 1 },
+                  disabled: formik.isSubmitting,
+                },
+              }}
+            />
+            <Countdown date={countdownDate}>
+              {(countdown) => {
+                const isCodeSent =
+                  countdown.days ||
+                  countdown.minutes ||
+                  countdown.seconds ||
+                  countdown.seconds;
+
+                return (
+                  <>
+                    {isCodeSent ? (
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        className="text-center"
+                      >
+                        Resend OTP in{" "}
+                        <Typography
+                          component="span"
+                          color="primary"
+                          className="font-semibold"
+                        >
+                          {countdown.minutes}:
+                          {countdown.seconds < 10
+                            ? `0${countdown.seconds}`
+                            : countdown.seconds}
+                        </Typography>
+                      </Typography>
+                    ) : (
+                      <div className="flex items-center justify-center">
+                        <Typography className="text-center">
+                          Didn’t receive code?{" "}
+                          <ButtonBase
+                            disableRipple
+                            disabled={sendSavingsOtpMutationResult.isLoading}
+                            component={MuiLink}
+                            onClick={handleResendOtp as any}
+                            className="underline text-text-primary font-bold"
+                          >
+                            Resend Code.
+                          </ButtonBase>
+                        </Typography>
+                        {/* {requestOtpMutationResult.isLoading && (
+                <CircularProgress size={12} thickness={8} className="ml-1" />
+              )} */}
+                      </div>
+                    )}
+                  </>
+                );
+              }}
+            </Countdown>
+          </div>
+          <LoadingButton
+            fullWidth
+            size="large"
+            disabled={!formik.isValid || !formik.dirty}
+            loading={formik.isSubmitting}
+            loadingPosition="end"
+            endIcon={<></>}
+            onClick={formik.handleSubmit as any}
+          >
+            Verify
+          </LoadingButton>
+        </div>
+      ),
     },
     {
       title: "Fund Yield Plan",
@@ -660,6 +810,7 @@ export default function FixedCreatePlan(
           FixedCreatePlanStep.RECIPIENT_INFORMATION,
           FixedCreatePlanStep.PLAN_INFORMATION,
           FixedCreatePlanStep.SUMMARY,
+          FixedCreatePlanStep.VERIFICATION,
         ].includes(enumStep) ? (
           <BackIconButton
             onClick={() => {
@@ -827,6 +978,12 @@ export default function FixedCreatePlan(
   );
 }
 
+function getCountdownDate() {
+  const date = new Date();
+  date.setTime(date.getTime() + 1000 * 60 * 5);
+  return date;
+}
+
 function getEnumStepIndex(enumStep: FixedCreatePlanStep) {
   const index = STEPS_INDEX.indexOf(enumStep);
   return index > -1 ? index : undefined;
@@ -837,6 +994,7 @@ const STEPS_INDEX = [
   FixedCreatePlanStep.RECIPIENT_INFORMATION,
   FixedCreatePlanStep.PLAN_INFORMATION,
   FixedCreatePlanStep.SUMMARY,
+  FixedCreatePlanStep.VERIFICATION,
   FixedCreatePlanStep.SELECT_PAYMENT_METHOD,
   FixedCreatePlanStep.TRANSFER_TO_ACCOUNT,
   FixedCreatePlanStep.SUCCESS,

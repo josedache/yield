@@ -310,7 +310,8 @@ function DashboardMain() {
                   )}
                 >
                   {() =>
-                    savingsWalletPosting?.[0]?.total_interest ? (
+                    // eslint-disable-next-line no-constant-condition
+                    savingsWalletPosting?.[0]?.total_interest || true ? (
                       <div className="flex items-center mt-1 text-gray-500">
                         <Typography variant="body1" className="mr-1">
                           Interest Earned •

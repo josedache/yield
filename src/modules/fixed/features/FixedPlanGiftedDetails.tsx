@@ -1,4 +1,11 @@
-import { Dialog, DialogContent, DialogProps, Typography } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogProps,
+  Typography,
+} from "@mui/material";
 import CurrencyTypography from "components/CurrencyTypography";
 import DialogTitleXCloseButton from "components/DialogTitleXCloseButton";
 import useToggle from "hooks/useToggle";
@@ -6,10 +13,14 @@ import { ReactNode, useMemo } from "react";
 import { SavingsAccountGifted } from "src/types/savings-api";
 import { savingsApi } from "apis/savings-api";
 import LoadingContent from "components/LoadingContent";
+import FixedCreatePlan from "./FixedCreatePlan";
+import { SAVINGS_ACCOUNT_STATUS_TYPE } from "constants/savings";
 
 function FixedPlanTransactionDetails(props: FixedPlanTransactionDetailsProps) {
-  const { info, children, onClose, ...restProps } = props;
+  const { info, children, open, onClose, ...restProps } = props;
   const [isOpen, toggleOpen, setOpen] = useToggle();
+
+  const [isFund, toggleFund, setFund] = useToggle();
 
   const giftedSavingsAccountsQueryResult =
     savingsApi.useGetGiftedSavingsAccountsQuery(
@@ -29,7 +40,12 @@ function FixedPlanTransactionDetails(props: FixedPlanTransactionDetailsProps) {
 
   return (
     <>
-      <Dialog open={isOpen} maxWidth="xs" fullWidth {...restProps}>
+      <Dialog
+        open={(open ?? isOpen) && !isFund}
+        maxWidth="xs"
+        fullWidth
+        {...restProps}
+      >
         <DialogTitleXCloseButton
           onClose={handleClose}
           className="pt-4 text-center"
@@ -113,11 +129,32 @@ function FixedPlanTransactionDetails(props: FixedPlanTransactionDetailsProps) {
             )}
           </LoadingContent>
         </DialogContent>
+        {giftedSavingsAccount &&
+        info?.status_code ===
+          SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL ? (
+          <DialogActions>
+            <Button fullWidth onClick={toggleFund} className="max-w-sm mx-auto">
+              Fund Plan
+            </Button>
+          </DialogActions>
+        ) : null}
       </Dialog>
 
       {typeof children === "function"
         ? children({ isOpen, toggleOpen, setOpen })
         : children}
+
+      {isFund && (
+        <FixedCreatePlan
+          savingsId={info?.savings_id}
+          isPayment
+          open
+          onClose={() => {
+            setFund(false);
+            handleClose();
+          }}
+        />
+      )}
     </>
   );
 }
