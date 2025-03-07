@@ -226,10 +226,17 @@ export default function FixedCreatePlan(
               .string()
               .label("Deposit Period Id")
               .required("Required"),
-            name: yup.string().label("Plan Name").trim().length(30).required(),
+            name: yup
+              .string()
+              .label("Plan Name")
+              .trim()
+              .when("type", ([type], schema) =>
+                type === "gift" ? schema.max(30) : schema
+              )
+              .required(),
             ...(values.type === "gift"
               ? {
-                  note: yup.string().label("Note").trim().length(50).required(),
+                  note: yup.string().label("Note").trim().max(50).required(),
                 }
               : undefined),
           },

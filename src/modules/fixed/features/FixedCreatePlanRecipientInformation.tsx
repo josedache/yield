@@ -1,6 +1,5 @@
 import { FixedCreatePlanContentProps } from "../types/FixedCreatePlan";
 // import { getFormikTextFieldProps } from "utils/formik";
-import NumberTextField from "components/NumberTextField";
 import { TextField, Typography } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
 
@@ -13,13 +12,11 @@ export default function FixedCreatePlanRecipientInformation(
     <>
       <div className="space-y-4 my-4">
         <div>
-          <NumberTextField
-            freeSolo
+          <TextField
             fullWidth
             label="Recipient’s Phone Number"
             // {...getFormikTextFieldProps(formik, "recipientPhoneNumber")}
             value={recipientUserDetails?.phone}
-            onChange={() => {}}
           />
           <div className="text-success-main flex items-center gap-1 mt-1">
             <Iconify
