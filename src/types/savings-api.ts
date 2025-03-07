@@ -140,7 +140,7 @@ export type SavingsFixedDepositProductInformationApiResponse = ApiResponse<{
 
 export type SavingsAccounts = {
   totalAvailableBalance: string;
-  totalFixedPrincipal:string;
+  totalFixedPrincipal: string;
   savingsAccounts: {
     id: number;
     client_name: string;
@@ -275,3 +275,32 @@ export type SavingsCreateGiftYieldApiResponse = ApiResponse<{
   savingsId: number;
   resourceId: number;
 }>;
+
+export type SavingsAccountGifted = {
+  recipient_name: string;
+  type: string;
+  savings_id: string;
+  name: string;
+  amount: string;
+  note: string;
+  duration: number;
+  date: string;
+  status: string;
+  status_code: number;
+  reference: number;
+};
+
+export type SavingsAccountsGiftedApiResponse = ApiResponse<
+  SavingsAccountGifted[] | SavingsAccountGifted
+>;
+
+export type SavingsWalletPosting = {
+  total_interest: number;
+  daily_interest: number;
+  date: number;
+  balance: number;
+};
+
+export type SavingsWalletPostingApiResponse = ApiResponse<
+  SavingsWalletPosting[]
+>;

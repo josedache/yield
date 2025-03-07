@@ -6,6 +6,7 @@ import {
   LiquidateSavingsAPiRequest,
   LiquidateSavingsApiResponse,
   SavingsAccountsApiResponse,
+  SavingsAccountsGiftedApiResponse,
   SavingsActivateAccountRequest,
   SavingsActivateAccountResponse,
   SavingsCalculatorApiRequest,
@@ -20,6 +21,7 @@ import {
   SavingsTransactionsApiResponse,
   SavingsTransferApiRequest,
   SavingsTransferApiResponse,
+  SavingsWalletPostingApiResponse,
   SavingsYieldUserDetailsResponse,
   SendSavingsOtpAPiRequest,
   UpdateDraftSavingsApiRequest,
@@ -269,6 +271,42 @@ export const savingsApi = coreApi.injectEndpoints({
         ...config,
       }),
       invalidatesTags: [tags.SAVINGS],
+    }),
+
+    getGiftedSavingsAccounts: builder.query<
+      SavingsAccountsGiftedApiResponse,
+      ApiRequest<
+        void,
+        void,
+        {
+          savingsId?: any;
+          status?: any;
+        }
+      >
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/gifted_accounts",
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.SAVINGS],
+    }),
+    getSavingsWalletPosting: builder.query<
+      SavingsWalletPostingApiResponse,
+      ApiRequest<
+        void,
+        void,
+        {
+          savingsId?: any;
+        }
+      >
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/wallet_posting",
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.SAVINGS],
     }),
   }),
 });

@@ -37,6 +37,7 @@ import { FlexUrlDialog } from "modules/flex/enums/FlexUrlDialog";
 import { FixedUrlDialog } from "modules/fixed/enums/FixedUrlDialog";
 import { FLEX_PRODUCT_ID } from "constants/env";
 import WalletTransfer from "modules/wallet/features/WalletTransfer";
+import DashboardWalletInterestPosting from "../features/DashboardWalletInterestPosting";
 
 function DashboardMain() {
   const authUser = useAuthUser();
@@ -52,6 +53,14 @@ function DashboardMain() {
 
   const wallet = walletQueryResult.data?.data;
 
+  const savingsWalletPostingQueryResult =
+    savingsApi.useGetSavingsWalletPostingQuery(
+      useMemo(() => ({ params: { savingsId: wallet?.id } }), [wallet?.id]),
+      { skip: !wallet?.id }
+    );
+
+  const savingsWalletPosting = savingsWalletPostingQueryResult.data?.data;
+
   const flexSavingsAccountsQueryResult = savingsApi.useGetSavingsAccountsQuery(
     useMemo(() => ({ params: { type: "recurring_deposit" } }), [])
   );
@@ -60,20 +69,32 @@ function DashboardMain() {
 
   const flexSavingsAccount = flexSavingsAccounts?.savingsAccounts?.[0];
 
-  const flexSavingsAccountQueryResult = savingsApi.useGetSavingsAccountQuery(
-    useMemo(
-      () => ({
-        params: {
-          savingType: "recurring_deposit",
-          savingsId: flexSavingsAccount?.id,
-        },
-      }),
-      [flexSavingsAccount?.id]
-    ),
-    { skip: !flexSavingsAccount?.id }
-  );
+  // const flexSavingsAccountQueryResult = savingsApi.useGetSavingsAccountQuery(
+  //   useMemo(
+  //     () => ({
+  //       params: {
+  //         savingType: "recurring_deposit",
+  //         savingsId: flexSavingsAccount?.id,
+  //       },
+  //     }),
+  //     [flexSavingsAccount?.id]
+  //   ),
+  //   { skip: !flexSavingsAccount?.id }
+  // );
 
-  const flexSavingsAccountExpanded = flexSavingsAccountQueryResult.data?.data;
+  // const flexSavingsAccountExpanded = flexSavingsAccountQueryResult.data?.data;
+
+  const flexSavingsWalletPostingQueryResult =
+    savingsApi.useGetSavingsWalletPostingQuery(
+      useMemo(
+        () => ({ params: { savingsId: flexSavingsAccount?.id } }),
+        [flexSavingsAccount?.id]
+      ),
+      { skip: !flexSavingsAccount?.id }
+    );
+
+  const flexSavingsWalletPosting =
+    flexSavingsWalletPostingQueryResult.data?.data;
 
   const flexSavingsProductQueryResult =
     savingsApi.useGetSavingsProductInformationQuery(
@@ -88,7 +109,7 @@ function DashboardMain() {
 
   const fixedSavingsAccounts = fixedSavingsAccountsQueryResult.data?.data;
 
-  // const fixedSavingsAccount = flexSavingsAccounts?.savingsAccounts?.[0];
+  const fixedSavingsAccount = fixedSavingsAccounts?.savingsAccounts?.[0];
 
   // const fixedSavingsAccountQueryResult = savingsApi.useGetSavingsAccountQuery(
   //   useMemo(
@@ -104,6 +125,18 @@ function DashboardMain() {
   // );
 
   // const fixedSavingsAccountExpanded = fixedSavingsAccountQueryResult.data?.data;
+
+  const fixedSavingsWalletPostingQueryResult =
+    savingsApi.useGetSavingsWalletPostingQuery(
+      useMemo(
+        () => ({ params: { savingsId: fixedSavingsAccount?.id } }),
+        [fixedSavingsAccount?.id]
+      ),
+      { skip: !fixedSavingsAccount?.id }
+    );
+
+  const fixedSavingsWalletPosting =
+    fixedSavingsWalletPostingQueryResult.data?.data;
 
   const savingsRecentActivitiesQueryResult =
     savingsApi.useGetSavingsRecentActivitiesQuery(
@@ -276,44 +309,57 @@ function DashboardMain() {
                     />
                   )}
                 >
-                  {() => (
-                    <div className="flex items-center mt-1 text-gray-500">
-                      <Typography variant="body1" className="mr-1">
-                        Interest Earned •
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        color="success"
-                        className="font-medium"
-                      >
-                        +
-                        <CurrencyTypography
-                          component="span"
-                          variant="inherit"
-                          // blur={isWalletBalanceVisible}
+                  {() =>
+                    savingsWalletPosting?.[0]?.total_interest ? (
+                      <div className="flex items-center mt-1 text-gray-500">
+                        <Typography variant="body1" className="mr-1">
+                          Interest Earned •
+                        </Typography>
+                        <Typography
+                          variant="body1"
+                          color="success"
+                          className="font-medium"
                         >
-                          {wallet?.interest_earned}
+                          +
+                          <CurrencyTypography
+                            component="span"
+                            variant="inherit"
+                            // blur={isWalletBalanceVisible}
+                          >
+                            {/* {wallet?.interest_earned} */}
+                            {savingsWalletPosting?.[0]?.total_interest}
+                          </CurrencyTypography>
+                        </Typography>
+                        <DashboardWalletInterestPosting
+                          posting={savingsWalletPosting}
+                        >
+                          {({ toggleOpen }) => (
+                            <ButtonBase
+                              onClick={toggleOpen}
+                              className="bg-[#DCFCE7] text-success-main w-3 h-3 rounded-lg flex items-center justify-center ml-1"
+                            >
+                              <Iconify
+                                icon="iconamoon:arrow-right-2"
+                                className="text-xs"
+                              />
+                            </ButtonBase>
+                          )}
+                        </DashboardWalletInterestPosting>
+                      </div>
+                    ) : (
+                      <div className="flex items-center mt-1 text-gray-500">
+                        <Typography variant="caption" className="mr-1">
+                          Available Balance:
+                        </Typography>
+                        <CurrencyTypography
+                          variant="caption"
+                          blur={isWalletBalanceVisible}
+                        >
+                          {wallet?.available_balance}
                         </CurrencyTypography>
-                      </Typography>
-                      <ButtonBase className="bg-[#DCFCE7] text-success-main w-3 h-3 rounded-lg flex items-center justify-center ml-1">
-                        <Iconify
-                          icon="iconamoon:arrow-right-2"
-                          className="text-xs"
-                        />
-                      </ButtonBase>
-                    </div>
-                    // <div className="flex items-center mt-1 text-gray-500">
-                    //   <Typography variant="caption" className="mr-1">
-                    //     Available Balance:
-                    //   </Typography>
-                    //   <CurrencyTypography
-                    //     variant="caption"
-                    //     blur={isWalletBalanceVisible}
-                    //   >
-                    //     {wallet?.available_balance}
-                    //   </CurrencyTypography>
-                    // </div>
-                  )}
+                      </div>
+                    )
+                  }
                 </LoadingContent>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-1 gap-2 w-full md:w-[25%]">
@@ -346,13 +392,16 @@ function DashboardMain() {
                 iconClassName: "bg-[#5EB1BF] text-white",
                 label: "Fixed Yield",
                 value: fixedSavingsAccounts?.totalFixedPrincipal ?? 0,
+                isLoading:
+                  fixedSavingsAccountsQueryResult.isFetching ||
+                  fixedSavingsWalletPostingQueryResult.isFetching,
                 // interestRate: `${
                 //   fixedSavingsProduct?.interest_rate ?? 0
                 // }% P.A.`,
-                isLoading: fixedSavingsAccountsQueryResult.isFetching,
                 interestRate: `16-21% P.A.`,
-                interestEarned:
-                  flexSavingsAccountExpanded?.total_interest_earned,
+                // interestEarned:
+                //   flexSavingsAccountExpanded?.total_interest_earned,
+                interestEarned: fixedSavingsWalletPosting?.[0]?.total_interest,
                 isValueVisible: isFixedYieldVisible,
                 onValueVisibilityClick: toggleFixedYieldVisible,
                 to: FIXED,
@@ -364,10 +413,11 @@ function DashboardMain() {
                 value: flexSavingsAccounts?.totalAvailableBalance ?? 0,
                 isLoading:
                   flexSavingsAccountsQueryResult.isFetching ||
-                  flexSavingsAccountQueryResult.isFetching,
+                  flexSavingsWalletPostingQueryResult.isFetching,
                 interestRate: `${flexSavingsProduct?.interest_rate ?? 0}% P.A.`,
-                interestEarned:
-                  flexSavingsAccountExpanded?.total_interest_earned,
+                // interestEarned:
+                //   flexSavingsAccountExpanded?.total_interest_earned,
+                interestEarned: flexSavingsWalletPosting?.[0]?.total_interest,
                 isValueVisible: isFlexYieldVisible,
                 onValueVisibilityClick: toggleFlexYieldVisible,
                 to: FLEX,
@@ -379,7 +429,7 @@ function DashboardMain() {
                   iconClassName,
                   label,
                   value,
-                  // interestRate,
+                  interestRate,
                   interestEarned,
                   isValueVisible,
                   onValueVisibilityClick,
@@ -443,29 +493,35 @@ function DashboardMain() {
                         </IconButton>
                       </div>
                       <Divider />
-                      {/* <div className="mt-2 flex justify-between gap-2 items-center">
-                        <Typography className="flex items-center gap-2">
-                          Interest Rate
-                        </Typography>
 
-                        <Typography color="success">{interestRate}</Typography>
-                      </div> */}
-                      <div className="mt-2 flex justify-between gap-2 items-center">
-                        <Typography className="flex items-center gap-2">
-                          Interest Earned
-                        </Typography>
+                      {interestEarned ? (
+                        <div className="mt-2 flex justify-between gap-2 items-center">
+                          <Typography className="flex items-center gap-2">
+                            Interest Earned
+                          </Typography>
 
-                        <Typography color="success" className="font-medium">
-                          +
-                          <CurrencyTypography
-                            component="span"
-                            variant="inherit"
-                            // blur={isWalletBalanceVisible}
-                          >
-                            {interestEarned}
-                          </CurrencyTypography>
-                        </Typography>
-                      </div>
+                          <Typography color="success" className="font-medium">
+                            +
+                            <CurrencyTypography
+                              component="span"
+                              variant="inherit"
+                              // blur={isWalletBalanceVisible}
+                            >
+                              {interestEarned}
+                            </CurrencyTypography>
+                          </Typography>
+                        </div>
+                      ) : (
+                        <div className="mt-2 flex justify-between gap-2 items-center">
+                          <Typography className="flex items-center gap-2">
+                            Interest Rate
+                          </Typography>
+
+                          <Typography color="success">
+                            {interestRate}
+                          </Typography>
+                        </div>
+                      )}
                     </CardActionArea>
                   </Card>
                 );
