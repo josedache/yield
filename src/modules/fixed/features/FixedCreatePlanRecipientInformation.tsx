@@ -19,6 +19,7 @@ export default function FixedCreatePlanRecipientInformation(
             label="Recipient’s Phone Number"
             // {...getFormikTextFieldProps(formik, "recipientPhoneNumber")}
             value={recipientUserDetails?.phone}
+            onChange={() => {}}
           />
           <div className="text-success-main flex items-center gap-1 mt-1">
             <Iconify

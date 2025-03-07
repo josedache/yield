@@ -110,8 +110,10 @@ function FixedPlanTransactionDetails(props: FixedPlanTransactionDetailsProps) {
                       ? {
                           label: "Status",
                           value: (
-                            <span className="capitalize">
-                              {giftedSavingsAccount?.status}
+                            <span className="">
+                              {{ 100: "Pending", 300: "Successful" }[
+                                info?.status_code
+                              ] ?? giftedSavingsAccount?.status}
                             </span>
                           ),
                         }

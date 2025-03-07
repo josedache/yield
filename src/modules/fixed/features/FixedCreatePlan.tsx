@@ -10,6 +10,7 @@ import {
   Skeleton,
   Typography,
   Link as MuiLink,
+  CircularProgress,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -190,43 +191,52 @@ export default function FixedCreatePlan(
       otp: "",
     },
     enableReinitialize: true,
-    validationSchema: yup.object({
-      ...{
-        [FixedCreatePlanStep.SELECT_RECIPIENT]: {
-          type: yup.string().label("Type").required(),
-          phone: yup
-            .string()
-            .label("Recipient Phone Number")
-            .when("type", ([type], schema) =>
-              type === "gift" ? schema.length(11).required() : schema.optional()
-            ),
-        },
-        [FixedCreatePlanStep.PLAN_INFORMATION]: {
-          depositAmount: yup
-            .number()
-            .label("Amount")
-            .min(
-              getSavingsProductInformationQuery?.data?.data?.min_deposit_amt ||
-                0
-            )
-            .max(
-              getSavingsProductInformationQuery?.data?.data?.max_deposit_amt ||
-                0
-            )
-            .required("Required"),
-          depositPeriod: yup
-            .string()
-            .label("Deposit Period")
-            .required("Required"),
-          depositPeriodFrequencyId: yup
-            .string()
-            .label("Deposit Period Id")
-            .required("Required"),
-          name: yup.string().label("Plan Name").required("Required"),
-        },
-      }[enumStep],
+    validationSchema: yup.lazy((values: FixedCreatePlanFormikType) => {
+      return yup.object({
+        ...{
+          [FixedCreatePlanStep.SELECT_RECIPIENT]: {
+            type: yup.string().label("Type").required(),
+            phone: yup
+              .string()
+              .label("Recipient Phone Number")
+              .when("type", ([type], schema) =>
+                type === "gift"
+                  ? schema.length(11).required()
+                  : schema.optional()
+              ),
+          },
+          [FixedCreatePlanStep.PLAN_INFORMATION]: {
+            depositAmount: yup
+              .number()
+              .label("Amount")
+              .min(
+                getSavingsProductInformationQuery?.data?.data
+                  ?.min_deposit_amt || 0
+              )
+              .max(
+                getSavingsProductInformationQuery?.data?.data
+                  ?.max_deposit_amt || 0
+              )
+              .required("Required"),
+            depositPeriod: yup
+              .string()
+              .label("Deposit Period")
+              .required("Required"),
+            depositPeriodFrequencyId: yup
+              .string()
+              .label("Deposit Period Id")
+              .required("Required"),
+            name: yup.string().label("Plan Name").trim().length(30).required(),
+            ...(values.type === "gift"
+              ? {
+                  note: yup.string().label("Note").trim().length(50).required(),
+                }
+              : undefined),
+          },
+        }[enumStep],
+      });
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values, helper) => {
       const isGifting = values.type === "gift";
 
       trackUserClickOnCreateNewYield({
@@ -237,6 +247,13 @@ export default function FixedCreatePlan(
       try {
         switch (enumStep) {
           case FixedCreatePlanStep.SELECT_RECIPIENT: {
+            await helper.setValues((values) => ({
+              ...values,
+              name: "",
+              depositAmount: null,
+              depositPeriod: 1,
+            }));
+
             if (values.type === "personal") {
               stepper.go(
                 getEnumStepIndex(FixedCreatePlanStep.PLAN_INFORMATION)
@@ -249,7 +266,7 @@ export default function FixedCreatePlan(
                 });
                 return;
               }
-              
+
               await recipientUserDetailsQuery({
                 params: { mobileNo: values.phone },
               }).unwrap();
@@ -368,7 +385,7 @@ export default function FixedCreatePlan(
         enqueueSnackbar(
           error?.data?.message ??
             error?.data?.message?.[0] ??
-            "Failed to process",
+            "Failed to process, Please try again.",
           {
             variant: "error",
           }
@@ -624,6 +641,10 @@ export default function FixedCreatePlan(
                 });
                 handleFundYield("transfer");
               },
+              loading:
+                savingsActivateAccountMutationResult.isLoading &&
+                savingsActivateAccountMutationResult.originalArgs?.body
+                  ?.fund_source === "transfer",
               disabled: savingsActivateAccountMutationResult.isLoading,
             },
             {
@@ -635,6 +656,10 @@ export default function FixedCreatePlan(
               onClick: () => {
                 handleFundYield("wallet");
               },
+              loading:
+                savingsActivateAccountMutationResult.isLoading &&
+                savingsActivateAccountMutationResult.originalArgs?.body
+                  ?.fund_source === "wallet",
               disabled:
                 walletQueryResult?.isLoading ||
                 savingsActivateAccountMutationResult.isLoading ||
@@ -647,11 +672,15 @@ export default function FixedCreatePlan(
               onClick: () => {
                 handleFundYield("paystack");
               },
+              loading:
+                savingsActivateAccountMutationResult.isLoading &&
+                savingsActivateAccountMutationResult.originalArgs?.body
+                  ?.fund_source === "paystack",
               disabled:
                 generateTransactionOutwardPaymentReferenceMutationResult.isLoading ||
                 savingsActivateAccountMutationResult.isLoading,
             },
-          ].map(({ label, more, icon, ...restProps }) => {
+          ].map(({ label, more, icon, loading, ...restProps }) => {
             return (
               <ButtonBase
                 key={label}
@@ -673,11 +702,14 @@ export default function FixedCreatePlan(
                     </Typography>
                   </div>
                 </div>
-
-                <Iconify
-                  icon="weui:arrow-filled"
-                  className="text-lg text-text-secondary"
-                />
+                {loading ? (
+                  <CircularProgress size={12} />
+                ) : (
+                  <Iconify
+                    icon="weui:arrow-filled"
+                    className="text-lg text-text-secondary"
+                  />
+                )}
               </ButtonBase>
             );
           })}
@@ -762,9 +794,24 @@ export default function FixedCreatePlan(
             Success!
           </Typography>
           <Typography className="text-center">
-            You’ve successfully {isEdit ? "edited" : "created"}{" "}
-            {isEdit ? getSavingsQuery?.data?.data?.plan_name : "a Fixed Yield"}{" "}
-            plan.
+            {isGifting ? (
+              <>
+                You’ve successfully gifted{" "}
+                <span className="font-medium">
+                  {recipientUserDetails?.first_name}{" "}
+                  {recipientUserDetails?.last_name}
+                </span>{" "}
+                a Fixed Yield plan.
+              </>
+            ) : (
+              <>
+                You’ve successfully {isEdit ? "edited" : "created"}{" "}
+                {isEdit
+                  ? getSavingsQuery?.data?.data?.plan_name
+                  : "a Fixed Yield"}{" "}
+                plan.
+              </>
+            )}
           </Typography>
           <Button
             className="max-w-[255px]"
@@ -801,7 +848,6 @@ export default function FixedCreatePlan(
             maxWidth: isLastStep ? 400 : 440,
           },
         }}
-        onClose={onClose}
         {...rest}
       >
         <DialogTitleXCloseButton

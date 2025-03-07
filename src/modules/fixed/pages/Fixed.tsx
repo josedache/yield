@@ -252,7 +252,7 @@ function Fixed() {
                     value={activeTab}
                     onChange={(_, value) => setActiveTab(value)}
                   >
-                    {[{ label: "My Plans" }, { label: "Gift Plans" }].map(
+                    {[{ label: "My Plans" }, { label: "Gifted Plans" }].map(
                       (props, index) => (
                         <Tab
                           value={index}
@@ -518,7 +518,7 @@ const columns: ColumnDef<any>[] = [
     cell: (info) => {
       return (
         <div className="flex items-center gap-1">
-          {info?.row?.original?.gifted ? (
+          {info?.row?.original?.is_gifted ? (
             <svg
               width="14"
               height="13"
