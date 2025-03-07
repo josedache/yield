@@ -332,7 +332,7 @@ function Profile() {
               </div>
             </div>
           </Paper>
-          <Paper variant="outlined mt-4">
+          <Paper variant="outlined" className="mt-4">
             <div className="p-4 rounded-lg border-b">
               <h1 className="font-normal text-xs text-gray-600">
                 Refer your friends & family and earn some rewards.
