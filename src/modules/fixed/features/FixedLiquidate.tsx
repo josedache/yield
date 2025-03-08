@@ -184,7 +184,7 @@ export default function FixedLiquidate(
                   variant="body2"
                   className="text-left block text-neutral-500"
                 >
-                  Note: Early liquidation will result in a 30% fine on your
+                  Note: Early liquidation will result in a 20% fine on your
                   accrued interest. Are you sure you want to liquidate this
                   plan?
                 </Typography>
