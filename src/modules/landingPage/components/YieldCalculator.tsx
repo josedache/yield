@@ -78,6 +78,7 @@ const YieldCalculator = () => {
     if (isEmpty(formik.errors)) {
       formik.handleSubmit();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formik.values.depositAmount, formik.values.depositPeriod]);
 
   const months = [];
