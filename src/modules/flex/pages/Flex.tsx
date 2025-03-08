@@ -41,7 +41,7 @@ function Flex() {
 
   const [isFAQ, toggleFAQ] = useToggle(true);
 
-  const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
+  const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle(true);
 
   const transactionsParentRef = useRef(null);
 

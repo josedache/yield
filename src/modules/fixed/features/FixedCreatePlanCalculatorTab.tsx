@@ -6,7 +6,7 @@ import { format } from "date-fns";
 export default function FixedCreatePlanCalculatorTab(
   props: FixedCreatePlanContentProps
 ) {
-  const { savingsDepositCalculator, formik } = props;
+  const { savingsDepositCalculator, formik, isGifting } = props;
   const summary = [
     { title: "Plan Name", value: formik.values.name },
     {
@@ -39,6 +39,7 @@ export default function FixedCreatePlanCalculatorTab(
         `${savingsDepositCalculator?.data?.maturityAmount}` || ""
       )}`,
     },
+    ...(isGifting ? [{ title: "Note", value: formik.values.note }] : []),
   ];
 
   return (

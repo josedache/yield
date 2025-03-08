@@ -8,7 +8,8 @@ import { getFormikTextFieldProps } from "utils/formik";
 import FixedDurationSlider from "./FixedDurationSlider";
 
 export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
-  const { formik, disabledFields, savingsFixedProductInformation } = props;
+  const { formik, disabledFields, savingsFixedProductInformation, isGifting } =
+    props;
 
   return (
     <>
@@ -73,6 +74,15 @@ export default function FixedCreatePlanTab(props: FixedCreatePlanContentProps) {
           `${savingsFixedProductInformation.data.min_deposit_amt}`
         )}
       </FormHelperText>
+      {isGifting ? (
+        <TextField
+          className="mt-4"
+          fullWidth
+          label="Note (Optional)"
+          placeholder="Enter a personalised message"
+          {...getFormikTextFieldProps(formik, "note")}
+        />
+      ) : null}
     </>
   );
 }

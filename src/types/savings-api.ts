@@ -45,7 +45,7 @@ export type LiquidateSavingsAPiRequest = ApiRequest<{
 
 export type SendSavingsOtpAPiRequest = ApiRequest<{
   channel: "email" | "phone";
-  action: "liquidate" | "withdraw";
+  action: "liquidate" | "withdraw" | "transfer";
   amount: number;
 }>;
 
@@ -140,6 +140,7 @@ export type SavingsFixedDepositProductInformationApiResponse = ApiResponse<{
 
 export type SavingsAccounts = {
   totalAvailableBalance: string;
+  totalFixedPrincipal: string;
   savingsAccounts: {
     id: number;
     client_name: string;
@@ -237,4 +238,69 @@ export type SavingsRecentActivitiesApiResponse = ApiResponse<
     transaction_date: string;
     transaction_status: string;
   }[]
+>;
+
+export type SavingsYieldUserDetailsResponse = ApiResponse<{
+  first_name: string;
+  last_name: string;
+  phone: string;
+  gender: string;
+  client_id: number;
+  wallet_id: number;
+}>;
+
+export type SavingsCreateGiftYieldApiRequest = ApiRequest<{
+  productId: number;
+  // due_for_activation: any;
+  name: string;
+  lockinPeriodFrequency: number;
+  lockinPeriodFrequencyType: number;
+  depositAmount: number;
+  depositPeriod: number;
+  depositPeriodFrequencyId: number;
+  // recurringFrequency: number;
+  // recurringFrequencyType: number;
+  is_gifted: boolean;
+  firstname: string;
+  lastname: string;
+  reciever_client_id: string;
+  reciever_wallet_id: string;
+  note: string;
+  phone: string;
+}>;
+
+export type SavingsCreateGiftYieldApiResponse = ApiResponse<{
+  officeId: number;
+  clientId: number;
+  savingsId: number;
+  resourceId: number;
+}>;
+
+export type SavingsAccountGifted = {
+  recipient_name: string;
+  type: string;
+  savings_id: string;
+  name: string;
+  amount: string;
+  note: string;
+  duration: number;
+  date: string;
+  status: string;
+  status_code: number;
+  reference: number;
+};
+
+export type SavingsAccountsGiftedApiResponse = ApiResponse<
+  SavingsAccountGifted[] | SavingsAccountGifted
+>;
+
+export type SavingsWalletPosting = {
+  total_interest: number;
+  daily_interest: number;
+  date: number;
+  balance: number;
+};
+
+export type SavingsWalletPostingApiResponse = ApiResponse<
+  SavingsWalletPosting[]
 >;
