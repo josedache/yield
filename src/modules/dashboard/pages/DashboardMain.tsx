@@ -399,7 +399,7 @@ function DashboardMain() {
                 // interestRate: `${
                 //   fixedSavingsProduct?.interest_rate ?? 0
                 // }% P.A.`,
-                interestRate: `16-21% P.A.`,
+                interestRate: `16%-21% P.A.`,
                 // interestEarned:
                 //   flexSavingsAccountExpanded?.total_interest_earned,
                 interestEarned: fixedSavingsWalletPosting?.[0]?.total_interest,
