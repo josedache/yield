@@ -122,11 +122,11 @@ function FixedPlanTransactionDetails(props: FixedPlanTransactionDetailsProps) {
                     .filter((o) => !!o)
                     .map(({ label, value }) => {
                       return (
-                        <div className="grid grid-cols-2 gap-2 py-4 font-medium">
-                          <Typography className="text-neutral-500">
+                        <div className="grid grid-cols-5 sm:grid-cols-2 gap-0 sm:gap-2 py-4 font-medium">
+                          <Typography className="text-neutral-500 col-span-2 sm:col-span-1">
                             {label}
                           </Typography>
-                          <Typography className="text-right text-neutral-900 break-all">
+                          <Typography className="text-right text-neutral-900 break-normal col-span-3 sm:col-span-1" >
                             {value}
                           </Typography>
                         </div>
