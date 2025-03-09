@@ -161,7 +161,7 @@ function Fixed() {
                     >
                       {
                         savingsAccountsBalanceQueryResult?.data?.data
-                          ?.totalFixedPrincipal
+                          ?.totalAvailableBalance
                       }
                     </CurrencyTypography>
                   )}
@@ -545,9 +545,12 @@ const columns: ColumnDef<any>[] = [
     cell: (info) => {
       return (
         <CurrencyTypography>
-          {info.row.original?.principal ??
-            info.row.original?.available_balance ??
-            0}
+           {[
+            SAVINGS_ACCOUNT_STATUS_TYPE.REJECTED,
+            SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL,
+          ].includes(info.row.original?.account_status_code)
+            ? info.row.original?.principal
+            : info.row.original?.available_balance}
         </CurrencyTypography>
       );
     },
