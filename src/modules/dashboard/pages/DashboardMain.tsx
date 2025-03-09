@@ -392,7 +392,7 @@ function DashboardMain() {
                 icon: "material-symbols-light:lock-outline",
                 iconClassName: "bg-[#5EB1BF] text-white",
                 label: "Fixed Yield",
-                value: fixedSavingsAccounts?.totalFixedPrincipal ?? 0,
+                value: fixedSavingsAccounts?.totalAvailableBalance ?? 0,
                 isLoading:
                   fixedSavingsAccountsQueryResult.isFetching ||
                   fixedSavingsWalletPostingQueryResult.isFetching,
