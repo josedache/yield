@@ -1,6 +1,6 @@
 import { Paper, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import useStepper from "hooks/useStepper";
@@ -23,11 +23,18 @@ import {
   trackUserInputBVN,
   trackUserOTP,
 } from "configs/analytics";
+import { urlSearchParamsExtractor } from "utils/url";
 
 function AuthSignup() {
   const { enqueueSnackbar } = useSnackbar();
 
   const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+
+  const { yield_referral_code } = urlSearchParamsExtractor(searchParams, {
+    yield_referral_code: "",
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isIgree, _, setIgree] = useToggle();
@@ -71,7 +78,7 @@ function AuthSignup() {
       email: signupVerifyInfo?.email ?? igreeUserInfo?.user?.email ?? "",
       bvn: signupVerifyInfo?.bvn ?? igreeUserInfo?.user?.bvn ?? "",
       nin: signupVerifyInfo?.nin ?? igreeUserInfo?.user?.nin ?? "",
-      referal_code: "",
+      referal_code: yield_referral_code,
       alternate_number: signupVerifyInfo?.alternate_number ?? "",
       otp: "",
       password: "",
@@ -144,7 +151,7 @@ function AuthSignup() {
             }).unwrap();
             enqueueSnackbar("OTP verified successfully!", {
               variant: "success",
-            }); 
+            });
             break;
           }
           case AuthSignupStep.BASIC_INFORMATION: {
@@ -205,7 +212,13 @@ function AuthSignup() {
 
         if (message?.toLowerCase().includes("user already exists")) {
           enqueueSnackbar(message, { variant: "warning" });
-          return navigate(SIGNIN);
+          return navigate(
+            SIGNIN.concat(
+              yield_referral_code
+                ? `?yield_referral_code=${yield_referral_code}`
+                : ""
+            )
+          );
         }
 
         enqueueSnackbar(message || "Failed to process flow", {
@@ -360,7 +373,11 @@ function AuthSignup() {
               color="primary"
               className="font-bold"
               component={Link}
-              to={SIGNIN}
+              to={SIGNIN.concat(
+                yield_referral_code
+                  ? `?yield_referral_code=${yield_referral_code}`
+                  : ""
+              )}
             >
               Log In
             </Typography>

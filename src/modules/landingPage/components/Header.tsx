@@ -10,8 +10,9 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Logo from "components/Logo";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Icon as Iconify } from "@iconify/react";
+import { urlSearchParamsExtractor } from "utils/url";
 
 interface Props {
   /**
@@ -22,15 +23,29 @@ interface Props {
 }
 
 const drawerWidth = 240;
-const navItems = [{ href: "/signin", displayText: "Sign In" }];
 
 export default function Header(props: Props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
+  const [searchParams] = useSearchParams();
+
+  const { yield_referral_code } = urlSearchParamsExtractor(searchParams, {
+    yield_referral_code: "",
+  });
+
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
+
+  const navItems = [
+    {
+      href: "/signin".concat(
+        yield_referral_code ? `?yield_referral_code=${yield_referral_code}` : ""
+      ),
+      displayText: "Sign In",
+    },
+  ];
 
   const drawer = (
     <Box onClick={handleDrawerToggle}>
@@ -49,7 +64,15 @@ export default function Header(props: Props) {
           </ListItem>
         ))}
 
-        <Button href="/signup" fullWidth size="small">
+        <Button
+          href={"/signup".concat(
+            yield_referral_code
+              ? `?yield_referral_code=${yield_referral_code}`
+              : ""
+          )}
+          fullWidth
+          size="small"
+        >
           Get Started
         </Button>
       </List>
@@ -62,7 +85,7 @@ export default function Header(props: Props) {
   return (
     <header className="inset-x-0 top-0 z-50 sticky">
       <CssBaseline />
-      <div  className="bg-white shadow">
+      <div className="bg-white shadow">
         <Toolbar>
           <div className=" flex flex-wrap justify-between items-center mx-auto py-2 sm:py-4  w-full landingPagecontainer ">
             <Link to="/">
@@ -95,7 +118,11 @@ export default function Header(props: Props) {
               </div>
 
               <Button
-                href="/signup"
+                href={"/signup".concat(
+                  yield_referral_code
+                    ? `?yield_referral_code=${yield_referral_code}`
+                    : ""
+                )}
                 className="bg-primary-main text-white rounded-md px-5 py-2 text-base font-medium"
               >
                 Get Started

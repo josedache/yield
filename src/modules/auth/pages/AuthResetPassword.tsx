@@ -6,7 +6,7 @@ import {
   Link as MuiLink,
 } from "@mui/material";
 import { useFormik } from "formik";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import useStepper from "hooks/useStepper";
@@ -24,10 +24,17 @@ import NumberInput from "components/NumberInput";
 import clsx from "clsx";
 import Countdown from "components/Countdown";
 import { useState } from "react";
+import { urlSearchParamsExtractor } from "utils/url";
 
 function AuthResetPassword() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+
+  const [searchParams] = useSearchParams();
+
+  const { yield_referral_code } = urlSearchParamsExtractor(searchParams, {
+    yield_referral_code: "",
+  });
 
   const [sendUserResetPasswordMutation, sendUserResetPasswordMutationResult] =
     userApi.useSendUserResetPasswordMutation();
@@ -367,7 +374,11 @@ function AuthResetPassword() {
                 color="primary"
                 className="font-bold"
                 component={Link}
-                to={SIGNIN}
+                to={SIGNIN.concat(
+                  yield_referral_code
+                    ? `?yield_referral_code=${yield_referral_code}`
+                    : ""
+                )}
               >
                 Log In
               </Typography>

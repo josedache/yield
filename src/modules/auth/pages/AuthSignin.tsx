@@ -1,6 +1,6 @@
 import { Paper, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import { LoadingButton } from "@mui/lab";
@@ -11,6 +11,7 @@ import NumberTextField from "components/NumberTextField";
 import { userApi } from "apis/user-api";
 import { identifyUser } from "configs/mixpanel";
 import { trackUserSignIn } from "configs/analytics";
+import { urlSearchParamsExtractor } from "utils/url";
 
 function AuthSignin() {
   const navigate = useNavigate();
@@ -18,6 +19,11 @@ function AuthSignin() {
 
   const [loginUserMutation] = userApi.useLoginUserMutation();
 
+  const [searchParams] = useSearchParams();
+
+  const { yield_referral_code } = urlSearchParamsExtractor(searchParams, {
+    yield_referral_code: "",
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -108,7 +114,11 @@ function AuthSignin() {
                 color="primary"
                 className="font-bold"
                 component={Link}
-                to={RESET_PASSWORD}
+                to={RESET_PASSWORD.concat(
+                  yield_referral_code
+                    ? `?yield_referral_code=${yield_referral_code}`
+                    : ""
+                )}
               >
                 Reset Password
               </Typography>
@@ -119,7 +129,11 @@ function AuthSignin() {
                 color="primary"
                 className="font-bold"
                 component={Link}
-                to={SIGNUP}
+                to={SIGNUP.concat(
+                  yield_referral_code
+                    ? `?yield_referral_code=${yield_referral_code}`
+                    : ""
+                )}
               >
                 Sign up
               </Typography>
