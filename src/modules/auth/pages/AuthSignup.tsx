@@ -61,7 +61,7 @@ function AuthSignup() {
   const igreeUserInfo = iAgreeUserMutationResult.data?.data;
 
   const stepper = useStepper({
-    initialStep: getEnumStepIndex(AuthSignupStep.BASIC_INFORMATION),
+    initialStep: getEnumStepIndex(AuthSignupStep.BVN),
   });
 
   const [countdownDate, setCountdownDate] = useState(getCountdownDate);
