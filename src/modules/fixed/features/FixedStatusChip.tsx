@@ -6,7 +6,7 @@ export default function FixedStatusChip(props: ChipProps & { id: any }) {
   return (
     <Chip
       variant="soft"
-      label={id === 100 ? "Draft" : label}
+      label={id === 100 ? "Draft" : id > 800 ? "Closed" : label}
       color={SAVING_STATUS_COLOR[id]}
       {...rest}
     />
