@@ -311,7 +311,7 @@ function DashboardMain() {
                 >
                   {() =>
                     // eslint-disable-next-line no-constant-condition
-                    savingsWalletPosting?.[0]?.total_interest || true ? (
+                    savingsWalletPosting?.[0]?.total_interest ? (
                       <div className="flex items-center mt-1 text-gray-500">
                         <Typography variant="body1" className="mr-1">
                           Interest Earned •
@@ -348,17 +348,18 @@ function DashboardMain() {
                         </DashboardWalletInterestPosting>
                       </div>
                     ) : (
-                      <div className="flex items-center mt-1 text-gray-500">
-                        <Typography variant="caption" className="mr-1">
-                          Available Balance:
-                        </Typography>
-                        <CurrencyTypography
-                          variant="caption"
-                          blur={isWalletBalanceVisible}
-                        >
-                          {wallet?.available_balance}
-                        </CurrencyTypography>
-                      </div>
+                      null
+                      // <div className="flex items-center mt-1 text-gray-500">
+                      //   <Typography variant="caption" className="mr-1">
+                      //     Available Balance:
+                      //   </Typography>
+                      //   <CurrencyTypography
+                      //     variant="caption"
+                      //     blur={isWalletBalanceVisible}
+                      //   >
+                      //     {wallet?.available_balance}
+                      //   </CurrencyTypography>
+                      // </div>
                     )
                   }
                 </LoadingContent>

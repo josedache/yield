@@ -63,7 +63,7 @@ function DashboardWalletInterestPosting(
 
           <div>
             <Typography variant="body2" className="text-neutral-500">
-              Interest in 20 days
+              Interest in {posting?.length} days
             </Typography>
             <div className="flex items-center mt-1">
               <CurrencyTypography
