@@ -64,6 +64,7 @@ export default function FixedCreatePlan(
     onHandleSubmit?: (val: FixedCreatePlanFormikType) => void;
     isPayment?: boolean;
     isGifted?: boolean;
+    isRollover?: boolean;
     onSuccess?: () => void;
     proceedLabel?: string;
     disabledFields?: Array<"depositAmount" | "depositPeriod" | "name">;
@@ -82,12 +83,13 @@ export default function FixedCreatePlan(
     disabledFields,
     accountClosureId,
     isGifted,
+    isRollover,
     ...rest
   } = props;
 
   const stepper = useStepper({
     initialStep: getEnumStepIndex(
-      isEdit
+      isEdit || isRollover
         ? FixedCreatePlanStep.PLAN_INFORMATION
         : savingsId && isPayment
         ? FixedCreatePlanStep.SELECT_PAYMENT_METHOD
@@ -113,7 +115,7 @@ export default function FixedCreatePlan(
     {
       params: { savingsId: savingsId },
     },
-    { skip: !isEdit && !savingsId }
+    { skip: (!isEdit && !savingsId) || !savingsId }
   );
 
   // const fixedSavings = getSavingsQuery?.data?.data;
