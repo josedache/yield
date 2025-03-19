@@ -18,8 +18,8 @@ import { getAssetInfo } from "utils/file";
 import { userApi } from "apis/user-api";
 import { transactionApi } from "apis/transaction-api";
 import { trackUserProfileUpdate } from "configs/analytics";
-import ProfileReferralLinkShareCopy from "./features/ProfileReferralLinkShareCopy";
-import ProfileReferralLinkShare from "./features/ProfileReferralLinkShare";
+// import ProfileReferralLinkShareCopy from "./features/ProfileReferralLinkShareCopy";
+// import ProfileReferralLinkShare from "./features/ProfileReferralLinkShare";
 
 function Profile() {
   const authUser = useAuthUser();
@@ -57,7 +57,7 @@ function Profile() {
     [banks]
   );
 
-  const referralLink = `${window.location.origin}?yield_referral_code=${userReferralCodeQueryResult?.data?.data?.code}`;
+  // const referralLink = `${window.location.origin}?yield_referral_code=${userReferralCodeQueryResult?.data?.data?.code}`;
 
   const handleChangePreferredOtpMode = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -364,8 +364,8 @@ function Profile() {
                 </IconButton>
               </div>
             </div>
-            <ProfileReferralLinkShareCopy link={referralLink || ""} />
-            <ProfileReferralLinkShare link={referralLink || ""} />
+            {/* <ProfileReferralLinkShareCopy link={referralLink || ""} />
+            <ProfileReferralLinkShare link={referralLink || ""} /> */}
           </Paper>
         </div>
       </div>

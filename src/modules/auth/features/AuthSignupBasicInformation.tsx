@@ -81,7 +81,7 @@ function AuthSignupBasicInformation(props: AuthSignupStepContentProps) {
           placeholder="Enter Code"
           {...getFormikTextFieldProps(formik, "referal_code")}
         />
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-start">
           {referralCodeUserQueryResult.isFetching ? (
             <div className="flex items-center gap-1 mb-2">
               <CircularProgress size={12} thickness={8} />
