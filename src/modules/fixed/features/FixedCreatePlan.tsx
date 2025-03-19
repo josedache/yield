@@ -870,8 +870,12 @@ export default function FixedCreatePlan(
         </DialogTitleXCloseButton>
 
         {[
-          FixedCreatePlanStep.RECIPIENT_INFORMATION,
-          FixedCreatePlanStep.PLAN_INFORMATION,
+          ...(isRollover
+            ? []
+            : [
+                FixedCreatePlanStep.RECIPIENT_INFORMATION,
+                FixedCreatePlanStep.PLAN_INFORMATION,
+              ]),
           FixedCreatePlanStep.SUMMARY,
           FixedCreatePlanStep.VERIFICATION,
         ].includes(enumStep) ? (
