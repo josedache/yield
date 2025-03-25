@@ -1,0 +1,105 @@
+name: Build and deploy Yield GetENV
+
+on:
+  workflow_dispatch:
+#   repository_dispatch:
+#     types: [trigger-prod-workflow]
+    
+    
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: prod
+    
+    steps:
+      - name: get code from prod branch
+        uses: actions/checkout@v3
+        with:
+          ref: 'prod'
+      - name: Set up Date, Short SHA, and Env from File
+        id: vars
+        run: |
+          echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+          echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV 
+          echo "RUN_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
+
+      - name: Create .env file
+        run: |
+            echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" >> .env
+            echo "VITE_FLUTTERWAVE_CHECKOUT_JS=${{ secrets.VITE_FLUTTERWAVE_CHECKOUT_JS }}" >> .env
+            echo "VITE_FLUTTERWAVE_PUBLIC_KEY=${{ secrets.VITE_FLUTTERWAVE_PUBLIC_KEY }}" >> .env
+            echo "VITE_PAYSTACK_CHECKOUT_JS=${{ secrets.VITE_PAYSTACK_CHECKOUT_JS }}" >> .env
+            echo "VITE_PAYSTACK_PUBLIC_KEY=${{ secrets.VITE_PAYSTACK_PUBLIC_KEY }}" >> .env
+            echo "VITE_REMITA_CHECKOUT_JS=${{ secrets.VITE_REMITA_CHECKOUT_JS }}" >> .env
+            echo "VITE_REMITA_PUBLIC_KEY=${{ secrets.VITE_REMITA_PUBLIC_KEY }}" >> .env
+            echo "VITE_SEERBIT_CHECKOUT_JS=${{ secrets.VITE_SEERBIT_CHECKOUT_JS }}" >> .env
+            echo "VITE_SEERBIT_PUBLIC_KEY=${{ secrets.VITE_SEERBIT_PUBLIC_KEY }}" >> .env
+
+            echo "VITE_CDL_IAGREE_INLINE_JS=${{ secrets.VITE_CDL_IAGREE_INLINE_JS }}" >> .env
+            echo "VITE_CDL_IAGREE_INLINE_MODE=${{ secrets.VITE_CDL_IAGREE_INLINE_MODE }}" >> .env
+            echo "VITE_CDL_IAGREE_INLINE_BASE_URL=${{ secrets.VITE_CDL_IAGREE_INLINE_BASE_URL }}" >> .env
+
+            echo "VITE_FLEX_PRODUCT_ID=${{ secrets.VITE_FLEX_PRODUCT_ID }}" >> .env
+            echo "VITE_FIXED_PRODUCT_ID=${{ secrets.VITE_FIXED_PRODUCT_ID }}" >> .env
+            echo "VITE_SENTRY_AUTH_TOKEN=${{ secrets.VITE_SENTRY_AUTH_TOKEN }}" >> .env
+            echo "VITE_SENTRY_DSN_TOKEN=${{ secrets.VITE_SENTRY_DSN_TOKEN }}" >> .env
+            echo "VITE_SENTRY_PROPAGATION_TARGETS_URLS=${{ secrets.VITE_SENTRY_PROPAGATION_TARGETS_URLS }}" >> .env
+            echo "VITE_MIXPANEL_TOKEN=${{ secrets.VITE_MIXPANEL_TOKEN }}" >> .env
+            
+            
+
+
+      - name: Verify Environment Variables
+        run: |
+              echo "Displaying .env file content:"
+              cat .env
+        
+
+
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+    #   - name: Install Docker Compose
+    #     run: |
+    #       sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    #       sudo chmod +x /usr/local/bin/docker-compose
+    #       docker-compose --version
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      -  name: Login to Amazon ECR
+         id: login-ecr
+         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Images
+        run: |
+           export IMAGE_TAG=${{ secrets.ECR_SERVER }}/${{ secrets.ECR_REPOSITORY }}:get-env-${{ env.DATE }}-${{ env.SHORT_SHA }}-${{ env.RUN_NUMBER }}
+           docker build -t $IMAGE_TAG -f Dockerfile .
+           docker push $IMAGE_TAG
+      
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.30.2'
+  
+      - name: Authenticate to CDL-AWS-PROD
+        id: eks-auth
+        run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+      - name: Update deployment with new image
+        run: |
+          export IMAGE_TAG=${{ secrets.ECR_SERVER }}/${{ secrets.ECR_REPOSITORY }}:get-env-${{ env.DATE }}-${{ env.SHORT_SHA }}-${{ env.RUN_NUMBER }}
+          sed -i "s|{{IMAGE_TAG}}|$IMAGE_TAG|g" kubernetes-uat/yield-deploy.yml
+
+      - name: Deploy to EKS
+        run: |
+            kubectl apply -f kubernetes-uat/yield-deploy.yml
+           
