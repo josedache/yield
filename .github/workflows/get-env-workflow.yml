@@ -13,10 +13,10 @@ jobs:
     environment: prod
     
     steps:
-      - name: get code from prod branch
+      - name: get code from GEtenv branch
         uses: actions/checkout@v3
         with:
-          ref: 'prod'
+          ref: 'Getenv'
       - name: Set up Date, Short SHA, and Env from File
         id: vars
         run: |
