@@ -269,7 +269,10 @@ export default function FixedCreatePlan(
               );
               return;
             } else {
-              if (values.phone === authUser.mobileNo) {
+              if (
+                values.phone === authUser.mobileNo ||
+                values.phone === authUser?.alternate_number
+              ) {
                 enqueueSnackbar("You can't gift yourself", {
                   variant: "warning",
                 });
