@@ -14,30 +14,22 @@ import {
 import clsx from "clsx";
 import CurrencyTypography from "components/CurrencyTypography";
 import useToggle from "hooks/useToggle";
-import DashboardEmptyActivitySvg from "assets/svgs/dashboard-empty-activity.svg?react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { DASHBOARD_KYC, FIXED, FLEX } from "constants/urls";
 import useAuthUser from "hooks/useAuthUser";
 import { walletApi } from "apis/wallet-api";
 import LoadingContent from "components/LoadingContent";
 import { savingsApi } from "apis/savings-api";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { Icon as Iconify } from "@iconify/react";
 import WalletFund from "modules/wallet/features/WalletFund";
 import DashboardWithdrawalAccountCard from "../features/DashboardWithdrawalaccountCard";
-import { useVirtualizer } from "@tanstack/react-virtual";
-import {
-  TRANSACTION_TYPE_ID_TO_COLOR,
-  TRANSACTION_TYPE_ID_TO_ICON,
-  TRANSACTION_TYPE_ID_TO_SIGN,
-  TRANSACTION_TYPE_ID_TO_TITLE,
-} from "constants/transactions";
-import * as dfns from "date-fns";
 import { FlexUrlDialog } from "modules/flex/enums/FlexUrlDialog";
 import { FixedUrlDialog } from "modules/fixed/enums/FixedUrlDialog";
 import { FLEX_PRODUCT_ID } from "constants/env";
 import WalletTransfer from "modules/wallet/features/WalletTransfer";
 import DashboardWalletInterestPosting from "../features/DashboardWalletInterestPosting";
+import DashboardRecentActivities from "../features/DashboardRecentActivities";
 
 function DashboardMain() {
   const authUser = useAuthUser();
@@ -46,8 +38,6 @@ function DashboardMain() {
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle(true);
   const [isFixedYieldVisible, toggleFixedYieldVisible] = useToggle(true);
   const [isFlexYieldVisible, toggleFlexYieldVisible] = useToggle(true);
-
-  const recentActivitiesParentRef = useRef(null);
 
   const walletQueryResult = walletApi.useGetWalletQuery(undefined);
 
@@ -137,22 +127,6 @@ function DashboardMain() {
 
   const fixedSavingsWalletPosting =
     fixedSavingsWalletPostingQueryResult.data?.data;
-
-  const savingsRecentActivitiesQueryResult =
-    savingsApi.useGetSavingsRecentActivitiesQuery(
-      useMemo(() => ({ params: { type: "recurring_deposit" } }), [])
-    );
-
-  const savingsRecentActivities = savingsRecentActivitiesQueryResult.data?.data;
-
-  const virtualizer = useVirtualizer({
-    count: savingsRecentActivities?.length,
-    getScrollElement: () => recentActivitiesParentRef.current,
-    estimateSize: () => 56,
-    overscan: 5,
-  });
-
-  const virtualItems = virtualizer.getVirtualItems();
 
   const quickAccess = [
     {
@@ -309,58 +283,56 @@ function DashboardMain() {
                     />
                   )}
                 >
-                  {() =>
-                    // eslint-disable-next-line no-constant-condition
-                    savingsWalletPosting?.[0]?.total_interest ? (
-                      <div className="flex items-center mt-1 text-gray-500">
-                        <Typography variant="body1" className="mr-1">
-                          Interest Earned •
-                        </Typography>
-                        <Typography
-                          variant="body1"
-                          color="success"
-                          className="font-medium"
-                        >
-                          +
-                          <CurrencyTypography
-                            component="span"
-                            variant="inherit"
-                            // blur={isWalletBalanceVisible}
+                  {
+                    () =>
+                      savingsWalletPosting?.[0]?.total_interest ? (
+                        <div className="flex items-center mt-1 text-gray-500">
+                          <Typography variant="body1" className="mr-1">
+                            Interest Earned •
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            color="success"
+                            className="font-medium"
                           >
-                            {/* {wallet?.interest_earned} */}
-                            {savingsWalletPosting?.[0]?.total_interest}
-                          </CurrencyTypography>
-                        </Typography>
-                        <DashboardWalletInterestPosting
-                          posting={savingsWalletPosting}
-                        >
-                          {({ toggleOpen }) => (
-                            <ButtonBase
-                              onClick={toggleOpen}
-                              className="bg-[#DCFCE7] text-success-main w-3 h-3 rounded-lg flex items-center justify-center ml-1"
+                            +
+                            <CurrencyTypography
+                              component="span"
+                              variant="inherit"
+                              // blur={isWalletBalanceVisible}
                             >
-                              <Iconify
-                                icon="iconamoon:arrow-right-2"
-                                className="text-xs"
-                              />
-                            </ButtonBase>
-                          )}
-                        </DashboardWalletInterestPosting>
-                      </div>
-                    ) : (
-                      null
-                      // <div className="flex items-center mt-1 text-gray-500">
-                      //   <Typography variant="caption" className="mr-1">
-                      //     Available Balance:
-                      //   </Typography>
-                      //   <CurrencyTypography
-                      //     variant="caption"
-                      //     blur={isWalletBalanceVisible}
-                      //   >
-                      //     {wallet?.available_balance}
-                      //   </CurrencyTypography>
-                      // </div>
-                    )
+                              {/* {wallet?.interest_earned} */}
+                              {savingsWalletPosting?.[0]?.total_interest}
+                            </CurrencyTypography>
+                          </Typography>
+                          <DashboardWalletInterestPosting
+                            posting={savingsWalletPosting}
+                          >
+                            {({ toggleOpen }) => (
+                              <ButtonBase
+                                onClick={toggleOpen}
+                                className="bg-[#DCFCE7] text-success-main w-3 h-3 rounded-lg flex items-center justify-center ml-1"
+                              >
+                                <Iconify
+                                  icon="iconamoon:arrow-right-2"
+                                  className="text-xs"
+                                />
+                              </ButtonBase>
+                            )}
+                          </DashboardWalletInterestPosting>
+                        </div>
+                      ) : null
+                    // <div className="flex items-center mt-1 text-gray-500">
+                    //   <Typography variant="caption" className="mr-1">
+                    //     Available Balance:
+                    //   </Typography>
+                    //   <CurrencyTypography
+                    //     variant="caption"
+                    //     blur={isWalletBalanceVisible}
+                    //   >
+                    //     {wallet?.available_balance}
+                    //   </CurrencyTypography>
+                    // </div>
                   }
                 </LoadingContent>
               </div>
@@ -531,121 +503,7 @@ function DashboardMain() {
             )}
           </div>
 
-          <Paper className="py-4 md:py-8 mt-8 space-y-4">
-            <Typography variant="h5" className="px-4 md:px-8">
-              Recent Activities
-            </Typography>
-            <LoadingContent
-              loading={savingsRecentActivitiesQueryResult.isLoading}
-              error={savingsRecentActivitiesQueryResult.isError}
-              onRetry={savingsRecentActivitiesQueryResult.refetch}
-            >
-              {() => (
-                <>
-                  {savingsRecentActivities?.length ? (
-                    <div
-                      className="overflow-y-auto h-96 px-4 md:px-8"
-                      style={{ contain: "strict" }}
-                      ref={recentActivitiesParentRef}
-                    >
-                      <div
-                        className="relative w-full"
-                        style={{
-                          height: virtualizer.getTotalSize(),
-                        }}
-                      >
-                        <div
-                          className="absolute left0 top-0 w-full"
-                          style={{
-                            transform: `translateY(${
-                              virtualItems[0]?.start ?? 0
-                            }px)`,
-                          }}
-                        >
-                          {virtualItems.map((virtualItem) => {
-                            const transaction =
-                              savingsRecentActivities?.[virtualItem.index];
-                            return (
-                              <div
-                                key={transaction?.transactionId}
-                                className="flex items-center gap-4 py-2"
-                                data-index={virtualItem.index}
-                                ref={virtualizer.measureElement}
-                              >
-                                <IconButton
-                                  variant="soft"
-                                  color={
-                                    TRANSACTION_TYPE_ID_TO_COLOR[
-                                      transaction?.transaction_type_code
-                                    ] as any
-                                  }
-                                >
-                                  <Iconify
-                                    icon={
-                                      TRANSACTION_TYPE_ID_TO_ICON[
-                                        transaction?.transaction_type_code
-                                      ] as any
-                                    }
-                                  />
-                                </IconButton>
-                                <div>
-                                  <Typography variant="body1" gutterBottom>
-                                    {TRANSACTION_TYPE_ID_TO_TITLE[
-                                      transaction?.transaction_type_code
-                                    ] || "----"}
-                                  </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    color="textSecondary"
-                                  >
-                                    {dfns.format(
-                                      new Date(transaction?.transaction_date),
-                                      "dd MMM, yyyy"
-                                    )}
-                                  </Typography>
-                                </div>
-                                <div className="flex-1" />
-                                <Typography>
-                                  {
-                                    TRANSACTION_TYPE_ID_TO_SIGN[
-                                      transaction?.transaction_type_code
-                                    ] as any
-                                  }
-                                  <CurrencyTypography component="span">
-                                    {transaction?.amount}
-                                  </CurrencyTypography>
-                                </Typography>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col justify-center items-center gap-y-8 my-8">
-                      <DashboardEmptyActivitySvg />
-                      <div>
-                        <Typography
-                          variant="h6"
-                          className="text-center"
-                          gutterBottom
-                        >
-                          No Activities
-                        </Typography>
-                        <Typography
-                          variant="body1"
-                          color="textSecondary"
-                          className="text-center"
-                        >
-                          You don’t have any transaction history yet.
-                        </Typography>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </LoadingContent>
-          </Paper>
+          <DashboardRecentActivities />
         </div>
 
         <div className="w-full md:w-[35%]">
