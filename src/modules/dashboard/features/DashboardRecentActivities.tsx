@@ -290,17 +290,22 @@ function DashboardRecentActivityTransaction(props: {
           <Typography className="space-x-1">
             {transaction?.mobile_label
               ?.split(" ")
-              ?.map((word) => (
-                <span
-                  className={clsx(
-                    word.toLowerCase() === "to" || word.toLowerCase() === "from"
-                      ? ""
-                      : "font-semibold",
-                  )}
-                >
-                  {word}
-                </span>
-              ))}
+              .filter((w) => !!w)
+              ?.map((word) => {
+                const newWord = word.toLowerCase();
+                return (
+                  <span
+                    className={clsx(
+                      "capitalize inline-block",
+                      newWord === "to" || newWord === "from"
+                        ? ""
+                        : "font-semibold",
+                    )}
+                  >
+                    {newWord}
+                  </span>
+                );
+              })}
           </Typography>
           <Typography>{transaction?.transaction_category}</Typography>
         </div>
