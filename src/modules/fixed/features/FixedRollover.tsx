@@ -65,7 +65,7 @@ export default function FixedRollover(
           values.onAccountClosureId === ROLLOVER_WITH_CAPITAL
             ? "Capital Only"
             : "Capital + Interest",
-            status: 200,
+        status: 200,
       });
       try {
         if (stepper.step === 1 || stepper.step === 2) {
@@ -96,7 +96,7 @@ export default function FixedRollover(
             enqueueSnackbar("Rollover Successfully", {
               variant: "success",
             });
-          
+
             toggleFixedCreatePlan();
             stepper.go(3);
           }
@@ -110,7 +110,6 @@ export default function FixedRollover(
             variant: "error",
           }
         );
-       
       }
     },
   });
@@ -272,6 +271,7 @@ export default function FixedRollover(
 
   return isFixedCreatePlan ? (
     <FixedCreatePlan
+      isRollover
       onClose={toggleFixedCreatePlan}
       open={isFixedCreatePlan}
       accountClosureId={formik?.values?.onAccountClosureId}

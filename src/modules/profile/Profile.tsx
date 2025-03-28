@@ -18,6 +18,8 @@ import { getAssetInfo } from "utils/file";
 import { userApi } from "apis/user-api";
 import { transactionApi } from "apis/transaction-api";
 import { trackUserProfileUpdate } from "configs/analytics";
+// import ProfileReferralLinkShareCopy from "./features/ProfileReferralLinkShareCopy";
+// import ProfileReferralLinkShare from "./features/ProfileReferralLinkShare";
 
 function Profile() {
   const authUser = useAuthUser();
@@ -54,6 +56,8 @@ function Profile() {
       }, {} as Record<string, (typeof banks)[0]>),
     [banks]
   );
+
+  // const referralLink = `${window.location.origin}?yield_referral_code=${userReferralCodeQueryResult?.data?.data?.code}`;
 
   const handleChangePreferredOtpMode = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -332,39 +336,36 @@ function Profile() {
               </div>
             </div>
           </Paper>
-          <Paper variant="outlined" className="mt-4">
-            <div className="p-4 rounded-lg border-b">
-              <h1 className="font-normal text-xs text-gray-600">
-                Refer your friends & family and earn some rewards.
-              </h1>
-              <div className="mt-3 flex justify-between">
-                <Typography className="font-semibold text-[#1F2937] text-base">
-                  Your Referral Code
+          <Paper variant="outlined" className="mt-4 p-4 space-y-6">
+            <Typography variant="body1" className=" text-gray-600">
+              Refer your friends & family and earn some rewards.
+            </Typography>
+            <div className="mt-3 flex justify-between">
+              <Typography variant="h6" className="font-semibold">
+                Your Referral Code
+              </Typography>
+              <div className="flex items-center">
+                <Typography variant="body1" className="">
+                  {userReferralCodeQueryResult?.data?.data?.code}
                 </Typography>
-                <div className="flex items-center">
-                  <Typography
-                    variant="body1"
-                    className="text-[#111827] font-normal text-base"
-                  >
-                    {userReferralCodeQueryResult?.data?.data?.code}
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    color="primary"
-                    onClick={() =>
-                      clipboard.writeText(
-                        String(userReferralCodeQueryResult?.data?.data?.code)
-                      )
-                    }
-                  >
-                    <Iconify
-                      icon="material-symbols:file-copy-outline"
-                      className="cursor-pointer"
-                    />
-                  </IconButton>
-                </div>
+                <IconButton
+                  size="small"
+                  color="primary"
+                  onClick={() =>
+                    clipboard.writeText(
+                      String(userReferralCodeQueryResult?.data?.data?.code)
+                    )
+                  }
+                >
+                  <Iconify
+                    icon="material-symbols:file-copy-outline"
+                    className="cursor-pointer"
+                  />
+                </IconButton>
               </div>
             </div>
+            {/* <ProfileReferralLinkShareCopy link={referralLink || ""} />
+            <ProfileReferralLinkShare link={referralLink || ""} /> */}
           </Paper>
         </div>
       </div>

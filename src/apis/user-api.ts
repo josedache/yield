@@ -96,14 +96,16 @@ export const userApi = coreApi.injectEndpoints({
       providesTags: [tags.USER],
     }),
 
-    getUserReferralCode: builder.query<UserReferralCodeApiResponse, ApiRequest>({
-      query: (config) => ({
-        url: BASE_URL + "/get_ref_code",
-        method: "GET",
-        ...config,
-      }),
-      providesTags: [tags.USER],
-    }),
+    getUserReferralCode: builder.query<UserReferralCodeApiResponse, ApiRequest>(
+      {
+        query: (config) => ({
+          url: BASE_URL + "/get_ref_code",
+          method: "GET",
+          ...config,
+        }),
+        providesTags: [tags.USER],
+      }
+    ),
 
     verifyUserClientKyc: builder.mutation<UserClientKycApiResponse, ApiRequest>(
       {
@@ -288,6 +290,21 @@ export const userApi = coreApi.injectEndpoints({
         ...config,
       }),
       invalidatesTags: [tags.USER],
+    }),
+
+    getReferralCodeUser: builder.query<
+      ApiResponse<{
+        name: string;
+        code: string;
+      }>,
+      ApiRequest<void, { referral_code: string }>
+    >({
+      query: ({ path, ...config }) => ({
+        url: BASE_URL + "/get_ref_code/" + path.referral_code,
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.USER],
     }),
   }),
 });

@@ -5,14 +5,27 @@ import {
 import { AuthSignupStepContentProps } from "../types/AuthSignup";
 import {
   Checkbox,
+  CircularProgress,
   FormControlLabel,
   TextField,
   Typography,
 } from "@mui/material";
 import NumberTextField from "components/NumberTextField";
+import { userApi } from "apis/user-api";
+import { useMemo } from "react";
 
 function AuthSignupBasicInformation(props: AuthSignupStepContentProps) {
   const { formik } = props;
+
+  const referralCodeUserQueryResult = userApi.useGetReferralCodeUserQuery(
+    useMemo(
+      () => ({ path: { referral_code: formik.values.referal_code } }),
+      [formik.values.referal_code]
+    ),
+    { skip: !formik.values.referal_code }
+  );
+
+  const referralCodeUser = referralCodeUserQueryResult.data?.data;
 
   return (
     <div>
@@ -60,13 +73,38 @@ function AuthSignupBasicInformation(props: AuthSignupStepContentProps) {
         placeholder="Enter Email Address"
         {...getFormikTextFieldProps(formik, "email")}
       />
-      <TextField
-        fullWidth
-        margin="normal"
-        label="Referral Code (Optional)"
-        placeholder="Enter Code"
-        {...getFormikTextFieldProps(formik, "referal_code")}
-      />
+      <div>
+        <TextField
+          fullWidth
+          margin="normal"
+          label="Referral Code (Optional)"
+          placeholder="Enter Code"
+          {...getFormikTextFieldProps(formik, "referal_code")}
+        />
+        <div className="flex items-center justify-start">
+          {referralCodeUserQueryResult.isFetching ? (
+            <div className="flex items-center gap-1 mb-2">
+              <CircularProgress size={12} thickness={8} />
+              <Typography variant="body2" color="primary" className="font-bold">
+                Resolving Referral Code
+              </Typography>
+            </div>
+          ) : referralCodeUserQueryResult.isError ? (
+            // ||(!referralCodeUserQueryResult.isUninitialized &&
+            // !referralCodeUserQueryResult.data)
+            <Typography variant="body2" color="error" gutterBottom>
+              {(referralCodeUserQueryResult.error as any)?.message ||
+                "Invalid Referral Code"}
+            </Typography>
+          ) : referralCodeUser?.name && formik.values.referal_code ? (
+            <div className="bg-mui-primary-lighter inline-block p-1 rounded-full mb-4">
+              <Typography className="font-bold" variant="body2" color="primary">
+                {referralCodeUser?.name}
+              </Typography>
+            </div>
+          ) : null}
+        </div>
+      </div>
       <div>
         <FormControlLabel
           label={
