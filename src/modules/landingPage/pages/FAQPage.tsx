@@ -96,7 +96,7 @@ const faqs = [
   {
     question: "Is there any penalty charge for early withdrawal?",
     answer:
-      "You can withdraw up to 4 times without any penalty charges on your Flex Yield, but there is a 30% deduction on your accrued interest when you liquidate your Fixed Yield before maturity.",
+      "You can withdraw up to 4 times without any penalty charges on your Flex Yield, but there is a 20% deduction on your accrued interest when you liquidate your Fixed Yield before maturity.",
   },
   {
     question:
