@@ -18,12 +18,14 @@ import { getFormikTextFieldProps } from "utils/formik";
 import { formatNumberToCurrency } from "utils/number";
 import { landingPageApi } from "apis/landingpage-api";
 import { useEffect } from "react";
-import { isEmpty } from "utils/object";
 import { FIXED_PRODUCT_ID } from "constants/env";
 import {
   trackUserUponSelectingTheNumberOfMonthsForYield,
   trackUserUponSelectingYieldAmount,
 } from "configs/analytics";
+import currencyjs from "currency.js";
+import useDebouncedState from "hooks/useDebouncedState.ts";
+import useDataRef from "hooks/useDataRef.ts";
 
 const YieldCalculator = () => {
   const [
@@ -38,17 +40,18 @@ const YieldCalculator = () => {
       depositPeriodFrequencyId: "2",
       productId: FIXED_PRODUCT_ID,
     },
+    validateOnMount: true,
     validateOnChange: true,
     validationSchema: Yup.object({
       depositAmount: Yup.number()
         .required("Amount is required")
         .min(
           50000,
-          `Amount must be greater than ${formatNumberToCurrency(`50000`)}`
+          `Amount must be greater than ${formatNumberToCurrency(`50000`)}`,
         )
         .max(
           10000000,
-          `Amount must be less than ${formatNumberToCurrency(`10000000`)}`
+          `Amount must be less than ${formatNumberToCurrency(`10000000`)}`,
         ),
       depositPeriod: Yup.number().min(1, "Please select a duration"),
     }),
@@ -74,36 +77,46 @@ const YieldCalculator = () => {
     },
   });
 
-  useEffect(() => {
-    if (isEmpty(formik.errors)) {
-      formik.handleSubmit();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values.depositAmount, formik.values.depositPeriod]);
+  const { bankInterestEarned } = calculateYield(
+    currencyjs(formik.values.depositAmount).value,
+    formik.values.depositPeriod,
+  );
 
-  const months = [];
-  for (let i = 1; i <= 12; i++) {
-    months.push({ id: i, month: `${i} ${i === 1 ? "Month" : "Months"}` });
-  }
+  const [debouncedDepositAmount] = useDebouncedState(
+    formik.values.depositAmount,
+    {
+      enableReInitialize: true,
+      wait: 1000,
+    },
+  );
 
-  const calculateYield = (depositAmount: number, depositPeriod: number) => {
+  function calculateYield(depositAmount: number, depositPeriod: number) {
     if (depositAmount > 10_000_000 || depositAmount < 50_000) {
       return {
         bankInterestEarned: 0,
       };
     }
     const bankInterestRate = 4;
-    const bankInterestEarned =
-      depositAmount * (bankInterestRate / 100) * (depositPeriod / 12);
+    const bankInterestEarned = currencyjs(depositAmount)
+      .multiply(currencyjs(bankInterestRate).divide(100))
+      .multiply(currencyjs(depositPeriod).divide(12)).value;
+    // depositAmount * (bankInterestRate / 100) * (depositPeriod / 12);
+
     return {
-      bankInterestEarned: bankInterestEarned.toFixed(2),
+      bankInterestEarned: bankInterestEarned,
     };
-  };
-  const { depositAmount, depositPeriod } = formik.values;
-  const { bankInterestEarned } = calculateYield(
-    parseFloat(depositAmount),
-    depositPeriod
-  );
+  }
+
+  const dataRef = useDataRef({ formik });
+
+  useEffect(() => {
+    if (
+      dataRef.current.formik.isValid &&
+      !savingsFixedDepositCalculationMutationResult.isLoading
+    ) {
+      dataRef.current.formik.handleSubmit();
+    }
+  }, [dataRef, debouncedDepositAmount, formik.values.depositPeriod]);
 
   return (
     <div className=" flex flex-col lg:flex-row landingPagecontainer items-center justify-between mx-auto gap-8 xl:gap-14 px-4 md:px-16 lg:px-8 xl:px-5 py-14">
@@ -154,7 +167,6 @@ const YieldCalculator = () => {
           <TextField
             select
             label="Duration"
-            defaultValue={1}
             placeholder="Months"
             className="bg-transparent text-3xl text-primary-dark font-semibold"
             {...getFormikTextFieldProps(formik, "depositPeriod")}
@@ -201,11 +213,16 @@ const YieldCalculator = () => {
             <MenuItem value={1} disabled>
               Months
             </MenuItem>
-            {months.map((month, index) => (
-              <MenuItem key={index} value={month.id}>
-                {month.month}
-              </MenuItem>
-            ))}
+            {Array(11)
+              .fill(1)
+              .map((_, index) => {
+                const month = index + 1;
+                return (
+                  <MenuItem key={index} value={month}>
+                    {month} Month{index ? "" : "s"}
+                  </MenuItem>
+                );
+              })}
           </TextField>
         </div>
         {savingsFixedDepositCalculationMutationResult.isLoading ? (
@@ -240,7 +257,7 @@ const YieldCalculator = () => {
           ) : (
             <Typography className="font-semibold text-3xl md:text-5xl w-[90%] text-primary-dark mt-3 md:mt-6 overflow-x-scroll scrollbar-hidden">
               {formatNumberToCurrency(
-                `${savingsFixedDepositCalculationMutationResult?.data?.data?.maturityAmount}`
+                `${savingsFixedDepositCalculationMutationResult?.data?.data?.maturityAmount}`,
               )}
             </Typography>
           )}
@@ -250,7 +267,7 @@ const YieldCalculator = () => {
           ) : (
             <p className=" bg-neutral-500 py-1 px-4 my-5 text-white border rounded-full font-medium text-xs md:text-xl">
               {formatNumberToCurrency(
-                `${savingsFixedDepositCalculationMutationResult?.data?.data?.expectedInterestAmount}`
+                `${savingsFixedDepositCalculationMutationResult?.data?.data?.expectedInterestAmount}`,
               )}{" "}
               earned in returns on Yield
             </p>
@@ -261,7 +278,7 @@ const YieldCalculator = () => {
           ) : (
             <Typography className="font-medium text-xs md:text-lg py-1 px-4 border rounded-full bg-neutral-200">
               *In a bank, you would’ve earned{" "}
-              {formatNumberToCurrency(`${bankInterestEarned}`)}
+              {formatNumberToCurrency(String(bankInterestEarned))}
             </Typography>
           )}
 

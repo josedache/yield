@@ -231,7 +231,8 @@ export const savingsApi = coreApi.injectEndpoints({
         void,
         void,
         {
-          type: "recurring_deposit" | "fixed_deposit";
+          // type: "recurring_deposit" | "fixed_deposit";
+          type: 300 | 400;
         }
       >
     >({

@@ -1,11 +1,30 @@
 import { coreApi } from "configs/store-query";
 import { WALLET } from "constants/tags";
 import { ApiRequest, ApiResponse } from "src/types/api";
+import { TransactionListApiResponse } from "../types/transaction-api.ts";
 
 export const BASE_URL = "/transaction";
 
 export const transactionApi = coreApi.injectEndpoints({
   endpoints: (builder) => ({
+    getTransactions: builder.query<
+      TransactionListApiResponse,
+      ApiRequest<
+        void,
+        void,
+        {
+          offset?: number | string;
+          limit?: number | string;
+          orderBy?: "ASC" | "DESC";
+        }
+      >
+    >({
+      query: (config) => ({
+        url: BASE_URL,
+        method: "GET",
+        ...config,
+      }),
+    }),
     getTransactionOutwardNameEnquiry: builder.query<
       ApiResponse<any>,
       ApiRequest<void, void, { accountNumber: string; bankCode: string }>
