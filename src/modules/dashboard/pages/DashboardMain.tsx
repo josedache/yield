@@ -29,7 +29,7 @@ import { FixedUrlDialog } from "modules/fixed/enums/FixedUrlDialog";
 import { FLEX_PRODUCT_ID } from "constants/env";
 import WalletTransfer from "modules/wallet/features/WalletTransfer";
 import DashboardWalletInterestPosting from "../features/DashboardWalletInterestPosting";
-import DashboardRecentActivities from "../features/DashboardRecentActivities";
+import DashboardRecentActivities from "../features/DashboardRecentActivities.tsx";
 
 function DashboardMain() {
   const authUser = useAuthUser();

@@ -213,7 +213,7 @@ const YieldCalculator = () => {
             <MenuItem value={1} disabled>
               Months
             </MenuItem>
-            {Array(11)
+            {Array(12)
               .fill(1)
               .map((_, index) => {
                 const month = index + 1;
