@@ -31,9 +31,10 @@ import { transactionApi } from "apis/transaction-api";
 import { useMemo, useState } from "react";
 import NumberInput from "components/NumberInput";
 import { trackUserOnSelectingClaim } from "configs/analytics";
+import * as dfns from "date-fns";
 
 export default function FixedLiquidate(
-  props: DialogProps & { onClose: () => void; info: any }
+  props: DialogProps & { onClose: () => void; info: any },
 ) {
   const userAuth = useAuthUser();
   const { onClose, info, ...rest } = props;
@@ -48,6 +49,11 @@ export default function FixedLiquidate(
   const [liquidateSavingsMutation, liquidateSavingsMutationResult] =
     savingsApi.useLiquidateSavingsMutation();
 
+  const isPrematureLiquidate = dfns.isAfter(
+    new Date(info?.maturity_date),
+    new Date(),
+  );
+
   const transactionOutwardBankListQueryResult =
     transactionApi.useGetTransactionOutwardBankListQuery(undefined, {
       skip: !userAuth.bank_details.bankId,
@@ -56,11 +62,14 @@ export default function FixedLiquidate(
 
   const normalizedBanks = useMemo(
     () =>
-      banks?.reduce((acc, curr) => {
-        acc[curr.id] = curr;
-        return acc;
-      }, {} as Record<string, (typeof banks)[0]>),
-    [banks]
+      banks?.reduce(
+        (acc, curr) => {
+          acc[curr.id] = curr;
+          return acc;
+        },
+        {} as Record<string, (typeof banks)[0]>,
+      ),
+    [banks],
   );
 
   const formik = useFormik({
@@ -126,14 +135,14 @@ export default function FixedLiquidate(
             "Failed to process funding",
           {
             variant: "error",
-          }
+          },
         );
       }
     },
   });
 
   async function handleResendOpt() {
-    trackUserOnSelectingClaim({event: "Resend Otp", })
+    trackUserOnSelectingClaim({ event: "Resend Otp" });
     try {
       const resp = await sendOtpMutation({
         body: {
@@ -142,7 +151,7 @@ export default function FixedLiquidate(
           amount: 4000,
         },
       }).unwrap();
-      trackUserOnSelectingClaim({event: "Resend Otp", status: 200})
+      trackUserOnSelectingClaim({ event: "Resend Otp", status: 200 });
       setOptEmail(resp?.data as any);
       enqueueSnackbar("Otp resent!", {
         variant: "success",
@@ -154,7 +163,7 @@ export default function FixedLiquidate(
           "Failed to process funding",
         {
           variant: "error",
-        }
+        },
       );
     }
   }
@@ -162,7 +171,9 @@ export default function FixedLiquidate(
   const tabs = [
     {
       title: "Liquidate Yield",
-      description: "You’re about to prematurely liquidate this plan",
+      description: isPrematureLiquidate
+        ? "You’re about to prematurely liquidate this plan"
+        : "You’re about to liquidate this plan",
       content: (
         <div>
           <CurrencyTypography
@@ -172,24 +183,22 @@ export default function FixedLiquidate(
             {info?.available_balance}
           </CurrencyTypography>
 
-          {info?.maturity_date &&
-            new Date(info?.maturity_date) >= new Date() && (
-              <div className="flex gap-1 items-start mt-6">
-                <Iconify
-                  icon="ep:warning-filled"
-                  className="text-error-500 text-3xl h-5 p-0 leading-none"
-                />
+          {info?.maturity_date && isPrematureLiquidate ? (
+            <div className="flex gap-1 items-start mt-6">
+              <Iconify
+                icon="ep:warning-filled"
+                className="text-error-500 text-3xl h-5 p-0 leading-none"
+              />
 
-                <Typography
-                  variant="body2"
-                  className="text-left block text-neutral-500"
-                >
-                  Note: Early liquidation will result in a 20% fine on your
-                  accrued interest. Are you sure you want to liquidate this
-                  plan?
-                </Typography>
-              </div>
-            )}
+              <Typography
+                variant="body2"
+                className="text-left block text-neutral-500"
+              >
+                Note: Early liquidation will result in a 20% fine on your
+                accrued interest. Are you sure you want to liquidate this plan?
+              </Typography>
+            </div>
+          ) : null}
         </div>
       ),
     },
@@ -245,7 +254,7 @@ export default function FixedLiquidate(
                   normalizedBanks?.[authUser.bank_details.bankId]?.name || "",
                 more: userAuth?.bank_details?.accountnumber || "",
                 onClick: () => {
-                  trackUserOnSelectingClaim({event: "Click on Bank Name"})
+                  trackUserOnSelectingClaim({ event: "Click on Bank Name" });
                   formik.handleSubmit();
                 },
                 disabled:
@@ -256,7 +265,7 @@ export default function FixedLiquidate(
                 icon: <Iconify icon="ph:wallet-light" className="text-3xl" />,
                 label: `CDL Wallet`,
                 onClick: () => {
-                  trackUserOnSelectingClaim({event: "Clicked on CDL Wallet"});
+                  trackUserOnSelectingClaim({ event: "Clicked on CDL Wallet" });
                   formik.handleSubmit();
                 },
                 disabled:
@@ -270,7 +279,7 @@ export default function FixedLiquidate(
                   component={Paper}
                   className={clsx(
                     "rounded w-full",
-                    restProps?.disabled ? "text-neutral-400" : ""
+                    restProps?.disabled ? "text-neutral-400" : "",
                   )}
                   {...restProps}
                 >
@@ -302,7 +311,7 @@ export default function FixedLiquidate(
             containerStyle={{ justifyContent: "center" }}
             value={formik.values.otp}
             onChange={(token) => {
-              trackUserOnSelectingClaim({event: "otp sent to the user"})
+              trackUserOnSelectingClaim({ event: "otp sent to the user" });
               formik.setFieldValue("otp", token);
             }}
             placeholder=""
@@ -370,7 +379,9 @@ export default function FixedLiquidate(
   ];
 
   function handleClose(e?: any, reason?: any) {
-    trackUserOnSelectingClaim({event: "Clicked Okay to liquidate my process"});
+    trackUserOnSelectingClaim({
+      event: "Clicked Okay to liquidate my process",
+    });
     formik.resetForm();
     stepper.reset();
     onClose?.(e, reason);
@@ -415,7 +426,7 @@ export default function FixedLiquidate(
             className={clsx(
               stepper.step === 1 ? "grid grid-cols-2" : "grid grid-cols-1",
               "gap-3",
-              ["mt-6", "mt-3", "mt-3 hidden", "mt-4"][stepper.step]
+              ["mt-6", "mt-3", "mt-3 hidden", "mt-4"][stepper.step],
             )}
           >
             <Button
@@ -426,7 +437,7 @@ export default function FixedLiquidate(
               }}
               className={clsx(
                 stepper.step === 1 ? "block" : "hidden",
-                "bg-[#F2F6EE]"
+                "bg-[#F2F6EE]",
               )}
             >
               SKip
