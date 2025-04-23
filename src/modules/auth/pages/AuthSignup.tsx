@@ -328,6 +328,19 @@ function AuthSignup() {
   // const isFirstStep = enumStep === AuthSignupStep.BVN;
   // const isSecondStep = enumStep === AuthSignupStep.BVN_VERIFICATION;
 
+  if ((window as any).smartech) { 
+    (window as any).smartech(
+      'YIELD_SIGN_UP',
+      {'lastName' : formik.values.lastName, 
+        'firstName' : formik.values.firstName, 
+        'mobileNumber' : formik.values.phone, 
+        'signUpDate' :  new Date().toLocaleString()
+      }
+    )
+  } else {
+    console.error('Smartech is not available');
+  }
+
   return (
     <form
       onSubmit={formik.handleSubmit as any}

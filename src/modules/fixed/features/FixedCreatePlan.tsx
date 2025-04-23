@@ -851,6 +851,18 @@ export default function FixedCreatePlan(
     FixedCreatePlanStep.SUMMARY,
   ].includes(enumStep);
 
+  if ((window as any).smartech) { 
+    (window as any).smartech(
+      'CREATE_FIXED_PLAN',
+      { 'depositAmount' : formik.values.depositAmount, 
+        'depositPeriod' : formik.values.depositPeriod,
+        'depositName' : formik.values.name,
+      }
+    )
+  } else {
+    console.error('Smartech is not available');
+  }
+
   return (
     <>
       <Dialog
