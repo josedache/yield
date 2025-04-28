@@ -33,6 +33,7 @@ import FixedEditPlanName from "./FixedEditPlanName";
 import FixedRollover from "./FixedRollover";
 import { SAVINGS_ACCOUNT_STATUS_TYPE } from "constants/savings";
 import { trackUserOnClickingFundPlan } from "configs/analytics";
+import { downloadAsPDF } from "utils/file";
 
 
 export default function FixedPlanDetails(
@@ -42,6 +43,9 @@ export default function FixedPlanDetails(
   const { enqueueSnackbar } = useSnackbar();
   const [deleteSavingMutation, deleteSavingMutationResult] =
     savingsApi.useDeleteDraftSavingsMutation();
+
+  const [downloadInvestmentLetter, downloadInvestmentLetterResult] =
+    savingsApi.useLazyGetInvestmentLetterQuery()
 
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
   const [isFixedLiquidate, toggleFixedLiquidate] = useToggle();
@@ -189,6 +193,29 @@ export default function FixedPlanDetails(
     },
   ];
 
+  const downloadInvestmentNote = async () => {
+    try{
+      const response = await downloadInvestmentLetter({ params: {
+        savingsId: info?.id,
+        send: false,
+        savingsType : "200",
+        format : "pdf" }
+      }).unwrap()
+      downloadAsPDF(String(response?.data), "Yield Investment Letter");
+      enqueueSnackbar(response?.message || "Investment letter downloaded successful", {
+        variant: "success",
+      });
+       
+    }catch(error){  
+      console.error(error)
+      enqueueSnackbar(
+        error?.data?.errors?.[0]?.defaultUserMessage || `Error downloading investment letter`,
+      {
+        variant: "error",
+      }
+    );}
+  }
+
   return (
     <Fragment>
       <Drawer
@@ -302,6 +329,27 @@ export default function FixedPlanDetails(
           <div className="mt-6">
             <div className="px-6 flex justify-between">
               <Typography className="font-semibold">Details</Typography>
+              {[SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE,
+               SAVINGS_ACCOUNT_STATUS_TYPE.MATURED ]
+               .includes(getSavingsQuery?.data?.data?.account_status_code) ?
+               ( <ButtonBase
+                  onClick={downloadInvestmentNote}
+                  disableRipple
+                  disabled={downloadInvestmentLetterResult?.isFetching}
+                  className={`${downloadInvestmentLetterResult?.isFetching ? "text-neutral-800 " : "text-[#4920AA] cursor-pointer"}inline-block underline  text-sm `}
+                >
+                 {downloadInvestmentLetterResult?.isFetching && 
+                  <ButtonBase>
+                    <Iconify
+                      fontSize={17}
+                      icon="solar:refresh-linear"
+                      className=" text-[#4920AA] animate-spin "
+                    />
+                  </ButtonBase>
+                 } Download Investment Note
+                </ButtonBase> ) : null
+              }
+
               {[
                 SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL,
               ].includes(getSavingsQuery?.data?.data?.account_status_code) ? (

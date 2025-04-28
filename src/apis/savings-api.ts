@@ -16,6 +16,7 @@ import {
   SavingsFixedDepositCreateApiRequest,
   SavingsFixedDepositCreateApiResponse,
   SavingsFixedDepositProductInformationApiResponse,
+  SavingsInvestmentLetterApiResponse,
   SavingsRecentActivitiesApiResponse,
   SavingsTransactionApiResponse,
   SavingsTransactionsApiResponse,
@@ -309,5 +310,26 @@ export const savingsApi = coreApi.injectEndpoints({
       }),
       providesTags: [tags.SAVINGS],
     }),
+
+    getInvestmentLetter: builder.query<
+    SavingsInvestmentLetterApiResponse,
+    ApiRequest<
+    void,
+    void,
+    {
+      savingsId: string;
+      send: boolean,
+      savingsType :string,
+      format : string
+    }
+    >
+  >({
+    query: ({params}) => ({
+      url: BASE_URL + "/investment_letter",
+      method: "GET",
+      params,
+    }),
+    providesTags: [tags.SAVINGS],
+  }),
   }),
 });
