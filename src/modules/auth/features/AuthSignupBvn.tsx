@@ -192,11 +192,9 @@ function AuthSignupBvnVerify(props: AuthSignupStepContentProps) {
                               disabled={
                                 signupYieldUserMutationResult?.isLoading
                               }
-                              component={MuiLink}
                               onClick={sendOtp}
-                              className=""
                             >
-                              Resend OTP
+                              <MuiLink>Resend OTP</MuiLink>
                             </ButtonBase>
                           )}
                         </Typography>

@@ -219,7 +219,7 @@ const YieldCalculator = () => {
                 const month = index + 1;
                 return (
                   <MenuItem key={index} value={month}>
-                    {month} Month{index ? "" : "s"}
+                    {month} Month{index ? "s" : ""}
                   </MenuItem>
                 );
               })}
