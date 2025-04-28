@@ -336,7 +336,7 @@ export default function FixedPlanDetails(
                   onClick={downloadInvestmentNote}
                   disableRipple
                   disabled={downloadInvestmentLetterResult?.isFetching}
-                  className={`${downloadInvestmentLetterResult?.isFetching ? "text-neutral-800 " : "text-[#4920AA] cursor-pointer"}inline-block underline  text-sm `}
+                  className={`${downloadInvestmentLetterResult?.isFetching ? "text-neutral-400 " : "text-[#4920AA] cursor-pointer"}inline-block  text-sm `}
                 >
                  {downloadInvestmentLetterResult?.isFetching && 
                   <ButtonBase>
@@ -346,7 +346,7 @@ export default function FixedPlanDetails(
                       className=" text-[#4920AA] animate-spin "
                     />
                   </ButtonBase>
-                 } Download Investment Note
+                 } <span className="underline">Download Investment Note</span>
                 </ButtonBase> ) : null
               }
 
