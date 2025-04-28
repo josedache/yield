@@ -312,24 +312,24 @@ export const savingsApi = coreApi.injectEndpoints({
     }),
 
     getInvestmentLetter: builder.query<
-    SavingsInvestmentLetterApiResponse,
-    ApiRequest<
-    void,
-    void,
-    {
-      savingsId: string;
-      send: boolean,
-      savingsType :string,
-      format : string
-    }
-    >
-  >({
-    query: ({params}) => ({
-      url: BASE_URL + "/investment_letter",
-      method: "GET",
-      params,
+      SavingsInvestmentLetterApiResponse,
+      ApiRequest<
+        void,
+        void,
+        {
+          savingsId: string;
+          send: boolean;
+          savingsType: string;
+          format: string;
+        }
+      >
+    >({
+      query: ({ params }) => ({
+        url: BASE_URL + "/investment_letter",
+        method: "GET",
+        params,
+      }),
+      providesTags: [tags.SAVINGS],
     }),
-    providesTags: [tags.SAVINGS],
-  }),
   }),
 });

@@ -35,9 +35,8 @@ import { SAVINGS_ACCOUNT_STATUS_TYPE } from "constants/savings";
 import { trackUserOnClickingFundPlan } from "configs/analytics";
 import { downloadAsPDF } from "utils/file";
 
-
 export default function FixedPlanDetails(
-  props: DrawerProps & { onClose: () => void; info: any }
+  props: DrawerProps & { onClose: () => void; info: any },
 ) {
   const { onClose, info, ...rest } = props;
   const { enqueueSnackbar } = useSnackbar();
@@ -45,7 +44,7 @@ export default function FixedPlanDetails(
     savingsApi.useDeleteDraftSavingsMutation();
 
   const [downloadInvestmentLetter, downloadInvestmentLetterResult] =
-    savingsApi.useLazyGetInvestmentLetterQuery()
+    savingsApi.useLazyGetInvestmentLetterQuery();
 
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
   const [isFixedLiquidate, toggleFixedLiquidate] = useToggle();
@@ -79,7 +78,7 @@ export default function FixedPlanDetails(
     SAVINGS_ACCOUNT_STATUS_TYPE.PRE_MATURE_CLOSURE,
   ].includes(
     getSavingsQuery?.data?.data?.account_status_code ||
-      info?.account_status_code
+      info?.account_status_code,
   );
 
   const getSavingsTransactionQuery = savingsApi.useGetSavingsTransactionsQuery(
@@ -87,9 +86,9 @@ export default function FixedPlanDetails(
       () => ({
         params: { savingsId: info?.id, all: true },
       }),
-      [info?.id]
+      [info?.id],
     ),
-    { skip: !canViewTransactions }
+    { skip: !canViewTransactions },
   );
 
   const details = [
@@ -115,7 +114,7 @@ export default function FixedPlanDetails(
       title: "Accrued Interest",
       value: `+${
         formatNumberToCurrency(
-          getSavingsQuery?.data?.data?.total_interest_earned
+          getSavingsQuery?.data?.data?.total_interest_earned,
         ) || "0"
       }`,
     },
@@ -126,7 +125,7 @@ export default function FixedPlanDetails(
           `${
             getSavingsQuery?.data?.data?.maturity_amount -
             Number(getSavingsQuery?.data?.data?.principal)
-          }`
+          }`,
         ) || "0"
       }`,
     },
@@ -155,7 +154,7 @@ export default function FixedPlanDetails(
       disabled: getSavingsQuery?.data?.data?.submitted_date
         ? isBefore(
             new Date(getSavingsQuery?.data?.data?.submitted_date),
-            new Date(2024, 10, 30)
+            new Date(2024, 10, 30),
           )
         : true,
     },
@@ -166,7 +165,8 @@ export default function FixedPlanDetails(
       variant: "soft",
       status: [SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL],
       onClick: () => {
-        trackUserOnClickingFundPlan({event: "user clicked on fund plan button"
+        trackUserOnClickingFundPlan({
+          event: "user clicked on fund plan button",
         });
         toggleCompletePayment();
       },
@@ -194,27 +194,33 @@ export default function FixedPlanDetails(
   ];
 
   const downloadInvestmentNote = async () => {
-    try{
-      const response = await downloadInvestmentLetter({ params: {
-        savingsId: info?.id,
-        send: false,
-        savingsType : "200",
-        format : "pdf" }
-      }).unwrap()
+    try {
+      const response = await downloadInvestmentLetter({
+        params: {
+          savingsId: info?.id,
+          send: false,
+          savingsType: "200",
+          format: "pdf",
+        },
+      }).unwrap();
       downloadAsPDF(String(response?.data), "Yield Investment Letter");
-      enqueueSnackbar(response?.message || "Investment letter downloaded successful", {
-        variant: "success",
-      });
-       
-    }catch(error){  
-      console.error(error)
       enqueueSnackbar(
-        error?.data?.errors?.[0]?.defaultUserMessage || `Error downloading investment letter`,
-      {
-        variant: "error",
-      }
-    );}
-  }
+        response?.message || "Investment letter downloaded successful",
+        {
+          variant: "success",
+        },
+      );
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar(
+        error?.data?.errors?.[0]?.defaultUserMessage ||
+          `Error downloading investment letter`,
+        {
+          variant: "error",
+        },
+      );
+    }
+  };
 
   return (
     <Fragment>
@@ -287,7 +293,7 @@ export default function FixedPlanDetails(
               <Typography variant="body2" color="success" className="mt-1">
                 +
                 {formatNumberToCurrency(
-                  getSavingsQuery?.data?.data?.total_interest_earned
+                  getSavingsQuery?.data?.data?.total_interest_earned,
                 )}
               </Typography>
             ) : null}
@@ -308,8 +314,8 @@ export default function FixedPlanDetails(
               {actions
                 ?.filter((action) =>
                   action.status.includes(
-                    getSavingsQuery?.data?.data?.account_status_code
-                  )
+                    getSavingsQuery?.data?.data?.account_status_code,
+                  ),
                 )
                 ?.map(({ name, icon, ...rest }) => (
                   <Button
@@ -329,26 +335,28 @@ export default function FixedPlanDetails(
           <div className="mt-6">
             <div className="px-6 flex justify-between">
               <Typography className="font-semibold">Details</Typography>
-              {[SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE,
-               SAVINGS_ACCOUNT_STATUS_TYPE.MATURED ]
-               .includes(getSavingsQuery?.data?.data?.account_status_code) ?
-               ( <ButtonBase
+              {[
+                SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE,
+                SAVINGS_ACCOUNT_STATUS_TYPE.MATURED,
+              ].includes(getSavingsQuery?.data?.data?.account_status_code) ? (
+                <ButtonBase
                   onClick={downloadInvestmentNote}
                   disableRipple
                   disabled={downloadInvestmentLetterResult?.isFetching}
                   className={`${downloadInvestmentLetterResult?.isFetching ? "text-neutral-400 " : "text-[#4920AA] cursor-pointer"}inline-block  text-sm `}
                 >
-                 {downloadInvestmentLetterResult?.isFetching && 
-                  <ButtonBase>
-                    <Iconify
-                      fontSize={17}
-                      icon="solar:refresh-linear"
-                      className=" text-[#4920AA] animate-spin "
-                    />
-                  </ButtonBase>
-                 } <span className="underline">Download Investment Note</span>
-                </ButtonBase> ) : null
-              }
+                  {downloadInvestmentLetterResult?.isFetching && (
+                    <ButtonBase>
+                      <Iconify
+                        fontSize={17}
+                        icon="solar:refresh-linear"
+                        className=" text-[#4920AA] animate-spin "
+                      />
+                    </ButtonBase>
+                  )}{" "}
+                  <span className="underline">Download Investment Note</span>
+                </ButtonBase>
+              ) : null}
 
               {[
                 SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL,
@@ -479,7 +487,7 @@ export default function FixedPlanDetails(
                                   >
                                     {format(
                                       new Date(transaction?.transaction_date),
-                                      "dd MMM, yyyy"
+                                      "dd MMM, yyyy",
                                     )}
                                   </Typography>
                                 </div>
@@ -503,7 +511,7 @@ export default function FixedPlanDetails(
                                 </Typography>
                               </div>
                             );
-                          }
+                          },
                         )}
                       </div>
                     ) : (
