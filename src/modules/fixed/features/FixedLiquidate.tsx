@@ -376,19 +376,6 @@ export default function FixedLiquidate(
     onClose?.(e, reason);
   }
 
-  if ((window as any).smartech) { 
-    (window as any).smartech(
-      'LIQUIDATE_YIELD',
-      { 'maturityDate' : info?.maturity_date, 
-        'amount' :info?.available_balance,
-        'principalAmount':  info?.principal,
-        'liquidationTime' : new Date().toLocaleString()
-      }
-    )
-  } else {
-    console.error('Smartech is not available');
-  }
-
   return (
     <Dialog
       PaperProps={{
