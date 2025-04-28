@@ -269,6 +269,19 @@ export default function FixedRollover(
     },
   ];
 
+  if ((window as any).smartech) { 
+    (window as any).smartech(
+      'ROLL_OVER_FIXED_PLAN',
+      {'oldPlanCapital':  info?.principal,
+        'newPlanName': formik.values.newPlanName,
+        'newDepositPeriod': formik.values.depositPeriod,
+        'rollOverType' : formik.values.onAccountClosureId,
+      }
+    )
+  } else {
+    console.error('Smartech is not available');
+  }
+  
   return isFixedCreatePlan ? (
     <FixedCreatePlan
       isRollover

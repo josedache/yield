@@ -135,6 +135,16 @@ function Profile() {
     }
   }
 
+  if ((window as any).smartech) { 
+    (window as any).smartech(
+      'PROFILE_UPDATE',
+      { 'email' : authUser.email, 
+      }
+    )
+  } else {
+    console.error('Smartech is not available');
+  }
+  
   return (
     <div className="space-y-8">
       <div className="flex items-center flex-wrap gap-2">
