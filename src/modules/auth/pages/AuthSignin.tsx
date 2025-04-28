@@ -61,6 +61,15 @@ function AuthSignin() {
     },
   });
 
+  if ((window as any).smartech) { 
+    (window as any).smartech('YIELD_SIGN_IN',
+      {'login' : formik.values.phone , 
+        'signInTime' : new Date().toLocaleString()
+      } )
+  } else {
+    console.error('Smartech is not available');
+  }
+
   return (
     <form
       onSubmit={formik.handleSubmit as any}
