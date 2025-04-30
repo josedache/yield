@@ -91,9 +91,14 @@ export default function FixedLiquidate(
     onSubmit: async (values) => {
       try {
         switch (stepper.step) {
-          case 0:
-            stepper.next();
+          case 0: {
+            if (isPrematureLiquidate) {
+              stepper.next();
+            } else {
+              stepper.next(2);
+            }
             break;
+          }
           case 1:
             stepper.next();
             break;
