@@ -12,6 +12,7 @@ import { userApi } from "apis/user-api";
 import { identifyUser } from "configs/mixpanel";
 import { trackUserSignIn } from "configs/analytics";
 import { urlSearchParamsExtractor } from "utils/url";
+import { useEffect } from "react";
 
 function AuthSignin() {
   const navigate = useNavigate();
@@ -55,20 +56,21 @@ function AuthSignin() {
             : error?.data?.message || "Failed to login",
           {
             variant: "error",
-          }
+          },
         );
       }
     },
   });
-
-  if ((window as any).smartech) { 
-    (window as any).smartech('YIELD_SIGN_IN',
-      {'login' : formik.values.phone , 
-        'signInTime' : new Date().toLocaleString()
-      } )
-  } else {
-    console.error('Smartech is not available');
-  }
+  useEffect(() => {
+    if ((window as any).smartech) {
+      (window as any).smartech("dispatch", "signup", {
+        login: formik.values.phone,
+        signInTime: new Date().toLocaleString(),
+      });
+    } else {
+      console.error("Smartech is not available");
+    }
+  }, [formik.values.phone]);
 
   return (
     <form
@@ -126,7 +128,7 @@ function AuthSignin() {
                 to={RESET_PASSWORD.concat(
                   yield_referral_code
                     ? `?yield_referral_code=${yield_referral_code}`
-                    : ""
+                    : "",
                 )}
               >
                 Reset Password
@@ -141,7 +143,7 @@ function AuthSignin() {
                 to={SIGNUP.concat(
                   yield_referral_code
                     ? `?yield_referral_code=${yield_referral_code}`
-                    : ""
+                    : "",
                 )}
               >
                 Sign up
