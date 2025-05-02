@@ -23,12 +23,13 @@ import { LoadingButton } from "@mui/lab";
 import useToggle from "hooks/useToggle";
 import FixedCreatePlan from "./FixedCreatePlan";
 import { trackUserOnSelectingRollover } from "configs/analytics";
+import { useEffect } from "react";
 
 const ROLLOVER_WITH_CAPITAL = 400;
 const ROLLOVER_WITH_INTEREST = 300;
 
 export default function FixedRollover(
-  props: DialogProps & { onClose: () => void; info: any }
+  props: DialogProps & { onClose: () => void; info: any },
 ) {
   const { onClose, info, ...rest } = props;
   const { enqueueSnackbar } = useSnackbar();
@@ -108,7 +109,7 @@ export default function FixedRollover(
             "Failed to process funding",
           {
             variant: "error",
-          }
+          },
         );
       }
     },
@@ -135,7 +136,7 @@ export default function FixedRollover(
                   });
                   formik.setFieldValue(
                     "onAccountClosureId",
-                    ROLLOVER_WITH_CAPITAL
+                    ROLLOVER_WITH_CAPITAL,
                   );
 
                   stepper.go(1);
@@ -152,7 +153,7 @@ export default function FixedRollover(
                   });
                   formik.setFieldValue(
                     "onAccountClosureId",
-                    ROLLOVER_WITH_INTEREST
+                    ROLLOVER_WITH_INTEREST,
                   );
                   stepper.go(2);
                 },
@@ -165,7 +166,7 @@ export default function FixedRollover(
                   component={Paper}
                   className={clsx(
                     "rounded w-full ",
-                    restProps?.disabled ? "text-neutral-400" : ""
+                    restProps?.disabled ? "text-neutral-400" : "",
                   )}
                   {...restProps}
                 >
@@ -269,19 +270,24 @@ export default function FixedRollover(
     },
   ];
 
-  if ((window as any).smartech) { 
-    (window as any).smartech(
-      'ROLL_OVER_FIXED_PLAN',
-      {'oldPlanCapital':  info?.principal,
-        'newPlanName': formik.values.newPlanName,
-        'newDepositPeriod': formik.values.depositPeriod,
-        'rollOverType' : formik.values.onAccountClosureId,
-      }
-    )
-  } else {
-    console.error('Smartech is not available');
-  }
-  
+  useEffect(() => {
+    if ((window as any).smartech) {
+      (window as any).smartech("dispatch", "ROLL_OVER_FIXED_PLAN", {
+        oldPlanCapital: info?.principal,
+        newPlanName: formik.values.newPlanName,
+        newDepositPeriod: formik.values.depositPeriod,
+        rollOverType: formik.values.onAccountClosureId,
+      });
+    } else {
+      console.error("Smartech is not available");
+    }
+  }, [
+    info,
+    formik.values.newPlanName,
+    formik.values.depositPeriod,
+    formik.values.onAccountClosureId,
+  ]);
+
   return isFixedCreatePlan ? (
     <FixedCreatePlan
       isRollover

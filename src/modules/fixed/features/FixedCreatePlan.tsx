@@ -49,7 +49,7 @@ import FixedCreatePlanRecipientInformation from "./FixedCreatePlanRecipientInfor
 import Countdown from "components/Countdown";
 import NumberInput from "components/NumberInput";
 import OtpInput from "components/OtpInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import { useMemo } from "react";
 
 const ROLLOVER_WITH_CAPITAL = 400;
@@ -69,7 +69,7 @@ export default function FixedCreatePlan(
     proceedLabel?: string;
     disabledFields?: Array<"depositAmount" | "depositPeriod" | "name">;
     accountClosureId?: number;
-  }
+  },
 ) {
   const {
     onSuccess,
@@ -92,8 +92,8 @@ export default function FixedCreatePlan(
       isEdit || isRollover
         ? FixedCreatePlanStep.PLAN_INFORMATION
         : savingsId && isPayment
-        ? FixedCreatePlanStep.SELECT_PAYMENT_METHOD
-        : FixedCreatePlanStep.SELECT_RECIPIENT
+          ? FixedCreatePlanStep.SELECT_PAYMENT_METHOD
+          : FixedCreatePlanStep.SELECT_RECIPIENT,
     ),
   });
 
@@ -115,7 +115,7 @@ export default function FixedCreatePlan(
     {
       params: { savingsId: savingsId },
     },
-    { skip: (!isEdit && !savingsId) || !savingsId }
+    { skip: (!isEdit && !savingsId) || !savingsId },
   );
 
   // const fixedSavings = getSavingsQuery?.data?.data;
@@ -183,8 +183,8 @@ export default function FixedCreatePlan(
         accountClosureId === ROLLOVER_WITH_CAPITAL
           ? Number(getSavingsQuery?.data?.data?.principal || 0) || null
           : accountClosureId === ROLLOVER_WITH_INTEREST
-          ? Number(getSavingsQuery?.data?.data?.maturity_amount || 0) || null
-          : null,
+            ? Number(getSavingsQuery?.data?.data?.maturity_amount || 0) || null
+            : null,
       lockinPeriodFrequency: 0,
       lockinPeriodFrequencyType: 0,
       fundSource: "",
@@ -204,7 +204,7 @@ export default function FixedCreatePlan(
               .when("type", ([type], schema) =>
                 type === "gift"
                   ? schema.length(11).required()
-                  : schema.optional()
+                  : schema.optional(),
               ),
           },
           [FixedCreatePlanStep.PLAN_INFORMATION]: {
@@ -213,11 +213,11 @@ export default function FixedCreatePlan(
               .label("Amount")
               .min(
                 getSavingsProductInformationQuery?.data?.data
-                  ?.min_deposit_amt || 0
+                  ?.min_deposit_amt || 0,
               )
               .max(
                 getSavingsProductInformationQuery?.data?.data
-                  ?.max_deposit_amt || 0
+                  ?.max_deposit_amt || 0,
               )
               .required("Required"),
             depositPeriod: yup
@@ -233,7 +233,7 @@ export default function FixedCreatePlan(
               .label("Plan Name")
               .trim()
               .when("type", ([type], schema) =>
-                type === "gift" ? schema.max(30) : schema
+                type === "gift" ? schema.max(30) : schema,
               )
               .required(),
             ...(values.type === "gift"
@@ -265,7 +265,7 @@ export default function FixedCreatePlan(
 
             if (values.type === "personal") {
               stepper.go(
-                getEnumStepIndex(FixedCreatePlanStep.PLAN_INFORMATION)
+                getEnumStepIndex(FixedCreatePlanStep.PLAN_INFORMATION),
               );
               return;
             } else {
@@ -294,7 +294,7 @@ export default function FixedCreatePlan(
                 depositAmount: Number(values.depositAmount),
                 depositPeriod: String(values.depositPeriod) as any,
                 depositPeriodFrequencyId: String(
-                  values.depositPeriodFrequencyId
+                  values.depositPeriodFrequencyId,
                 ) as any,
                 productId: String(values.productId) as any,
               },
@@ -346,10 +346,10 @@ export default function FixedCreatePlan(
                       firstname: recipientUserDetails?.first_name,
                       lastname: recipientUserDetails?.last_name,
                       reciever_client_id: String(
-                        recipientUserDetails?.client_id
+                        recipientUserDetails?.client_id,
                       ),
                       reciever_wallet_id: String(
-                        recipientUserDetails?.wallet_id
+                        recipientUserDetails?.wallet_id,
                       ),
                       phone: recipientUserDetails?.phone,
                     },
@@ -369,7 +369,7 @@ export default function FixedCreatePlan(
                   // });
 
                   stepper.go(
-                    getEnumStepIndex(FixedCreatePlanStep.SELECT_PAYMENT_METHOD)
+                    getEnumStepIndex(FixedCreatePlanStep.SELECT_PAYMENT_METHOD),
                   );
                   return;
                 } else {
@@ -378,7 +378,7 @@ export default function FixedCreatePlan(
                   }).unwrap();
 
                   stepper.go(
-                    getEnumStepIndex(FixedCreatePlanStep.SELECT_PAYMENT_METHOD)
+                    getEnumStepIndex(FixedCreatePlanStep.SELECT_PAYMENT_METHOD),
                   );
 
                   return;
@@ -400,7 +400,7 @@ export default function FixedCreatePlan(
             "Failed to process, Please try again.",
           {
             variant: "error",
-          }
+          },
         );
       }
     },
@@ -470,7 +470,7 @@ export default function FixedCreatePlan(
           "Failed to generate reference",
         {
           variant: "error",
-        }
+        },
       );
     }
   }
@@ -483,7 +483,8 @@ export default function FixedCreatePlan(
             savingsId ||
               (isGifting
                 ? createSavingsGiftYieldMutationResult.data?.data?.savingsId
-                : savingsFixedDepositCreateMutationResult.data?.data?.savingsId)
+                : savingsFixedDepositCreateMutationResult.data?.data
+                    ?.savingsId),
           ) as any,
           fund_source: fundSource as any,
         },
@@ -503,7 +504,7 @@ export default function FixedCreatePlan(
           "Failed to process funding",
         {
           variant: "error",
-        }
+        },
       );
     }
   };
@@ -526,7 +527,7 @@ export default function FixedCreatePlan(
         error?.data?.errors?.[0]?.defaultUserMessage || `OTP failed to send!`,
         {
           variant: "error",
-        }
+        },
       );
     }
   };
@@ -663,7 +664,7 @@ export default function FixedCreatePlan(
               icon: <Iconify icon="ph:wallet-light" className="text-4xl" />,
               label: `Fund via Yield Wallet`,
               more: `Wallet balance: ${formatNumberToCurrency(
-                String(wallet?.balance || 0)
+                String(wallet?.balance || 0),
               )}`,
               onClick: () => {
                 handleFundYield("wallet");
@@ -699,7 +700,7 @@ export default function FixedCreatePlan(
                 component={Paper}
                 className={clsx(
                   "flex items-center justify-between gap-4 p-3 rounded ",
-                  restProps?.disabled ? "text-neutral-400" : ""
+                  restProps?.disabled ? "text-neutral-400" : "",
                 )}
                 {...restProps}
               >
@@ -777,7 +778,7 @@ export default function FixedCreatePlan(
                     "Upon Confirmation, your plan will be activated",
                     {
                       variant: "info",
-                    }
+                    },
                   );
                   onClose();
                 }}
@@ -851,17 +852,21 @@ export default function FixedCreatePlan(
     FixedCreatePlanStep.SUMMARY,
   ].includes(enumStep);
 
-  if ((window as any).smartech) { 
-    (window as any).smartech(
-      'CREATE_FIXED_PLAN',
-      { 'depositAmount' : formik.values.depositAmount, 
-        'depositPeriod' : formik.values.depositPeriod,
-        'depositName' : formik.values.name,
-      }
-    )
-  } else {
-    console.error('Smartech is not available');
-  }
+  useEffect(() => {
+    if ((window as any).smartech) {
+      (window as any).smartech("dispatch", "CREATE_FIXED_PLAN", {
+        depositAmount: formik.values.depositAmount,
+        depositPeriod: formik.values.depositPeriod,
+        depositName: formik.values.name,
+      });
+    } else {
+      console.error("Smartech is not available");
+    }
+  }, [
+    formik.values.depositAmount,
+    formik.values.depositPeriod,
+    formik.values.name,
+  ]);
 
   return (
     <>
