@@ -5,6 +5,8 @@ import {
   Drawer,
   DrawerProps,
   IconButton,
+  ListItemButton,
+  Popover,
   Skeleton,
   Typography,
 } from "@mui/material";
@@ -34,11 +36,13 @@ import FixedRollover from "./FixedRollover";
 import { SAVINGS_ACCOUNT_STATUS_TYPE } from "constants/savings";
 import { trackUserOnClickingFundPlan } from "configs/analytics";
 import { downloadAsPDF } from "utils/file";
+import usePopover from "hooks/usePopover";
 
 export default function FixedPlanDetails(
   props: DrawerProps & { onClose: () => void; info: any },
 ) {
   const { onClose, info, ...rest } = props;
+  const infoPopover = usePopover();
   const { enqueueSnackbar } = useSnackbar();
   const [deleteSavingMutation, deleteSavingMutationResult] =
     savingsApi.useDeleteDraftSavingsMutation();
@@ -193,14 +197,14 @@ export default function FixedPlanDetails(
     },
   ];
 
-  const downloadInvestmentNote = async () => {
+  const downloadInvestmentNote = async (format: "pdf" | "image") => {
     try {
       const response = await downloadInvestmentLetter({
         params: {
           savingsId: info?.id,
           send: false,
           savingsType: "200",
-          format: "pdf",
+          format: format,
         },
       }).unwrap();
       downloadAsPDF(String(response?.data), "Yield Investment Letter");
@@ -339,23 +343,58 @@ export default function FixedPlanDetails(
                 SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE,
                 SAVINGS_ACCOUNT_STATUS_TYPE.MATURED,
               ].includes(getSavingsQuery?.data?.data?.account_status_code) ? (
-                <ButtonBase
-                  onClick={downloadInvestmentNote}
-                  disableRipple
-                  disabled={downloadInvestmentLetterResult?.isFetching}
-                  className={`${downloadInvestmentLetterResult?.isFetching ? "text-neutral-400 " : "text-[#4920AA] cursor-pointer"}inline-block  text-sm `}
-                >
-                  {downloadInvestmentLetterResult?.isFetching && (
-                    <ButtonBase>
-                      <Iconify
-                        fontSize={17}
-                        icon="solar:refresh-linear"
-                        className=" text-[#4920AA] animate-spin "
-                      />
-                    </ButtonBase>
-                  )}{" "}
-                  <span className="underline">Download Investment Note</span>
-                </ButtonBase>
+                <>
+                  <ButtonBase
+                    disableRipple
+                    onClick={infoPopover.togglePopover}
+                    disabled={downloadInvestmentLetterResult?.isFetching}
+                    className={`${downloadInvestmentLetterResult?.isFetching ? "text-neutral-400 " : "text-[#4920AA] cursor-pointer"}inline-block  text-sm `}
+                  >
+                    {downloadInvestmentLetterResult?.isFetching && (
+                      <ButtonBase>
+                        <Iconify
+                          fontSize={17}
+                          icon="solar:refresh-linear"
+                          className=" text-[#4920AA] animate-spin "
+                        />
+                      </ButtonBase>
+                    )}{" "}
+                    <span className="underline text-xs">
+                      Download Investment Note
+                    </span>
+                  </ButtonBase>
+                  <Popover
+                    open={infoPopover.isOpen}
+                    anchorEl={infoPopover.anchorEl}
+                    onClose={infoPopover.togglePopover}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                    transformOrigin={{ vertical: "top", horizontal: "right" }}
+                    className="mt-[8.5px] "
+                    slotProps={{
+                      paper: {
+                        className: "shadow-md rounded-2xl border-0",
+                      },
+                    }}
+                  >
+                    <div className="w-36 ">
+                      <ListItemButton
+                        className="py-3 "
+                        disabled={downloadInvestmentLetterResult?.isFetching}
+                        onClick={() => downloadInvestmentNote("image")}
+                      >
+                        <Typography>Download JPEG</Typography>
+                      </ListItemButton>
+                      <Divider className="bg-neutral-50" />
+                      <ListItemButton
+                        disabled={downloadInvestmentLetterResult?.isFetching}
+                        className="py-3"
+                        onClick={() => downloadInvestmentNote("pdf")}
+                      >
+                        <Typography>Download PDF</Typography>
+                      </ListItemButton>
+                    </div>
+                  </Popover>
+                </>
               ) : null}
 
               {[
