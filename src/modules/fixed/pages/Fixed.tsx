@@ -46,7 +46,7 @@ function Fixed() {
 
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle(true);
   const [isFixedCreatePlan, toggleFixedCreatePlan] = useToggle(
-    dialog === FixedUrlDialog.CREATE_PLAN
+    dialog === FixedUrlDialog.CREATE_PLAN,
   );
   const [statusId, setStatusId] = useState<number>(0);
   const [isPlanDetails, togglePlanDetails] = useToggle();
@@ -61,18 +61,18 @@ function Fixed() {
       () => ({
         params: { type: "fixed_deposit", ...(statusId ? { statusId } : {}) },
       }),
-      [statusId]
+      [statusId],
     ),
-    { skip: activeTab !== 0 }
+    { skip: activeTab !== 0 },
   );
 
   const giftedSavingsAccountsQueryResult =
     savingsApi.useGetGiftedSavingsAccountsQuery(
       useMemo(
         () => ({ params: { ...(statusId ? { status: statusId } : {}) } }),
-        [statusId]
+        [statusId],
       ),
-      { skip: activeTab !== 1 }
+      { skip: activeTab !== 1 },
     );
 
   const giftedSavingsAccounts = giftedSavingsAccountsQueryResult.data
@@ -89,11 +89,11 @@ function Fixed() {
         return {
           params: params as any,
         };
-      }, [])
+      }, []),
     );
 
   const totalAvailableBalance = Number(
-    savingsAccountsBalanceQueryResult?.data?.data?.totalAvailableBalance ?? 0
+    savingsAccountsBalanceQueryResult?.data?.data?.totalAvailableBalance ?? 0,
   );
 
   const savedCard = false;
@@ -112,7 +112,7 @@ function Fixed() {
 
   async function handleFixedCreatePlanSuccess(
     totalAvailableBalance: number,
-    interval?: any
+    interval?: any,
   ) {
     try {
       const [savingsData] = await Promise.all([
@@ -268,7 +268,7 @@ function Fixed() {
                             </Typography>
                           }
                         />
-                      )
+                      ),
                     )}
                   </Tabs>
                   <TextField
@@ -290,7 +290,7 @@ function Fixed() {
                     {ALL_ACTIVE_SAVINGS_ACCOUNT_STATUS_TYPE.map(
                       ({ id, name }) => (
                         <MenuItem value={id}>{name}</MenuItem>
-                      )
+                      ),
                     )}
                   </TextField>
                 </div>
@@ -545,7 +545,7 @@ const columns: ColumnDef<any>[] = [
     cell: (info) => {
       return (
         <CurrencyTypography>
-           {[
+          {[
             SAVINGS_ACCOUNT_STATUS_TYPE.REJECTED,
             SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL,
           ].includes(info.row.original?.account_status_code)

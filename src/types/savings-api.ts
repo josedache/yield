@@ -304,3 +304,5 @@ export type SavingsWalletPosting = {
 export type SavingsWalletPostingApiResponse = ApiResponse<
   SavingsWalletPosting[]
 >;
+
+export type SavingsInvestmentLetterApiResponse = ApiResponse<void>;

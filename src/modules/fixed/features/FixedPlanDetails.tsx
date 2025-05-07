@@ -5,6 +5,8 @@ import {
   Drawer,
   DrawerProps,
   IconButton,
+  ListItemButton,
+  Popover,
   Skeleton,
   Typography,
 } from "@mui/material";
@@ -33,15 +35,20 @@ import FixedEditPlanName from "./FixedEditPlanName";
 import FixedRollover from "./FixedRollover";
 import { SAVINGS_ACCOUNT_STATUS_TYPE } from "constants/savings";
 import { trackUserOnClickingFundPlan } from "configs/analytics";
-
+import { downloadAsPDF } from "utils/file";
+import usePopover from "hooks/usePopover";
 
 export default function FixedPlanDetails(
-  props: DrawerProps & { onClose: () => void; info: any }
+  props: DrawerProps & { onClose: () => void; info: any },
 ) {
   const { onClose, info, ...rest } = props;
+  const infoPopover = usePopover();
   const { enqueueSnackbar } = useSnackbar();
   const [deleteSavingMutation, deleteSavingMutationResult] =
     savingsApi.useDeleteDraftSavingsMutation();
+
+  const [downloadInvestmentLetter, downloadInvestmentLetterResult] =
+    savingsApi.useLazyGetInvestmentLetterQuery();
 
   const [isWalletBalanceVisible, toggleWalletBalanceVisible] = useToggle();
   const [isFixedLiquidate, toggleFixedLiquidate] = useToggle();
@@ -75,7 +82,7 @@ export default function FixedPlanDetails(
     SAVINGS_ACCOUNT_STATUS_TYPE.PRE_MATURE_CLOSURE,
   ].includes(
     getSavingsQuery?.data?.data?.account_status_code ||
-      info?.account_status_code
+      info?.account_status_code,
   );
 
   const getSavingsTransactionQuery = savingsApi.useGetSavingsTransactionsQuery(
@@ -83,9 +90,9 @@ export default function FixedPlanDetails(
       () => ({
         params: { savingsId: info?.id, all: true },
       }),
-      [info?.id]
+      [info?.id],
     ),
-    { skip: !canViewTransactions }
+    { skip: !canViewTransactions },
   );
 
   const details = [
@@ -111,7 +118,7 @@ export default function FixedPlanDetails(
       title: "Accrued Interest",
       value: `+${
         formatNumberToCurrency(
-          getSavingsQuery?.data?.data?.total_interest_earned
+          getSavingsQuery?.data?.data?.total_interest_earned,
         ) || "0"
       }`,
     },
@@ -122,7 +129,7 @@ export default function FixedPlanDetails(
           `${
             getSavingsQuery?.data?.data?.maturity_amount -
             Number(getSavingsQuery?.data?.data?.principal)
-          }`
+          }`,
         ) || "0"
       }`,
     },
@@ -151,7 +158,7 @@ export default function FixedPlanDetails(
       disabled: getSavingsQuery?.data?.data?.submitted_date
         ? isBefore(
             new Date(getSavingsQuery?.data?.data?.submitted_date),
-            new Date(2024, 10, 30)
+            new Date(2024, 10, 30),
           )
         : true,
     },
@@ -162,7 +169,8 @@ export default function FixedPlanDetails(
       variant: "soft",
       status: [SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL],
       onClick: () => {
-        trackUserOnClickingFundPlan({event: "user clicked on fund plan button"
+        trackUserOnClickingFundPlan({
+          event: "user clicked on fund plan button",
         });
         toggleCompletePayment();
       },
@@ -188,6 +196,35 @@ export default function FixedPlanDetails(
       disabled: getSavingsQuery?.isLoading,
     },
   ];
+
+  const downloadInvestmentNote = async (format: "pdf" | "image") => {
+    try {
+      const response = await downloadInvestmentLetter({
+        params: {
+          savingsId: info?.id,
+          send: false,
+          savingsType: "200",
+          format: format,
+        },
+      }).unwrap();
+      downloadAsPDF(String(response?.data), "Yield Investment Letter");
+      enqueueSnackbar(
+        response?.message || "Investment letter downloaded successful",
+        {
+          variant: "success",
+        },
+      );
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar(
+        error?.data?.errors?.[0]?.defaultUserMessage ||
+          `Error downloading investment letter`,
+        {
+          variant: "error",
+        },
+      );
+    }
+  };
 
   return (
     <Fragment>
@@ -260,7 +297,7 @@ export default function FixedPlanDetails(
               <Typography variant="body2" color="success" className="mt-1">
                 +
                 {formatNumberToCurrency(
-                  getSavingsQuery?.data?.data?.total_interest_earned
+                  getSavingsQuery?.data?.data?.total_interest_earned,
                 )}
               </Typography>
             ) : null}
@@ -281,8 +318,8 @@ export default function FixedPlanDetails(
               {actions
                 ?.filter((action) =>
                   action.status.includes(
-                    getSavingsQuery?.data?.data?.account_status_code
-                  )
+                    getSavingsQuery?.data?.data?.account_status_code,
+                  ),
                 )
                 ?.map(({ name, icon, ...rest }) => (
                   <Button
@@ -302,6 +339,64 @@ export default function FixedPlanDetails(
           <div className="mt-6">
             <div className="px-6 flex justify-between">
               <Typography className="font-semibold">Details</Typography>
+              {[
+                SAVINGS_ACCOUNT_STATUS_TYPE.ACTIVE,
+                SAVINGS_ACCOUNT_STATUS_TYPE.MATURED,
+              ].includes(getSavingsQuery?.data?.data?.account_status_code) ? (
+                <>
+                  <ButtonBase
+                    disableRipple
+                    onClick={infoPopover.togglePopover}
+                    disabled={downloadInvestmentLetterResult?.isFetching}
+                    className={`${downloadInvestmentLetterResult?.isFetching ? "text-neutral-400 " : "text-[#4920AA] cursor-pointer"}inline-block  text-sm `}
+                  >
+                    {downloadInvestmentLetterResult?.isFetching && (
+                      <ButtonBase>
+                        <Iconify
+                          fontSize={17}
+                          icon="solar:refresh-linear"
+                          className=" text-[#4920AA] animate-spin "
+                        />
+                      </ButtonBase>
+                    )}{" "}
+                    <span className="underline text-xs">
+                      Download Investment Note
+                    </span>
+                  </ButtonBase>
+                  <Popover
+                    open={infoPopover.isOpen}
+                    anchorEl={infoPopover.anchorEl}
+                    onClose={infoPopover.togglePopover}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                    transformOrigin={{ vertical: "top", horizontal: "right" }}
+                    className="mt-[8.5px] "
+                    slotProps={{
+                      paper: {
+                        className: "shadow-md rounded-2xl border-0",
+                      },
+                    }}
+                  >
+                    <div className="w-36 ">
+                      <ListItemButton
+                        className="py-3 "
+                        disabled={downloadInvestmentLetterResult?.isFetching}
+                        onClick={() => downloadInvestmentNote("image")}
+                      >
+                        <Typography>Download JPEG</Typography>
+                      </ListItemButton>
+                      <Divider className="bg-neutral-50" />
+                      <ListItemButton
+                        disabled={downloadInvestmentLetterResult?.isFetching}
+                        className="py-3"
+                        onClick={() => downloadInvestmentNote("pdf")}
+                      >
+                        <Typography>Download PDF</Typography>
+                      </ListItemButton>
+                    </div>
+                  </Popover>
+                </>
+              ) : null}
+
               {[
                 SAVINGS_ACCOUNT_STATUS_TYPE.SUBMITTED_AND_PENDING_APPROVAL,
               ].includes(getSavingsQuery?.data?.data?.account_status_code) ? (
@@ -431,7 +526,7 @@ export default function FixedPlanDetails(
                                   >
                                     {format(
                                       new Date(transaction?.transaction_date),
-                                      "dd MMM, yyyy"
+                                      "dd MMM, yyyy",
                                     )}
                                   </Typography>
                                 </div>
@@ -455,7 +550,7 @@ export default function FixedPlanDetails(
                                 </Typography>
                               </div>
                             );
-                          }
+                          },
                         )}
                       </div>
                     ) : (
