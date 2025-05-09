@@ -272,12 +272,17 @@ export default function FixedRollover(
 
   useEffect(() => {
     if ((window as any).smartech) {
-      (window as any).smartech("dispatch", "ROLL_OVER_FIXED_PLAN", {
-        oldPlanCapital: info?.principal,
-        newPlanName: formik.values.newPlanName,
-        newDepositPeriod: formik.values.depositPeriod,
-        rollOverType: formik.values.onAccountClosureId,
-      });
+      (window as any)
+        .smartech(
+          "identify",
+          `CDL-${info?.id}`,
+        )(window as any)
+        .smartech("dispatch", "roll_over_fixed_plan", {
+          oldplancapital: info?.principal,
+          newplanname: formik.values.newPlanName,
+          newdepositperiod: formik.values.depositPeriod,
+          rollovertype: formik.values.onAccountClosureId,
+        });
     } else {
       console.error("Smartech is not available");
     }

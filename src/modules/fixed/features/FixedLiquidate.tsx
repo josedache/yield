@@ -164,12 +164,17 @@ export default function FixedLiquidate(
 
   useEffect(() => {
     if ((window as any).smartech) {
-      (window as any).smartech("dispatch", "LIQUIDATE_YIELD", {
-        maturityDate: info?.maturity_date,
-        amount: info?.available_balance,
-        principalAmount: info?.principal,
-        liquidationTime: new Date().toLocaleString(),
-      });
+      (window as any)
+        .smartech(
+          "identify",
+          `CDL-${info?.id}`,
+        )(window as any)
+        .smartech("dispatch", "liquidate_yield", {
+          maturitydate: info?.maturity_date,
+          amount: info?.available_balance,
+          principalamount: info?.principal,
+          liquidationtime: new Date().toLocaleString(),
+        });
     } else {
       console.error("Smartech is not available");
     }
