@@ -24,9 +24,11 @@ import {
   trackUserOTP,
 } from "configs/analytics";
 import { urlSearchParamsExtractor } from "utils/url";
+import useAuthUser from "hooks/useAuthUser";
 
 function AuthSignup() {
   const { enqueueSnackbar } = useSnackbar();
+  const authUser = useAuthUser();
 
   const navigate = useNavigate();
 
@@ -330,17 +332,23 @@ function AuthSignup() {
 
   useEffect(() => {
     if ((window as any).smartech) {
-      (window as any).smartech("dispatch", "YIELD_SIGN_UP", {
-        signupdate: new Date().toLocaleString(),
-        firstname: formik.values.firstName,
-        mobile: formik.values.phone,
-        email: formik.values.email,
-        lastname: formik.values.lastName,
-      });
+      (window as any)
+        .smartech(
+          "identify",
+          `CDL-${authUser?.clientId}`,
+        )(window as any)
+        .smartech("dispatch", "signup", {
+          signupdate: new Date().toLocaleString(),
+          firstname: formik.values.firstName,
+          mobile: formik.values.phone,
+          email: formik.values.email,
+          lastname: formik.values.lastName,
+        });
     } else {
       console.error("Smartech is not available");
     }
   }, [
+    authUser?.clientId,
     formik.values.lastName,
     formik.values.firstName,
     formik.values.phone,

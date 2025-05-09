@@ -139,9 +139,14 @@ function Profile() {
   }
 
   if ((window as any).smartech) {
-    (window as any).smartech("dispatch", "PROFILE_UPDATE", {
-      email: authUser.email,
-    });
+    (window as any)
+      .smartech(
+        "identify",
+        `CDL-${authUser?.clientId}`,
+      )(window as any)
+      .smartech("dispatch", "profile_update", {
+        email: authUser.email,
+      });
   } else {
     console.error("Smartech is not available");
   }
