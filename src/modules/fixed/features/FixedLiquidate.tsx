@@ -233,8 +233,9 @@ export default function FixedLiquidate(
     },
     {
       title: "Liquidate Yield",
-      description:
-        "You’ve decided to prematurely liquidate your yied. Please select an option below to receive your funds.",
+      description: isPrematureLiquidate
+        ? "You’ve decided to prematurely liquidate your yied. Please select an option below to receive your funds."
+        : "",
       content: (
         <div>
           <Typography className="mt-1 text-center text-neutral-500">
