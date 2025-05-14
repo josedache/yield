@@ -17,7 +17,6 @@ import { useEffect } from "react";
 function AuthSignin() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-
   const [loginUserMutation] = userApi.useLoginUserMutation();
 
   const [searchParams] = useSearchParams();
@@ -61,9 +60,10 @@ function AuthSignin() {
       }
     },
   });
+
   useEffect(() => {
     if ((window as any).smartech) {
-      (window as any).smartech("dispatch", "signup", {
+      (window as any).smartech("dispatch", "signin", {
         login: formik.values.phone,
         signInTime: new Date().toLocaleString(),
       });

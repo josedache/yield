@@ -854,7 +854,8 @@ export default function FixedCreatePlan(
 
   useEffect(() => {
     if ((window as any).smartech) {
-      (window as any).smartech("dispatch", "CREATE_FIXED_PLAN", {
+      (window as any).smartech("identify", `CDL-${authUser?.clientId}`);
+      (window as any).smartech("dispatch", "create_fixed_plan", {
         depositAmount: formik.values.depositAmount,
         depositPeriod: formik.values.depositPeriod,
         depositName: formik.values.name,
@@ -866,6 +867,7 @@ export default function FixedCreatePlan(
     formik.values.depositAmount,
     formik.values.depositPeriod,
     formik.values.name,
+    authUser?.clientId,
   ]);
 
   return (

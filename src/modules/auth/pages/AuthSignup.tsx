@@ -330,7 +330,7 @@ function AuthSignup() {
 
   useEffect(() => {
     if ((window as any).smartech) {
-      (window as any).smartech("dispatch", "YIELD_SIGN_UP", {
+      (window as any).smartech("dispatch", "signup", {
         signupdate: new Date().toLocaleString(),
         firstname: formik.values.firstName,
         mobile: formik.values.phone,

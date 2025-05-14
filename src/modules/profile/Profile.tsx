@@ -139,7 +139,8 @@ function Profile() {
   }
 
   if ((window as any).smartech) {
-    (window as any).smartech("dispatch", "PROFILE_UPDATE", {
+    (window as any).smartech("identify", `CDL-${authUser?.clientId}`);
+    (window as any).smartech("dispatch", "profile_update", {
       email: authUser.email,
     });
   } else {
