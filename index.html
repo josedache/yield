@@ -121,11 +121,8 @@
     </script>
     <script src="//cdnt.netcoresmartech.com/smartechclient.js"></script>
     <script>
-      smartech(
-        "create",
-        "ADGMOT35CHFLVDHBJNIG50K96BLFG7DDG4JKAN9HT7JUJNA2KGCG",
-      );
-      smartech("register", "d01fca3da863deb1ae9a6ee0fcbf3d1a");
+      smartech("create", "%VITE_NETCORE_CREATE_TOKEN%");
+      smartech("register", " %VITE_NETCORE_REGISTER_TOKEN%");
       smartech("identify", "");
     </script>
     <div id="root"></div>
