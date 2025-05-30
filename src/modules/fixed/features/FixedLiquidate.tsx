@@ -2,6 +2,7 @@ import {
   Button,
   ButtonBase,
   CardActionArea,
+  CircularProgress,
   Dialog,
   DialogContent,
   DialogProps,
@@ -266,6 +267,7 @@ export default function FixedLiquidate(
                 disabled:
                   sendOtpMutationResult?.isLoading ||
                   transactionOutwardBankListQueryResult?.isLoading,
+                loading: formik.isSubmitting,
               },
               {
                 icon: <Iconify icon="ph:wallet-light" className="text-3xl" />,
@@ -277,8 +279,9 @@ export default function FixedLiquidate(
                 disabled:
                   sendOtpMutationResult?.isLoading ||
                   transactionOutwardBankListQueryResult?.isLoading,
+                loading: formik.isSubmitting,
               },
-            ].map(({ label, icon, more, ...restProps }) => {
+            ].map(({ label, icon, more, loading, ...restProps }) => {
               return (
                 <ButtonBase
                   key={label}
@@ -300,6 +303,7 @@ export default function FixedLiquidate(
                     </div>
 
                     {more ? <Typography>{more}</Typography> : null}
+                    {loading ? <CircularProgress size={12} /> : null}
                   </CardActionArea>
                 </ButtonBase>
               );
