@@ -450,7 +450,7 @@ export default function FixedLiquidate(
                 "bg-[#F2F6EE]",
               )}
             >
-              SKip
+              Skip
             </Button>
             {stepper.step <= 3 ? (
               <LoadingButton
