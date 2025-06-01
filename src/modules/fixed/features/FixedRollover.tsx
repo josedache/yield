@@ -23,6 +23,7 @@ import { LoadingButton } from "@mui/lab";
 import useToggle from "hooks/useToggle";
 import FixedCreatePlan from "./FixedCreatePlan";
 import { trackUserOnSelectingRollover } from "configs/analytics";
+import { useEffect } from "react";
 
 const ROLLOVER_WITH_CAPITAL = 400;
 const ROLLOVER_WITH_INTEREST = 300;
@@ -289,6 +290,25 @@ export default function FixedRollover(
       ),
     },
   ];
+
+  useEffect(() => {
+    if ((window as any).smartech) {
+      (window as any).smartech("identify", `CDL-${info?.id}`);
+      (window as any).smartech("dispatch", "roll_over_fixed_plan", {
+        oldplancapital: info?.principal,
+        newplanname: formik.values.newPlanName,
+        newdepositperiod: formik.values.depositPeriod,
+        rollovertype: formik.values.onAccountClosureId,
+      });
+    } else {
+      console.error("Smartech is not available");
+    }
+  }, [
+    info,
+    formik.values.newPlanName,
+    formik.values.depositPeriod,
+    formik.values.onAccountClosureId,
+  ]);
 
   return isFixedCreatePlan ? (
     <FixedCreatePlan

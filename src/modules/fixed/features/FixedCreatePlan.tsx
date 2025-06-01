@@ -701,6 +701,7 @@ export default function FixedCreatePlan(
                 className={clsx(
                   "flex items-center justify-between gap-4 p-3 rounded ",
                   restProps?.disabled ? "text-neutral-400" : "",
+                  restProps?.disabled ? "text-neutral-400" : "",
                 )}
                 {...restProps}
               >

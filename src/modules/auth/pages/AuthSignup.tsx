@@ -212,6 +212,7 @@ function AuthSignup() {
 
         if (message?.toLowerCase().includes("user already exists")) {
           enqueueSnackbar(message, { variant: "warning" });
+
           return navigate(
             SIGNIN.concat(
               yield_referral_code

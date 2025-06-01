@@ -29,7 +29,7 @@ import { LoadingButton } from "@mui/lab";
 import { getFormikTextFieldProps } from "utils/formik";
 import useAuthUser from "hooks/useAuthUser";
 import { transactionApi } from "apis/transaction-api";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import NumberInput from "components/NumberInput";
 import { trackUserOnSelectingClaim } from "configs/analytics";
 import * as dfns from "date-fns";
@@ -188,6 +188,20 @@ export default function FixedLiquidate(
       );
     }
   }
+
+  useEffect(() => {
+    if ((window as any).smartech) {
+      (window as any).smartech("identify", `CDL-${info?.id}`);
+      (window as any).smartech("dispatch", "liquidate_yield", {
+        maturitydate: info?.maturity_date,
+        amount: info?.available_balance,
+        principalamount: info?.principal,
+        liquidationtime: new Date().toLocaleString(),
+      });
+    } else {
+      console.error("Smartech is not available");
+    }
+  }, [info]);
 
   const tabs = [
     {

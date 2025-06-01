@@ -12,11 +12,11 @@ import { userApi } from "apis/user-api";
 import { identifyUser } from "configs/mixpanel";
 import { trackUserSignIn } from "configs/analytics";
 import { urlSearchParamsExtractor } from "utils/url";
+import { useEffect } from "react";
 
 function AuthSignin() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-
   const [loginUserMutation] = userApi.useLoginUserMutation();
 
   const [searchParams] = useSearchParams();
@@ -72,6 +72,17 @@ function AuthSignin() {
       }
     },
   });
+
+  useEffect(() => {
+    if ((window as any).smartech) {
+      (window as any).smartech("dispatch", "signin", {
+        login: formik.values.phone,
+        signInTime: new Date().toLocaleString(),
+      });
+    } else {
+      console.error("Smartech is not available");
+    }
+  }, [formik.values.phone]);
 
   return (
     <form
