@@ -28,7 +28,7 @@ const ROLLOVER_WITH_CAPITAL = 400;
 const ROLLOVER_WITH_INTEREST = 300;
 
 export default function FixedRollover(
-  props: DialogProps & { onClose: () => void; info: any }
+  props: DialogProps & { onClose: () => void; info: any },
 ) {
   const { onClose, info, ...rest } = props;
   const { enqueueSnackbar } = useSnackbar();
@@ -99,6 +99,27 @@ export default function FixedRollover(
 
             toggleFixedCreatePlan();
             stepper.go(3);
+            if ((window as any).smartech) {
+              (window as any).smartech("contact", "1", {
+                "pk^clientid": `CDL-${info?.id}`,
+                rolloverType:
+                  values.onAccountClosureId === ROLLOVER_WITH_CAPITAL
+                    ? "Capital Only"
+                    : "Capital + Interest",
+              });
+              (window as any).smartech("identify", `CDL-${info?.id}`);
+              (window as any).smartech("dispatch", "roll_over_fixed_plan", {
+                oldplancapital: info?.principal,
+                newplanname: formik.values.newPlanName,
+                newdepositperiod: formik.values.depositPeriod,
+                rollovertype:
+                  values.onAccountClosureId === ROLLOVER_WITH_CAPITAL
+                    ? "Capital Only"
+                    : "Capital + Interest",
+              });
+            } else {
+              console.error("Smartech is not available");
+            }
           }
         }
       } catch (error) {
@@ -108,7 +129,7 @@ export default function FixedRollover(
             "Failed to process funding",
           {
             variant: "error",
-          }
+          },
         );
       }
     },
@@ -135,7 +156,7 @@ export default function FixedRollover(
                   });
                   formik.setFieldValue(
                     "onAccountClosureId",
-                    ROLLOVER_WITH_CAPITAL
+                    ROLLOVER_WITH_CAPITAL,
                   );
 
                   stepper.go(1);
@@ -152,7 +173,7 @@ export default function FixedRollover(
                   });
                   formik.setFieldValue(
                     "onAccountClosureId",
-                    ROLLOVER_WITH_INTEREST
+                    ROLLOVER_WITH_INTEREST,
                   );
                   stepper.go(2);
                 },
@@ -165,7 +186,7 @@ export default function FixedRollover(
                   component={Paper}
                   className={clsx(
                     "rounded w-full ",
-                    restProps?.disabled ? "text-neutral-400" : ""
+                    restProps?.disabled ? "text-neutral-400" : "",
                   )}
                   {...restProps}
                 >

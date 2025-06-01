@@ -46,7 +46,19 @@ function AuthSignin() {
           variant: "success",
         });
         identifyUser(data.data.user.id, data.data.user);
-
+        if ((window as any).smartech) {
+          (window as any).smartech("contact", "1", {
+            "pk^clientid": `CDL-${data.data.user.id}`,
+            mobile: formik.values.phone,
+          });
+          (window as any).smartech("identify", `CDL-${data.data.user.id}`);
+          (window as any).smartech("dispatch", "signin", {
+            login: formik.values.phone,
+            signInTime: new Date().toLocaleString(),
+          });
+        } else {
+          console.error("Smartech is not available");
+        }
         navigate(DASHBOARD);
       } catch (error: any) {
         enqueueSnackbar(
@@ -55,7 +67,7 @@ function AuthSignin() {
             : error?.data?.message || "Failed to login",
           {
             variant: "error",
-          }
+          },
         );
       }
     },
@@ -117,7 +129,7 @@ function AuthSignin() {
                 to={RESET_PASSWORD.concat(
                   yield_referral_code
                     ? `?yield_referral_code=${yield_referral_code}`
-                    : ""
+                    : "",
                 )}
               >
                 Reset Password
@@ -132,7 +144,7 @@ function AuthSignin() {
                 to={SIGNUP.concat(
                   yield_referral_code
                     ? `?yield_referral_code=${yield_referral_code}`
-                    : ""
+                    : "",
                 )}
               >
                 Sign up

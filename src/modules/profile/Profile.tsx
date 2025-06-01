@@ -32,7 +32,7 @@ function Profile() {
     userApi.useGetUserReferralCodeQuery(undefined);
 
   const [preferredOtpMode, setPreferredOtpMode] = useState(
-    authUser.preffered_notification_channel ?? "bvn_phone"
+    authUser.preffered_notification_channel ?? "bvn_phone",
   );
 
   const [uploadUserFileMutation, uploadUserFileMutationResult] =
@@ -50,17 +50,20 @@ function Profile() {
 
   const normalizedBanks = useMemo(
     () =>
-      banks?.reduce((acc, curr) => {
-        acc[curr.id] = curr;
-        return acc;
-      }, {} as Record<string, (typeof banks)[0]>),
-    [banks]
+      banks?.reduce(
+        (acc, curr) => {
+          acc[curr.id] = curr;
+          return acc;
+        },
+        {} as Record<string, (typeof banks)[0]>,
+      ),
+    [banks],
   );
 
   // const referralLink = `${window.location.origin}?yield_referral_code=${userReferralCodeQueryResult?.data?.data?.code}`;
 
   const handleChangePreferredOtpMode = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     try {
       const data = await preferredOtpModeMutation({
@@ -73,7 +76,7 @@ function Profile() {
         data?.message || "Preferred OTP mode updated successfully!",
         {
           variant: "success",
-        }
+        },
       );
     } catch (error) {
       const message = Array.isArray(error?.data?.message)
@@ -133,6 +136,19 @@ function Profile() {
         status: 700,
       });
     }
+  }
+
+  if ((window as any).smartech) {
+    (window as any).smartech("contact", "1", {
+      "pk^clientid": `CDL-${authUser?.clientId}`,
+      email: authUser.email,
+    });
+    (window as any).smartech("identify", `CDL-${authUser?.clientId}`);
+    (window as any).smartech("dispatch", "profile_update", {
+      email: authUser.email,
+    });
+  } else {
+    console.error("Smartech is not available");
   }
 
   return (
@@ -221,7 +237,7 @@ function Profile() {
                       color="primary"
                       onClick={() =>
                         clipboard.writeText(
-                          String(authUser?.bank_details?.accountnumber)
+                          String(authUser?.bank_details?.accountnumber),
                         )
                       }
                     >
@@ -314,7 +330,7 @@ function Profile() {
                   onDropRejected={(fileRejection) => {
                     enqueueSnackbar(
                       fileRejection[0].errors?.[0].message || "File Rejected",
-                      { variant: "error" }
+                      { variant: "error" },
                     );
                   }}
                 >
@@ -353,7 +369,7 @@ function Profile() {
                   color="primary"
                   onClick={() =>
                     clipboard.writeText(
-                      String(userReferralCodeQueryResult?.data?.data?.code)
+                      String(userReferralCodeQueryResult?.data?.data?.code),
                     )
                   }
                 >

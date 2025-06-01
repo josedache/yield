@@ -127,6 +127,21 @@ export default function FixedLiquidate(
               },
             }).unwrap();
             stepper.next(4);
+            if ((window as any).smartech) {
+              (window as any).smartech("contact", "1", {
+                "pk^clientid": `CDL-${info?.id}`,
+                maturitydate: info?.maturity_date,
+              });
+              (window as any).smartech("identify", `CDL-${info?.id}`);
+              (window as any).smartech("dispatch", "liquidate_yield", {
+                maturitydate: info?.maturity_date,
+                amount: info?.available_balance,
+                principalamount: info?.principal,
+                liquidationtime: new Date().toLocaleString(),
+              });
+            } else {
+              console.error("Smartech is not available");
+            }
             break;
           case 4:
             stepper.next();

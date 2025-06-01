@@ -12,7 +12,7 @@ import AuthSignupCreatePassword from "../features/AuthSignupCreatePassword";
 import { LoadingButton } from "@mui/lab";
 import { SIGNIN } from "constants/urls";
 import { userApi } from "apis/user-api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CDL_IAGREE_INLINE_BASE_URL,
   CDL_IAGREE_INLINE_MODE,
@@ -216,8 +216,8 @@ function AuthSignup() {
             SIGNIN.concat(
               yield_referral_code
                 ? `?yield_referral_code=${yield_referral_code}`
-                : ""
-            )
+                : "",
+            ),
           );
         }
 
@@ -242,7 +242,7 @@ function AuthSignup() {
         error?.data?.errors?.[0]?.defaultUserMessage || `OTP failed to send!`,
         {
           variant: "error",
-        }
+        },
       );
     }
   };
@@ -327,7 +327,24 @@ function AuthSignup() {
 
   // const isFirstStep = enumStep === AuthSignupStep.BVN;
   // const isSecondStep = enumStep === AuthSignupStep.BVN_VERIFICATION;
-
+  useEffect(() => {
+    if ((window as any).smartech) {
+      (window as any).smartech("dispatch", "signup", {
+        signupdate: new Date().toLocaleString(),
+        firstname: formik.values.firstName,
+        mobile: formik.values.phone,
+        email: formik.values.email,
+        lastname: formik.values.lastName,
+      });
+    } else {
+      console.error("Smartech is not available");
+    }
+  }, [
+    formik.values.lastName,
+    formik.values.firstName,
+    formik.values.phone,
+    formik.values.email,
+  ]);
   return (
     <form
       onSubmit={formik.handleSubmit as any}
@@ -376,7 +393,7 @@ function AuthSignup() {
               to={SIGNIN.concat(
                 yield_referral_code
                   ? `?yield_referral_code=${yield_referral_code}`
-                  : ""
+                  : "",
               )}
             >
               Log In
