@@ -40,6 +40,8 @@ import {
   trackUserDocumentVerification,
 } from "configs/analytics";
 
+// import { locationApi } from "apis/location-api.ts";
+
 function DashboardKyc() {
   const { enqueueSnackbar } = useSnackbar();
 
@@ -58,45 +60,48 @@ function DashboardKyc() {
     userApi.useSendUserOtpMutation();
   const [verifyOtpMutation] = userApi.useVerifyUserOtpMutation();
   const [countdownDate, setCountdownDate] = useState<Date | undefined>(
-    undefined
+    undefined,
   );
 
   const banks = transactionOutwardBankListQueryResult.data?.data;
 
   const normalizedBanks = useMemo(
     () =>
-      banks?.reduce((acc, curr) => {
-        acc[curr.id] = curr;
-        return acc;
-      }, {} as Record<string, (typeof banks)[0]>),
-    [banks]
+      banks?.reduce(
+        (acc, curr) => {
+          acc[curr.id] = curr;
+          return acc;
+        },
+        {} as Record<string, (typeof banks)[0]>,
+      ),
+    [banks],
   );
 
-  const isBasicInformationCompleted =
-    authUser?.firstname &&
-    authUser?.lastname &&
-    authUser?.bvn &&
-    authUser?.mobileNo &&
-    authUser?.email;
+  const isBasicInformationCompleted = authUser?.kyc_validation?.basic;
 
-  const isIdentificationCompleted = authUser?.nin;
-  const isAlternateNumberCompleted = authUser?.alternate_number;
+  const isIdentificationCompleted = authUser?.kyc_validation?.nin;
+  const isAlternateNumberCompleted = authUser?.kyc_validation?.alternateNumber;
 
-  const isAccountDetailsCompleted =
-    authUser?.bank_details?.accountnumber &&
-    authUser?.bank_details?.accountname;
+  const isAccountDetailsCompleted = authUser?.kyc_validation?.bank;
+
+  // const isAddressVerificationCompleted = false;
+  // const isTaxIdentificationNumberCompleted = false;
 
   const stepper = useStepper({
     initialStep: getEnumStepIndex(
       !isBasicInformationCompleted
         ? DashboardKycStep.BASIC_INFORMATION
         : !isIdentificationCompleted
-        ? DashboardKycStep.IDENTIFICATION
-        : !isAlternateNumberCompleted
-        ? DashboardKycStep.ALTERNATE_PHONE_NUMBER
-        : !isAccountDetailsCompleted
-        ? DashboardKycStep.ACCOUNT_DETAILS
-        : DashboardKycStep.SUCCESS
+          ? DashboardKycStep.IDENTIFICATION
+          : !isAlternateNumberCompleted
+            ? DashboardKycStep.ALTERNATE_PHONE_NUMBER
+            : !isAccountDetailsCompleted
+              ? DashboardKycStep.ACCOUNT_DETAILS
+              : // : !isAddressVerificationCompleted
+                //   ? DashboardKycStep.ADDRESS_VERIFICATION
+                //   : !isTaxIdentificationNumberCompleted
+                //     ? DashboardKycStep.TAX_IDENTIFICATION_NUMBER
+                DashboardKycStep.SUCCESS,
     ),
   });
 
@@ -120,6 +125,18 @@ function DashboardKyc() {
         type: "nin_slip",
         id_number: authUser?.nin ?? "",
       },
+      // address: "",
+      // full_name: "",
+      // utility_number: "",
+      // utility_type: "",
+      // utility_provider: "",
+      // partner_params: {
+      //   user_id: authUser?.userId,
+      //   job_id: "",
+      // },
+      // state: "",
+      // city: "",
+      // tin: "",
     },
     enableReinitialize: true,
     validationSchema: yup.object({
@@ -160,6 +177,17 @@ function DashboardKyc() {
           accountname: yup.string().label("Account Name").required(),
           bankId: yup.string().label("Bank").required(),
         },
+        // [DashboardKycStep.ADDRESS_VERIFICATION]: {
+        //   address: yup.string().label("Address").required(),
+        //   utility_number: yup.string().label("Utility Number").required(),
+        //   utility_type: yup.string().label("Utility Type").required(),
+        //   utility_provider: yup.string().label("Utility Provider").required(),
+        //   state: yup.string().label("State").required(),
+        //   city: yup.string().label("City").required(),
+        // },
+        // [DashboardKycStep.TAX_IDENTIFICATION_NUMBER]: {
+        //   tin: yup.string().label("TIN").required(),
+        // },
       }[enumStep],
     }),
     onSubmit: async (values) => {
@@ -178,7 +206,7 @@ function DashboardKyc() {
               data?.message || "Basic information updated Successfully!",
               {
                 variant: "success",
-              }
+              },
             );
 
             if (isAccountDetailsCompleted) {
@@ -187,7 +215,7 @@ function DashboardKyc() {
 
             if (isIdentificationCompleted) {
               return stepper.go(
-                getEnumStepIndex(DashboardKycStep.ACCOUNT_DETAILS)
+                getEnumStepIndex(DashboardKycStep.ACCOUNT_DETAILS),
               );
             }
 
@@ -203,7 +231,7 @@ function DashboardKyc() {
               data?.message || "Document uploaded successfully!",
               {
                 variant: "success",
-              }
+              },
             );
             break;
           }
@@ -218,7 +246,7 @@ function DashboardKyc() {
               data?.message || "Alternate Phone Number updated Successfully!",
               {
                 variant: "success",
-              }
+              },
             );
 
             break;
@@ -244,7 +272,7 @@ function DashboardKyc() {
               data?.message || "Account details updated Successfully!",
               {
                 variant: "success",
-              }
+              },
             );
             trackUserAddBankAccount({
               accountNumber: formik.values.accountnumber,
@@ -271,6 +299,20 @@ function DashboardKyc() {
     },
   });
 
+  // const statesQueryResult = locationApi.useGetLocationAllStatesQuery(undefined);
+
+  // const states = statesQueryResult.data?.data;
+
+  // const lgasQueryResult = locationApi.useGetLocationStateLgasQuery(
+  //   useMemo(
+  //     () => ({ path: { state: formik.values.state } }),
+  //     [formik.values.state],
+  //   ),
+  //   { skip: !formik.values.state },
+  // );
+
+  // const lgas = lgasQueryResult.data?.data?.lgas;
+
   const transactionOutwardNameEnquiryQueryResult =
     transactionApi.useGetTransactionOutwardNameEnquiryQuery(
       useMemo(
@@ -280,7 +322,7 @@ function DashboardKyc() {
             accountNumber: formik.values.accountnumber,
           },
         }),
-        [formik.values.accountnumber, formik.values.bankId, normalizedBanks]
+        [formik.values.accountnumber, formik.values.bankId, normalizedBanks],
       ),
       {
         skip: !(
@@ -288,7 +330,7 @@ function DashboardKyc() {
           formik.values.accountnumber &&
           formik.values.accountnumber?.length === 10
         ),
-      }
+      },
     );
 
   const transactionOutwardNameEnquiry =
@@ -318,7 +360,7 @@ function DashboardKyc() {
         error?.data?.errors?.[0]?.defaultUserMessage || `OTP failed to send!`,
         {
           variant: "error",
-        }
+        },
       );
     }
   };
@@ -417,7 +459,7 @@ function DashboardKyc() {
                     fullWidth
                     label="BVN"
                     placeholder="Enter a valid BVN"
-                    {...(authUser.bvn
+                    {...(authUser.bvn && authUser.clientId
                       ? { value: formik.values.bvn, disabled: true }
                       : getFormikTextFieldProps(formik, "bvn"))}
                     // {...getFormikTextFieldProps(formik, "bvn")}
@@ -619,7 +661,7 @@ function DashboardKyc() {
                       disabled={!formik.values.alternateMobileNo}
                       {...getFormikTextFieldProps(
                         formik,
-                        "alternateMobileNoOtp"
+                        "alternateMobileNoOtp",
                       )}
                       slotProps={{
                         input: {
@@ -766,6 +808,99 @@ function DashboardKyc() {
                 </div>
               ),
             },
+            // {
+            //   title: "Address Verification",
+            //   completed: isAddressVerificationCompleted,
+            //   content: (
+            //     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            //       <TextField
+            //         fullWidth
+            //         label="Street Address"
+            //         placeholder="House Number and Street Name"
+            //         {...getFormikTextFieldProps(formik, "address")}
+            //       />
+            //       <TextField
+            //         fullWidth
+            //         label="State"
+            //         placeholder="Select State"
+            //         select
+            //         {...getFormikTextFieldProps(formik, "state")}
+            //       >
+            //         {states?.map((option) => (
+            //           <MenuItem key={option} value={option}>
+            //             {option}
+            //           </MenuItem>
+            //         ))}
+            //       </TextField>
+            //       <TextField
+            //         fullWidth
+            //         label="Town/City"
+            //         placeholder="Town/City"
+            //         select
+            //         {...getFormikTextFieldProps(formik, "city")}
+            //       >
+            //         {lgas?.map((option) => (
+            //           <MenuItem key={option} value={option}>
+            //             {option}
+            //           </MenuItem>
+            //         ))}
+            //       </TextField>
+            //       <TextField
+            //         fullWidth
+            //         label="Electricity Type (Optional)"
+            //         placeholder="Select Electricity Type"
+            //         select
+            //         {...getFormikTextFieldProps(formik, "utility_type")}
+            //       >
+            //         {[]?.map((option: any) => (
+            //           <MenuItem key={option.id} value={option.id}>
+            //             {option.name}
+            //           </MenuItem>
+            //         ))}
+            //       </TextField>
+            //       <TextField
+            //         fullWidth
+            //         label="Electricity Provider (Optional)"
+            //         placeholder="Select Electricity Provider"
+            //         select
+            //         {...getFormikTextFieldProps(formik, "utility_provider")}
+            //       >
+            //         {[]?.map((option: any) => (
+            //           <MenuItem key={option.id} value={option.id}>
+            //             {option.name}
+            //           </MenuItem>
+            //         ))}
+            //       </TextField>
+            //       <TextField
+            //         fullWidth
+            //         label="Meter Number (Optional)"
+            //         placeholder="Enter Meter Number"
+            //         {...getFormikTextFieldProps(formik, "utility_number")}
+            //       />
+            //       <div />
+            //       <div className="flex items-end mt-4">
+            //         <div className="flex-1">{actionButtons}</div>
+            //       </div>
+            //     </div>
+            //   ),
+            // },
+            // {
+            //   title: "Tax Identification Number (Optional)",
+            //   completed: isTaxIdentificationNumberCompleted,
+            //   content: (
+            //     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            //       <TextField
+            //         fullWidth
+            //         label="Tax Verification Number (TIN)"
+            //         placeholder="Enter Tax Verification Number"
+            //         {...getFormikTextFieldProps(formik, "tin")}
+            //       />
+            //       <div className="flex items-end mt-4">
+            //         <div className="flex-1">{actionButtons}</div>
+            //       </div>
+            //     </div>
+            //   ),
+            // },
           ].map(({ title, content, completed }, index) => {
             return (
               <Accordion
@@ -774,7 +909,7 @@ function DashboardKyc() {
                 expanded={stepper.step === index}
                 className={clsx(
                   stepper.step === index ? "border-neutral-50" : "border-none",
-                  "rounded-lg mb-4"
+                  "rounded-lg mb-4",
                 )}
                 sx={{
                   "&:before": {
@@ -794,7 +929,9 @@ function DashboardKyc() {
                       variant="h6"
                       className={clsx(
                         completed ? "text-neutral-500" : "",
-                        stepper.step === index ? "font-semibold" : "font-normal"
+                        stepper.step === index
+                          ? "font-semibold"
+                          : "font-normal",
                       )}
                     >
                       {title}
@@ -859,6 +996,8 @@ const STEPS_INDEX = [
   DashboardKycStep.IDENTIFICATION,
   DashboardKycStep.ALTERNATE_PHONE_NUMBER,
   DashboardKycStep.ACCOUNT_DETAILS,
+  // DashboardKycStep.ADDRESS_VERIFICATION,
+  // DashboardKycStep.TAX_IDENTIFICATION_NUMBER,
   DashboardKycStep.SUCCESS,
 ];
 

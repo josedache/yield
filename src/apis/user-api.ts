@@ -36,56 +36,56 @@ export const BASE_URL = "/user";
 
 export const userApi = coreApi.injectEndpoints({
   endpoints: (builder) => ({
-    // loginUser: builder.mutation<UserLoginApiResponse, UserLoginApiRequest>({
-    //   query: ({ ...config }) => ({
-    //     url: BASE_URL + "/login",
-    //     method: "POST",
-    //     ...config,
-    //   }),
-    //   invalidatesTags: [tags.USER],
-    // }),
-
     loginUser: builder.mutation<UserLoginApiResponse, UserLoginApiRequest>({
-      queryFn: async (config, _, __, baseQuery) => {
-        const loginResult = await baseQuery({
-          url: BASE_URL + "/login",
-          method: "POST",
-          ...config,
-        });
-
-        if (loginResult.error) {
-          return loginResult;
-        }
-
-        const headers = new Headers();
-        headers.set(
-          "Authorization",
-          `Bearer ${(loginResult.data as any)?.data?.token}`
-        );
-
-        const verifyResult = await baseQuery({
-          url: BASE_URL + "/kyc/client/verify",
-          method: "GET",
-          headers: headers,
-        });
-
-        if (verifyResult.error) {
-          return verifyResult as any;
-        }
-
-        return {
-          ...loginResult,
-          data: {
-            ...(loginResult.data as any),
-            data: {
-              ...(loginResult.data as any).data,
-              profile: verifyResult.data,
-            },
-          },
-        };
-      },
+      query: ({ ...config }) => ({
+        url: BASE_URL + "/login",
+        method: "POST",
+        ...config,
+      }),
       invalidatesTags: [tags.USER],
     }),
+
+    // loginUser: builder.mutation<UserLoginApiResponse, UserLoginApiRequest>({
+    //   queryFn: async (config, _, __, baseQuery) => {
+    //     const loginResult = await baseQuery({
+    //       url: BASE_URL + "/login",
+    //       method: "POST",
+    //       ...config,
+    //     });
+    //
+    //     if (loginResult.error) {
+    //       return loginResult;
+    //     }
+    //
+    //     const headers = new Headers();
+    //     headers.set(
+    //       "Authorization",
+    //       `Bearer ${(loginResult.data as any)?.data?.token}`
+    //     );
+    //
+    //     const verifyResult = await baseQuery({
+    //       url: BASE_URL + "/kyc/client/verify",
+    //       method: "GET",
+    //       headers: headers,
+    //     });
+    //
+    //     if (verifyResult.error) {
+    //       return verifyResult as any;
+    //     }
+    //
+    //     return {
+    //       ...loginResult,
+    //       data: {
+    //         ...(loginResult.data as any),
+    //         data: {
+    //           ...(loginResult.data as any).data,
+    //           profile: verifyResult.data,
+    //         },
+    //       },
+    //     };
+    //   },
+    //   invalidatesTags: [tags.USER],
+    // }),
 
     getUserClientKyc: builder.query<UserClientKycApiResponse, ApiRequest>({
       query: (config) => ({
@@ -104,7 +104,7 @@ export const userApi = coreApi.injectEndpoints({
           ...config,
         }),
         providesTags: [tags.USER],
-      }
+      },
     ),
 
     verifyUserClientKyc: builder.mutation<UserClientKycApiResponse, ApiRequest>(
@@ -115,7 +115,7 @@ export const userApi = coreApi.injectEndpoints({
           ...config,
         }),
         invalidatesTags: [tags.USER],
-      }
+      },
     ),
 
     logoutUser: builder.mutation<ApiResponse, UserLogoutApiRequest>({

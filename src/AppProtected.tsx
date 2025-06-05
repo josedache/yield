@@ -17,17 +17,21 @@ import useLogout from "hooks/useLogout";
 function AppProtected() {
   const { logout } = useLogout();
 
-  const userClientKycQueryResult = userApi.useGetUserClientKycQuery(undefined);
-  const userSelfieFileQueryResult =
-    userApi.useGetUserSelfieFileQuery(undefined);
+  const authUser = useAuthUser();
+
+  const userClientKycQueryResult = userApi.useGetUserClientKycQuery(undefined, {
+    skip: !authUser?.clientId,
+  });
+  const userSelfieFileQueryResult = userApi.useGetUserSelfieFileQuery(
+    undefined,
+    { skip: !authUser?.clientId },
+  );
 
   const [
     isRefreshTokenDialog,
     toggleRefreshTokenDialog,
     setRefreshTokenDialog,
   ] = useToggle();
-
-  const authUser = useAuthUser();
 
   const isKycCompleted =
     authUser?.kyc_validation?.basic &&
@@ -39,7 +43,7 @@ function AppProtected() {
       if (authUser?.expiresIn) {
         const differenceInExpiration = differenceInSeconds(
           new Date(authUser?.expiresIn),
-          new Date()
+          new Date(),
         );
 
         if (differenceInExpiration <= 30) {
