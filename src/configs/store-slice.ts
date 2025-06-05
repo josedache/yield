@@ -105,6 +105,15 @@ export const slice = createSlice({
         },
       )
       .addMatcher(
+        userApi.endpoints.getUserClientKycVerify.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser.alternate_number = payload?.data?.alternateMobileNo;
+          state.authUser = Object.assign(state.authUser, payload.data, {
+            kyc_validation: getKyc(payload.data),
+          });
+        },
+      )
+      .addMatcher(
         userApi.endpoints.verifyUserClientKyc.matchFulfilled,
         (state, { payload }) => {
           state.authUser.alternate_number = payload?.data?.alternateMobileNo;

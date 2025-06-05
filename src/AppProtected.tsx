@@ -19,9 +19,12 @@ function AppProtected() {
 
   const authUser = useAuthUser();
 
-  const userClientKycQueryResult = userApi.useGetUserClientKycQuery(undefined, {
-    skip: !authUser?.clientId,
-  });
+  const userClientKycQueryResult = userApi.useGetUserClientKycVerifyQuery(
+    undefined,
+    {
+      skip: !authUser?.clientId,
+    },
+  );
   const userSelfieFileQueryResult = userApi.useGetUserSelfieFileQuery(
     undefined,
     { skip: !authUser?.clientId },

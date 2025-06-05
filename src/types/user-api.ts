@@ -226,6 +226,47 @@ export type UserClientKycVerifyApiRequest = ApiRequest<{
   isActive: true;
 }>;
 
+export type UserClientKycVerifyGetApiResponse = ApiResponse<{
+  clientId: number;
+  clientType: string;
+  title: string;
+  firstname: string;
+  middlename: string;
+  lastname: string;
+  displayName: string;
+  mobileNo: string;
+  email: string;
+  gender: string;
+  kycLevel: number;
+  maritalStatus: string;
+  dateOfBirth: string;
+  bvn: string;
+  nin: string;
+  account_status: number;
+  kyc_validation_details: {
+    is_bvn_validated: boolean;
+    is_nin_validated: boolean;
+    is_client_identifier_validated: boolean;
+    is_mobile_no_validated: boolean;
+    is_adddress_validated: boolean;
+    is_selfie_validated: boolean;
+    is_email_validated: boolean;
+  };
+  bank_details: {
+    bankId: number;
+    accountnumber: string;
+    accountname: string;
+    active: boolean;
+    account_type: null;
+    sort_code: string;
+    bank_classification: null;
+    resourceId: number;
+  };
+  single_transaction_limit: number;
+  daily_transaction_limit: number;
+  preffered_notification_channel: string;
+}>;
+
 export type UserLogoutApiRequest = ApiRequest<{ flag?: "others" | "all" }>;
 
 export type UserResetPasswordSendApiRequest = ApiRequest<{
