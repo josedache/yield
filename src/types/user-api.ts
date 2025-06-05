@@ -10,13 +10,47 @@ export type UserLoginApiRequest = ApiRequest<{
 
 export type UserLoginApiResponse = ApiResponse<{
   userId: number;
-  user: any;
   token: string;
   expiresIn: string;
   refreshToken: string;
+  refresh_expiry: string;
   is_new_device: boolean;
   login_expiry: number;
   profile: UserClientKycApiResponse["data"];
+  user: {
+    id: number;
+    client_id: string;
+    tier_level: string;
+    is_active: boolean;
+    login_2fa: boolean;
+    is_2fa: boolean;
+    is_suspended: boolean;
+    firstname: string;
+    lastname: string;
+    email: string;
+    phone: string;
+    encrypted_pin: string;
+    tin: string | null;
+    referal_code: string | null;
+    alternate_number: string;
+    channel: string;
+    is_phone_verified: boolean;
+    is_alternate_number_verified: boolean;
+    is_email_verified: boolean;
+    is_bvn_verified: boolean;
+    is_nin_verified: boolean;
+    is_admin: boolean;
+    onboarding_stage: string;
+    cba_wallet_id: string;
+    cba_flex_id: string;
+    preferred_number: string;
+    preferred_notification_channel: string;
+    created_at: string;
+    updated_at: string;
+    transaction_limit: string;
+    deactivation_logs: Array<any>;
+    zeusKycLevel: number;
+  };
 }>;
 
 export type UserReferralCodeApiResponse = ApiResponse<{
@@ -288,7 +322,6 @@ export type UserCreatePasswordApiResponse = ApiResponse<any>;
 export type UserFileUploadPasswordApiRequest = ApiRequest<any>;
 
 export type UserFileUploadPasswordApiResponse = ApiResponse<any>;
-
 
 export type UserIAgreeApiRequest = ApiRequest<{
   reference: string;

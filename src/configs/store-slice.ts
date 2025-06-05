@@ -39,19 +39,19 @@ export const slice = createSlice({
         userApi.endpoints.signupYieldUser.matchFulfilled,
         (state, { payload }) => {
           state.authUser = { token: payload.data.token } as User;
-        }
+        },
       )
       .addMatcher(
         userApi.endpoints.signupYieldSecondStageUser.matchFulfilled,
         (state, { payload }) => {
           state.authUser = { token: payload.data.token } as User;
-        }
+        },
       )
       .addMatcher(
         userApi.endpoints.iAgreeUser.matchFulfilled,
         (state, { payload }) => {
           state.authUser = { token: payload.data.token } as User;
-        }
+        },
       )
       .addMatcher(
         userApi.endpoints.loginUser.matchFulfilled,
@@ -59,15 +59,16 @@ export const slice = createSlice({
           state.authUser = {
             // kyc_validation: getKyc(payload.data?.user),
             ...payload.data?.user,
-            ...payload.data?.profile,
+            // ...payload.data?.profile,
+            clientId: Number(payload?.data?.user?.client_id),
             token: payload?.data?.token,
             expiresIn: String(
-              addSeconds(new Date(), payload?.data?.login_expiry)
+              addSeconds(new Date(), payload?.data?.login_expiry),
             ),
             refreshToken: payload?.data?.refreshToken,
             isAuthenticated: true,
           } as User;
-        }
+        },
       )
       .addMatcher(
         userApi.endpoints.userRefreshToken.matchFulfilled,
@@ -75,21 +76,21 @@ export const slice = createSlice({
           state.authUser.token = payload.data.token;
           state.authUser.refreshToken = payload.data.refreshToken;
           state.authUser.expiresIn = String(
-            addSeconds(new Date(), payload?.data?.login_expiry)
+            addSeconds(new Date(), payload?.data?.login_expiry),
           );
-        }
+        },
       )
       .addMatcher(
         userApi.endpoints.sendUserResetPassword.matchFulfilled,
         (state, { payload }) => {
           state.authUser = payload.data as User;
-        }
+        },
       )
       .addMatcher(
         userApi.endpoints.verifyUserResetPassword.matchFulfilled,
         (state, { payload }) => {
           state.authUser.token = payload.data;
-        }
+        },
       )
       .addMatcher(userApi.endpoints.resetPassword.matchFulfilled, (state) => {
         state.authUser = null;
@@ -101,7 +102,7 @@ export const slice = createSlice({
           state.authUser = Object.assign(state.authUser, payload.data, {
             kyc_validation: getKyc(payload.data),
           });
-        }
+        },
       )
       .addMatcher(
         userApi.endpoints.verifyUserClientKyc.matchFulfilled,
@@ -110,7 +111,7 @@ export const slice = createSlice({
           state.authUser = Object.assign(state.authUser, payload.data, {
             kyc_validation: getKyc(payload.data),
           });
-        }
+        },
       )
       .addMatcher(
         userApi.endpoints.getUserSelfieFile.matchFulfilled,
@@ -118,7 +119,7 @@ export const slice = createSlice({
           state.authUser.avatar = isBase64DataURL(payload.data)
             ? payload.data
             : `data:image/png;base64,${payload.data}`;
-        }
+        },
       ),
 });
 
@@ -136,16 +137,19 @@ function getKyc(authUser: Partial<User>) {
     authUser?.lastname &&
     authUser?.bvn &&
     authUser?.mobileNo &&
-    authUser?.email
+    authUser?.email &&
+    authUser?.clientId
   );
 
   const nin = !!authUser?.nin;
+
+  const alternateNumber = !!authUser?.alternate_number;
 
   const bank = !!(
     authUser?.bank_details?.accountnumber && authUser?.bank_details?.accountname
   );
 
-  return { basic, nin, bank };
+  return { basic, nin, bank, alternateNumber };
 }
 
 // export interface MyObjectType {
