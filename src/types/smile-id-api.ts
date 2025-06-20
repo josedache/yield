@@ -10,6 +10,9 @@ export type SmileIdInitiateAddressApiRequest = ApiRequest<{
     user_id: string;
     job_id: string;
   };
+  state: string;
+  city: string;
+  // tin: string;
 }>;
 
 export type SmileIdInitiateAddressApiResponse = ApiResponse;

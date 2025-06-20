@@ -46,6 +46,27 @@ export type User = {
     nin: boolean;
     bank: boolean;
     alternateNumber: boolean;
+    address: boolean;
+    tin: boolean;
+  };
+  kyc_status: {
+    id: string;
+    user_id: string;
+    client_id: string;
+    tier: number;
+    selfie: string | null;
+    nin_slip: string | null;
+    admission_letter: string | null;
+    utility_bill: string | null;
+    id_card: string | null;
+    bank_statement: string | null;
+    rent_agreement: string | null;
+    voters_card: string | null;
+    international_passport: string;
+    drivers_license: string | null;
+    address: string;
+    created_at: string;
+    updated_at: string;
   };
   bank_details: {
     bankId: number;

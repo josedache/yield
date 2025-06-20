@@ -9,6 +9,8 @@ import {
   UserFileUploadPasswordApiResponse,
   UserIAgreeApiRequest,
   UserIAgreeApiResponse,
+  UserKycStatusApiRequest,
+  UserKycStatusApiResponse,
   UserLoginApiRequest,
   UserLoginApiResponse,
   UserLogoutApiRequest,
@@ -96,14 +98,16 @@ export const userApi = coreApi.injectEndpoints({
       providesTags: [tags.USER],
     }),
 
-    getUserClientKycVerify: builder.query<UserClientKycApiResponse, ApiRequest>({
-      query: (config) => ({
-        url: BASE_URL + "/kyc/client/verify/get",
-        method: "GET",
-        ...config,
-      }),
-      providesTags: [tags.USER],
-    }),
+    getUserClientKycVerify: builder.query<UserClientKycApiResponse, ApiRequest>(
+      {
+        query: (config) => ({
+          url: BASE_URL + "/kyc/client/verify/get",
+          method: "GET",
+          ...config,
+        }),
+        providesTags: [tags.USER],
+      },
+    ),
 
     getUserReferralCode: builder.query<UserReferralCodeApiResponse, ApiRequest>(
       {
@@ -310,6 +314,17 @@ export const userApi = coreApi.injectEndpoints({
     >({
       query: ({ path, ...config }) => ({
         url: BASE_URL + "/get_ref_code/" + path.referral_code,
+        method: "GET",
+        ...config,
+      }),
+      providesTags: [tags.USER],
+    }),
+    getUserKycStatus: builder.query<
+      UserKycStatusApiResponse,
+      UserKycStatusApiRequest
+    >({
+      query: (config) => ({
+        url: BASE_URL + "/kyc_status/",
         method: "GET",
         ...config,
       }),

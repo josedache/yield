@@ -13,12 +13,12 @@ import {
   Dialog,
   DialogContent,
   DialogContentText,
+  FormHelperText,
   Icon,
+  Link as MuiLink,
   MenuItem,
   TextField,
   Typography,
-  Link as MuiLink,
-  FormHelperText,
 } from "@mui/material";
 import { Icon as Iconify } from "@iconify/react";
 import { Link } from "react-router-dom";
@@ -39,8 +39,11 @@ import {
   trackUserAddBankAccount,
   trackUserDocumentVerification,
 } from "configs/analytics";
-
-// import { locationApi } from "apis/location-api.ts";
+import { locationApi } from "apis/location-api.ts";
+import { smileIdApi } from "apis/smile-id-api.ts";
+import * as dfns from "date-fns";
+import { paymentApi } from "apis/payment-api.ts";
+import useDebouncedState from "hooks/useDebouncedState.ts";
 
 function DashboardKyc() {
   const { enqueueSnackbar } = useSnackbar();
@@ -58,7 +61,12 @@ function DashboardKyc() {
 
   const [sendOtpMutation, sendOtpMutationResult] =
     userApi.useSendUserOtpMutation();
+
   const [verifyOtpMutation] = userApi.useVerifyUserOtpMutation();
+
+  const [initiateSmileIdAddressMutation] =
+    smileIdApi.useInitiateSmileIdAddressMutation();
+
   const [countdownDate, setCountdownDate] = useState<Date | undefined>(
     undefined,
   );
@@ -84,8 +92,8 @@ function DashboardKyc() {
 
   const isAccountDetailsCompleted = authUser?.kyc_validation?.bank;
 
-  // const isAddressVerificationCompleted = false;
-  // const isTaxIdentificationNumberCompleted = false;
+  const isAddressVerificationCompleted = authUser?.kyc_validation?.address;
+  // const isTaxIdentificationNumberCompleted = authUser?.kyc_validation?.tin;
 
   const stepper = useStepper({
     initialStep: getEnumStepIndex(
@@ -97,11 +105,11 @@ function DashboardKyc() {
             ? DashboardKycStep.ALTERNATE_PHONE_NUMBER
             : !isAccountDetailsCompleted
               ? DashboardKycStep.ACCOUNT_DETAILS
-              : // : !isAddressVerificationCompleted
-                //   ? DashboardKycStep.ADDRESS_VERIFICATION
-                //   : !isTaxIdentificationNumberCompleted
-                //     ? DashboardKycStep.TAX_IDENTIFICATION_NUMBER
-                DashboardKycStep.SUCCESS,
+              : !isAddressVerificationCompleted
+                ? DashboardKycStep.ADDRESS_VERIFICATION
+                : // : !isTaxIdentificationNumberCompleted
+                  //   ? DashboardKycStep.TAX_IDENTIFICATION_NUMBER
+                  DashboardKycStep.SUCCESS,
     ),
   });
 
@@ -125,17 +133,16 @@ function DashboardKyc() {
         type: "nin_slip",
         id_number: authUser?.nin ?? "",
       },
-      // address: "",
-      // full_name: "",
-      // utility_number: "",
-      // utility_type: "",
-      // utility_provider: "",
-      // partner_params: {
-      //   user_id: authUser?.userId,
-      //   job_id: "",
-      // },
-      // state: "",
-      // city: "",
+      address: "",
+      utility_number: "",
+      utility_type: "",
+      utility_provider: "",
+      partner_params: {
+        user_id: authUser?.id,
+        job_id: "",
+      },
+      state: "",
+      city: "",
       // tin: "",
     },
     enableReinitialize: true,
@@ -177,14 +184,14 @@ function DashboardKyc() {
           accountname: yup.string().label("Account Name").required(),
           bankId: yup.string().label("Bank").required(),
         },
-        // [DashboardKycStep.ADDRESS_VERIFICATION]: {
-        //   address: yup.string().label("Address").required(),
-        //   utility_number: yup.string().label("Utility Number").required(),
-        //   utility_type: yup.string().label("Utility Type").required(),
-        //   utility_provider: yup.string().label("Utility Provider").required(),
-        //   state: yup.string().label("State").required(),
-        //   city: yup.string().label("City").required(),
-        // },
+        [DashboardKycStep.ADDRESS_VERIFICATION]: {
+          address: yup.string().label("Address").required(),
+          utility_number: yup.string().label("Utility Number").required(),
+          utility_type: yup.string().label("Utility Type").required(),
+          utility_provider: yup.string().label("Utility Provider").required(),
+          state: yup.string().label("State").required(),
+          city: yup.string().label("City").required(),
+        },
         // [DashboardKycStep.TAX_IDENTIFICATION_NUMBER]: {
         //   tin: yup.string().label("TIN").required(),
         // },
@@ -282,6 +289,62 @@ function DashboardKyc() {
 
             break;
           }
+
+          case DashboardKycStep.ADDRESS_VERIFICATION: {
+            const data = await initiateSmileIdAddressMutation({
+              body: {
+                address: values.address,
+                full_name: [values.firstname, values.lastname].join(" "),
+                utility_number: values.utility_number,
+                utility_type: values.utility_type,
+                utility_provider: ((name) => {
+                  switch (name.toLowerCase()) {
+                    case "aba electric prepaind":
+                      return "ABA_POWER";
+                    case "eko electric prepaid":
+                      return "EKEDC";
+                    case "abuja electric. prepaid":
+                      return "AEDC";
+                    case "benin electric prepaid":
+                      return "BEDC";
+                    case "enugu electric prepaid":
+                      return "EEDC";
+                    case "harcourt electric prepaid":
+                      return "PEDC";
+                    case "ibadan electric prepaid":
+                      return "IBEDC";
+                    case "ikeja electric prepaid":
+                      return "IKEDC";
+                    case "jos electric prepaid":
+                      return "JEDC";
+                    case "kaduna electric prepaid":
+                      return "KAEDCO";
+                    case "kano electric prepaid":
+                      return "KEDCO";
+                    case "yola electricity prepaid":
+                      return "YEDC";
+                    default:
+                      return null;
+                  }
+                })(
+                  planTypePaymentCategory?.find(
+                    (option) => option.planId == values.utility_provider,
+                  )?.operatorName,
+                ),
+                partner_params: {
+                  user_id: String(authUser?.id),
+                  job_id: `${authUser?.id}-address-${dfns.format(new Date(), "yyyy:MM:dd HH:mm:ss")}`,
+                },
+                state: values.state,
+                city: values.city,
+                // tin: values.tin,
+              },
+            }).unwrap();
+            enqueueSnackbar(data?.message || "Address verified Successfully!", {
+              variant: "success",
+            });
+            break;
+          }
           default:
             break;
         }
@@ -299,19 +362,53 @@ function DashboardKyc() {
     },
   });
 
-  // const statesQueryResult = locationApi.useGetLocationAllStatesQuery(undefined);
+  const statesQueryResult = locationApi.useGetLocationAllStatesQuery(undefined);
 
-  // const states = statesQueryResult.data?.data;
+  const states = statesQueryResult.data?.data;
 
-  // const lgasQueryResult = locationApi.useGetLocationStateLgasQuery(
-  //   useMemo(
-  //     () => ({ path: { state: formik.values.state } }),
-  //     [formik.values.state],
-  //   ),
-  //   { skip: !formik.values.state },
-  // );
+  const lgasQueryResult = locationApi.useGetLocationStateLgasQuery(
+    useMemo(
+      () => ({ path: { state: formik.values.state } }),
+      [formik.values.state],
+    ),
+    { skip: !formik.values.state },
+  );
 
-  // const lgas = lgasQueryResult.data?.data?.lgas;
+  const lgas = lgasQueryResult.data?.data?.lgas;
+
+  const planTypePaymentCategoryQueryResult =
+    paymentApi.useGetPlanTypePaymentCategoryQuery(
+      useMemo(() => ({ path: { categoryId: "4" } }), []),
+    );
+
+  const planTypePaymentCategory = planTypePaymentCategoryQueryResult.data?.data;
+
+  const [debouncedUtilityNumber] = useDebouncedState(
+    formik.values.utility_number,
+    {
+      enableReInitialize: true,
+      wait: 1000,
+    },
+  );
+
+  const paymentProductAccountEnquiryQueryResult =
+    paymentApi.useGetPaymentProductAccountEnquiryQuery(
+      useMemo(
+        () => ({
+          path: {
+            productId: String(formik.values.utility_provider),
+            accountId: String(debouncedUtilityNumber),
+          },
+        }),
+        [formik.values.utility_provider, debouncedUtilityNumber],
+      ),
+      {
+        skip: !(formik.values.utility_provider && debouncedUtilityNumber),
+      },
+    );
+
+  const paymentProductAccountEnquiry =
+    paymentProductAccountEnquiryQueryResult.data?.data;
 
   const transactionOutwardNameEnquiryQueryResult =
     transactionApi.useGetTransactionOutwardNameEnquiryQuery(
@@ -808,82 +905,117 @@ function DashboardKyc() {
                 </div>
               ),
             },
-            // {
-            //   title: "Address Verification",
-            //   completed: isAddressVerificationCompleted,
-            //   content: (
-            //     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            //       <TextField
-            //         fullWidth
-            //         label="Street Address"
-            //         placeholder="House Number and Street Name"
-            //         {...getFormikTextFieldProps(formik, "address")}
-            //       />
-            //       <TextField
-            //         fullWidth
-            //         label="State"
-            //         placeholder="Select State"
-            //         select
-            //         {...getFormikTextFieldProps(formik, "state")}
-            //       >
-            //         {states?.map((option) => (
-            //           <MenuItem key={option} value={option}>
-            //             {option}
-            //           </MenuItem>
-            //         ))}
-            //       </TextField>
-            //       <TextField
-            //         fullWidth
-            //         label="Town/City"
-            //         placeholder="Town/City"
-            //         select
-            //         {...getFormikTextFieldProps(formik, "city")}
-            //       >
-            //         {lgas?.map((option) => (
-            //           <MenuItem key={option} value={option}>
-            //             {option}
-            //           </MenuItem>
-            //         ))}
-            //       </TextField>
-            //       <TextField
-            //         fullWidth
-            //         label="Electricity Type (Optional)"
-            //         placeholder="Select Electricity Type"
-            //         select
-            //         {...getFormikTextFieldProps(formik, "utility_type")}
-            //       >
-            //         {[]?.map((option: any) => (
-            //           <MenuItem key={option.id} value={option.id}>
-            //             {option.name}
-            //           </MenuItem>
-            //         ))}
-            //       </TextField>
-            //       <TextField
-            //         fullWidth
-            //         label="Electricity Provider (Optional)"
-            //         placeholder="Select Electricity Provider"
-            //         select
-            //         {...getFormikTextFieldProps(formik, "utility_provider")}
-            //       >
-            //         {[]?.map((option: any) => (
-            //           <MenuItem key={option.id} value={option.id}>
-            //             {option.name}
-            //           </MenuItem>
-            //         ))}
-            //       </TextField>
-            //       <TextField
-            //         fullWidth
-            //         label="Meter Number (Optional)"
-            //         placeholder="Enter Meter Number"
-            //         {...getFormikTextFieldProps(formik, "utility_number")}
-            //       />
-            //       <div />
-            //       <div className="flex items-end mt-4">
-            //         <div className="flex-1">{actionButtons}</div>
-            //       </div>
-            //     </div>
-            //   ),
-            // },
+            {
+              title: "Address Verification",
+              completed: isAddressVerificationCompleted,
+              content: (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <TextField
+                    fullWidth
+                    label="Street Address"
+                    placeholder="House Number and Street Name"
+                    {...getFormikTextFieldProps(formik, "address")}
+                  />
+                  <TextField
+                    fullWidth
+                    label="State"
+                    placeholder="Select State"
+                    select
+                    {...getFormikTextFieldProps(formik, "state")}
+                  >
+                    {states?.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <TextField
+                    fullWidth
+                    label="Town/City"
+                    placeholder="Town/City"
+                    select
+                    {...getFormikTextFieldProps(formik, "city")}
+                  >
+                    {lgas?.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <TextField
+                    fullWidth
+                    label="Electricity Type (Optional)"
+                    placeholder="Select Electricity Type"
+                    select
+                    {...getFormikTextFieldProps(formik, "utility_type")}
+                  >
+                    {[
+                      { name: "PrePaid", id: "PrePaid" },
+                      { name: "PostPaid", id: "PostPaid" },
+                    ]?.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <TextField
+                    fullWidth
+                    label="Electricity Provider (Optional)"
+                    placeholder="Select Electricity Provider"
+                    select
+                    {...getFormikTextFieldProps(formik, "utility_provider")}
+                  >
+                    {planTypePaymentCategory?.map((option) => (
+                      <MenuItem
+                        key={option.planId}
+                        value={option.planId}
+                        className="flex gap-2"
+                      >
+                        {/*<Avatar src={option.icon} />*/}
+                        <span>{option.operatorName}</span>
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <div className="space-y-2">
+                    <TextField
+                      fullWidth
+                      label="Meter Number (Optional)"
+                      placeholder="Enter Meter Number"
+                      {...getFormikTextFieldProps(formik, "utility_number")}
+                    />
+                    <>
+                      {paymentProductAccountEnquiryQueryResult.isFetching ? (
+                        <Typography variant="body2">
+                          Resolving Details <CircularProgress size={10} />
+                        </Typography>
+                      ) : paymentProductAccountEnquiryQueryResult.isSuccess ? (
+                        <div className="flex items-center gap-2 text-success-main">
+                          <Iconify
+                            icon="lets-icons:check-fill"
+                            className="text-lg"
+                          />
+                          <Typography variant="body2" className="font-medium">
+                            {paymentProductAccountEnquiry?.customerName}
+                          </Typography>
+                        </div>
+                      ) : paymentProductAccountEnquiryQueryResult.isError ? (
+                        <Typography variant="body2" color="error">
+                          {
+                            (
+                              transactionOutwardNameEnquiryQueryResult.error as any
+                            )?.data?.message
+                          }
+                        </Typography>
+                      ) : null}
+                    </>
+                  </div>
+                  <div />
+                  <div className="flex items-end mt-4">
+                    <div className="flex-1">{actionButtons}</div>
+                  </div>
+                </div>
+              ),
+            },
             // {
             //   title: "Tax Identification Number (Optional)",
             //   completed: isTaxIdentificationNumberCompleted,
@@ -996,7 +1128,7 @@ const STEPS_INDEX = [
   DashboardKycStep.IDENTIFICATION,
   DashboardKycStep.ALTERNATE_PHONE_NUMBER,
   DashboardKycStep.ACCOUNT_DETAILS,
-  // DashboardKycStep.ADDRESS_VERIFICATION,
+  DashboardKycStep.ADDRESS_VERIFICATION,
   // DashboardKycStep.TAX_IDENTIFICATION_NUMBER,
   DashboardKycStep.SUCCESS,
 ];

@@ -99,27 +99,31 @@ export const slice = createSlice({
         userApi.endpoints.getUserClientKyc.matchFulfilled,
         (state, { payload }) => {
           state.authUser.alternate_number = payload?.data?.alternateMobileNo;
-          state.authUser = Object.assign(state.authUser, payload.data, {
-            kyc_validation: getKyc(payload.data),
-          });
+          state.authUser = Object.assign(state.authUser, payload.data);
+          state.authUser.kyc_validation = getKyc(state.authUser);
         },
       )
       .addMatcher(
         userApi.endpoints.getUserClientKycVerify.matchFulfilled,
         (state, { payload }) => {
           state.authUser.alternate_number = payload?.data?.alternateMobileNo;
-          state.authUser = Object.assign(state.authUser, payload.data, {
-            kyc_validation: getKyc(payload.data),
-          });
+          state.authUser = Object.assign(state.authUser, payload.data);
+          state.authUser.kyc_validation = getKyc(state.authUser);
         },
       )
       .addMatcher(
         userApi.endpoints.verifyUserClientKyc.matchFulfilled,
         (state, { payload }) => {
           state.authUser.alternate_number = payload?.data?.alternateMobileNo;
-          state.authUser = Object.assign(state.authUser, payload.data, {
-            kyc_validation: getKyc(payload.data),
-          });
+          state.authUser = Object.assign(state.authUser, payload.data);
+          state.authUser.kyc_validation = getKyc(state.authUser);
+        },
+      )
+      .addMatcher(
+        userApi.endpoints.getUserKycStatus.matchFulfilled,
+        (state, { payload }) => {
+          state.authUser.kyc_status = payload.data;
+          state.authUser.kyc_validation = getKyc(state.authUser);
         },
       )
       .addMatcher(
@@ -158,7 +162,13 @@ function getKyc(authUser: Partial<User>) {
     authUser?.bank_details?.accountnumber && authUser?.bank_details?.accountname
   );
 
-  return { basic, nin, bank, alternateNumber };
+  const address =
+    !authUser?.kyc_status?.address ||
+    authUser?.kyc_status?.address === "failed";
+
+  const tin = false;
+
+  return { basic, nin, bank, alternateNumber, address, tin };
 }
 
 // export interface MyObjectType {

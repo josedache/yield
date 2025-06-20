@@ -14,7 +14,7 @@ export const smileIdApi = coreApi.injectEndpoints({
       SmileIdInitiateAddressApiRequest
     >({
       query: (config) => ({
-        url: BASE_URL,
+        url: BASE_URL + "/address-initiate",
         method: "POST",
         ...config,
       }),

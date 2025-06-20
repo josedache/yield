@@ -18,7 +18,7 @@ export type UserLoginApiResponse = ApiResponse<{
   is_new_device: boolean;
   login_expiry: number;
   profile: UserClientKycApiResponse["data"];
-  user: User
+  user: User;
 }>;
 
 export type UserReferralCodeApiResponse = ApiResponse<{
@@ -391,4 +391,26 @@ export type UserRefreshTokenResponse = ApiResponse<{
   token: string;
   refreshToken: string;
   login_expiry: number;
+}>;
+
+export type UserKycStatusApiRequest = ApiRequest;
+
+export type UserKycStatusApiResponse = ApiResponse<{
+  id: string;
+  user_id: string;
+  client_id: string;
+  tier: number;
+  selfie: string | null;
+  nin_slip: string | null;
+  admission_letter: string | null;
+  utility_bill: string | null;
+  id_card: string | null;
+  bank_statement: string | null;
+  rent_agreement: string | null;
+  voters_card: string | null;
+  international_passport: string;
+  drivers_license: string | null;
+  address: string;
+  created_at: string;
+  updated_at: string;
 }>;

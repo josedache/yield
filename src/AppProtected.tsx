@@ -19,12 +19,17 @@ function AppProtected() {
 
   const authUser = useAuthUser();
 
+  const userKycStatusQueryResult = userApi.useGetUserKycStatusQuery(undefined, {
+    skip: !authUser?.clientId,
+  });
+
   const userClientKycQueryResult = userApi.useGetUserClientKycVerifyQuery(
     undefined,
     {
       skip: !authUser?.clientId,
     },
   );
+
   const userSelfieFileQueryResult = userApi.useGetUserSelfieFileQuery(
     undefined,
     { skip: !authUser?.clientId },
@@ -39,7 +44,8 @@ function AppProtected() {
   const isKycCompleted =
     authUser?.kyc_validation?.basic &&
     authUser?.kyc_validation?.nin &&
-    authUser?.kyc_validation?.bank;
+    authUser?.kyc_validation?.bank &&
+    authUser?.kyc_validation?.address;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -68,17 +74,20 @@ function AppProtected() {
     <LoadingContent
       loading={
         userClientKycQueryResult.isLoading ||
-        userSelfieFileQueryResult.isLoading
+        userSelfieFileQueryResult.isLoading ||
+        userKycStatusQueryResult.isLoading
       }
-      error={userClientKycQueryResult.isError}
+      error={
+        userClientKycQueryResult.isError || userKycStatusQueryResult.isError
+      }
       onRetry={() => {
         if (userClientKycQueryResult.isError) {
           userClientKycQueryResult.refetch();
         }
 
-        // if (userClientKycQueryResult.isError) {
-        //   userClientKycQueryResult.refetch();
-        // }
+        if (userKycStatusQueryResult.isError) {
+          userKycStatusQueryResult.refetch();
+        }
       }}
     >
       {() => (
